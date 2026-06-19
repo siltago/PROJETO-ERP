@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { criarTarefaAutomatica } from "@/lib/tarefas";
+import { getSetorComprasId, garantirColunasCompras, colunaPorStatusPedido, moverTarefaPedido } from "@/lib/kanban-compras";
 
 async function getUsuarioId() {
   const supabase = createClient();
@@ -12,6 +14,26 @@ async function getUsuarioId() {
   const admin = createAdminClient();
   const { data } = await admin.from("usuarios").select("id").eq("auth_id", user.id).single();
   return data?.id as string;
+}
+
+async function getUsuario() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado.");
+  const admin = createAdminClient();
+  const { data } = await admin.from("usuarios").select("id, setor_id, nome").eq("auth_id", user.id).single();
+  return data as { id: string; setor_id: string | null; nome: string };
+}
+
+async function getSetorCompras(): Promise<string | null> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("setores")
+    .select("id")
+    .ilike("nome", "%compra%")
+    .limit(1)
+    .maybeSingle();
+  return data?.id ?? null;
 }
 
 async function registrarAssinatura(
@@ -41,7 +63,8 @@ async function registrarHistorico(
 
 export async function criarSolicitacao(formData: FormData) {
   const admin = createAdminClient();
-  const usuario_id = await getUsuarioId();
+  const usuario = await getUsuario();
+  const usuario_id = usuario.id;
 
   const obra_id     = formData.get("obra_id") as string | null;
   const origem      = formData.get("origem") as string;
@@ -73,8 +96,27 @@ export async function criarSolicitacao(formData: FormData) {
 
   await registrarHistorico(admin, "solicitacao", sol.id, usuario_id, "CRIADA", { numero: sol.numero });
   await registrarAssinatura(admin, usuario_id, "solicitacao", sol.id, "CRIADA");
+
+  const setorComprasIdSol = await getSetorComprasId();
+  if (setorComprasIdSol) {
+    const colunasMapSol = await garantirColunasCompras(setorComprasIdSol);
+    await criarTarefaAutomatica({
+      titulo: `Solicitação ${sol.numero} — aguardando pedido`,
+      setor_id: setorComprasIdSol,
+      origem: "COMPRA",
+      entidade_ref: "solicitacao",
+      entidade_ref_id: sol.id,
+      obra_id: (obra_id as string) ?? undefined,
+      prioridade: prioridade === "URGENTE" ? "ALTA" : "MEDIA",
+      criado_por: usuario_id,
+      coluna_id: colunasMapSol["Solicitações abertas"],
+    });
+  }
+
   revalidatePath("/compras");
   revalidatePath("/compras/solicitacoes");
+  revalidatePath("/");
+  revalidatePath("/tarefas");
   redirect(`/compras/solicitacoes/${sol.id}`);
 }
 
@@ -123,7 +165,8 @@ async function gerarNumeroPedido(
 
 export async function criarPedido(formData: FormData) {
   const admin = createAdminClient();
-  const usuario_id = await getUsuarioId();
+  const usuario = await getUsuario();
+  const usuario_id = usuario.id;
 
   const obra_id             = (formData.get("obra_id") as string | null) || null;
   const fornecedor_id       = formData.get("fornecedor_id") as string;
@@ -178,8 +221,28 @@ export async function criarPedido(formData: FormData) {
 
   await registrarHistorico(admin, "pedido", ped.id, usuario_id, "CRIADO", { numero: ped.numero });
   await registrarAssinatura(admin, usuario_id, "pedido", ped.id, "CRIADO");
+
+  const setorComprasId = await getSetorComprasId();
+  if (setorComprasId) {
+    const colunasMap = await garantirColunasCompras(setorComprasId);
+    await criarTarefaAutomatica({
+      titulo: `Pedido ${ped.numero} — rascunho`,
+      setor_id: setorComprasId,
+      origem: "COMPRA",
+      entidade_ref: "pedido",
+      entidade_ref_id: ped.id,
+      pedido_id: ped.id,
+      obra_id: obra_id ?? undefined,
+      prioridade: "MEDIA",
+      criado_por: usuario_id,
+      coluna_id: colunasMap["Rascunho"],
+    });
+  }
+
   revalidatePath("/compras");
   revalidatePath("/compras/pedidos");
+  revalidatePath("/");
+  revalidatePath("/tarefas");
   redirect(`/compras/pedidos/${ped.id}`);
 }
 
@@ -211,6 +274,9 @@ export async function alterarStatusPedido(
       }
     }
   }
+
+  // Move o card do Kanban para a coluna correspondente ao novo status
+  await moverTarefaPedido(id, status, usuario_id);
 
   await registrarHistorico(admin, "pedido", id, usuario_id, `STATUS_${status}`, { observacoes });
   await registrarAssinatura(admin, usuario_id, "pedido", id, `STATUS_${status}`);
