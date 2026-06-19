@@ -384,28 +384,34 @@ export async function alterarFormaPagamento(id: string, ativo: boolean) {
 
 export async function criarFornecedor(formData: FormData) {
   const admin = createAdminClient();
-  const nome    = (formData.get("nome") as string).trim();
-  const cnpj    = (formData.get("cnpj") as string | null)?.trim() || null;
-  const email   = (formData.get("email") as string | null)?.trim() || null;
-  const telefone = (formData.get("telefone") as string | null)?.trim() || null;
-  const contato  = (formData.get("contato") as string | null)?.trim() || null;
-  const tipos    = formData.getAll("tipos").map(String).filter(Boolean);
+  const g = (k: string) => (formData.get(k) as string | null)?.trim() || null;
+  const nome  = (formData.get("nome") as string).trim();
+  const tipos = formData.getAll("tipos").map(String).filter(Boolean);
   if (!nome) throw new Error("Nome é obrigatório.");
-  const { error } = await admin.from("fornecedores").insert({ nome, cnpj, email, telefone, contato, tipos });
+  const { error } = await admin.from("fornecedores").insert({
+    nome, tipos,
+    razao_social: g("razao_social"), cnpj: g("cnpj"),
+    email: g("email"), telefone: g("telefone"), contato: g("contato"),
+    endereco: g("endereco"), numero: g("numero"), complemento: g("complemento"),
+    bairro: g("bairro"), cidade: g("cidade"), estado: g("estado"), cep: g("cep"),
+  });
   if (error) throw new Error(error.message);
   revalidatePath("/compras/fornecedores");
 }
 
 export async function editarFornecedor(id: string, formData: FormData) {
   const admin = createAdminClient();
-  const nome    = (formData.get("nome") as string).trim();
-  const cnpj    = (formData.get("cnpj") as string | null)?.trim() || null;
-  const email   = (formData.get("email") as string | null)?.trim() || null;
-  const telefone = (formData.get("telefone") as string | null)?.trim() || null;
-  const contato  = (formData.get("contato") as string | null)?.trim() || null;
-  const tipos    = formData.getAll("tipos").map(String).filter(Boolean);
+  const g = (k: string) => (formData.get(k) as string | null)?.trim() || null;
+  const nome  = (formData.get("nome") as string).trim();
+  const tipos = formData.getAll("tipos").map(String).filter(Boolean);
   if (!nome) throw new Error("Nome é obrigatório.");
-  const { error } = await admin.from("fornecedores").update({ nome, cnpj, email, telefone, contato, tipos }).eq("id", id);
+  const { error } = await admin.from("fornecedores").update({
+    nome, tipos,
+    razao_social: g("razao_social"), cnpj: g("cnpj"),
+    email: g("email"), telefone: g("telefone"), contato: g("contato"),
+    endereco: g("endereco"), numero: g("numero"), complemento: g("complemento"),
+    bairro: g("bairro"), cidade: g("cidade"), estado: g("estado"), cep: g("cep"),
+  }).eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/compras/fornecedores");
 }

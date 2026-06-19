@@ -7,9 +7,11 @@ import { excluirFornecedores, editarFornecedor } from "@/app/compras/actions";
 
 type TipoLinha = { nome: string; slug: string };
 type Fornecedor = {
-  id: string; nome: string; cnpj: string | null; email: string | null;
-  telefone: string | null; contato: string | null; ativo: boolean;
-  tipos: string[] | null;
+  id: string; nome: string; razao_social: string | null; cnpj: string | null;
+  email: string | null; telefone: string | null; contato: string | null;
+  ativo: boolean; tipos: string[] | null;
+  endereco: string | null; numero: string | null; complemento: string | null;
+  bairro: string | null; cidade: string | null; estado: string | null; cep: string | null;
 };
 
 function FornecedorRow({ f, tiposLinha }: { f: Fornecedor; tiposLinha: TipoLinha[] }) {
@@ -42,24 +44,52 @@ function FornecedorRow({ f, tiposLinha }: { f: Fornecedor; tiposLinha: TipoLinha
         <form onSubmit={handleEdit} className="space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="text-[10px] uppercase tracking-wide text-ink-faint">Nome</label>
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">Nome Fantasia *</label>
               <input name="nome" defaultValue={f.nome} required className="field h-8 text-sm" />
             </div>
             <div>
-              <label className="text-[10px] uppercase tracking-wide text-ink-faint">Contato</label>
-              <input name="contato" defaultValue={f.contato ?? ""} className="field h-8 text-sm" />
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">Razão Social</label>
+              <input name="razao_social" defaultValue={f.razao_social ?? ""} className="field h-8 text-sm" />
             </div>
             <div>
-              <label className="text-[10px] uppercase tracking-wide text-ink-faint">E-mail</label>
-              <input name="email" type="email" defaultValue={f.email ?? ""} className="field h-8 text-sm" />
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">CNPJ</label>
+              <input name="cnpj" defaultValue={f.cnpj ?? ""} className="field h-8 text-sm" />
             </div>
             <div>
               <label className="text-[10px] uppercase tracking-wide text-ink-faint">Telefone</label>
               <input name="telefone" defaultValue={f.telefone ?? ""} className="field h-8 text-sm" />
             </div>
             <div>
-              <label className="text-[10px] uppercase tracking-wide text-ink-faint">CNPJ</label>
-              <input name="cnpj" defaultValue={f.cnpj ?? ""} className="field h-8 text-sm" />
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">E-mail</label>
+              <input name="email" type="email" defaultValue={f.email ?? ""} className="field h-8 text-sm" />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">Contato</label>
+              <input name="contato" defaultValue={f.contato ?? ""} className="field h-8 text-sm" />
+            </div>
+            <div className="sm:col-span-2 grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                <label className="text-[10px] uppercase tracking-wide text-ink-faint">Endereço</label>
+                <input name="endereco" defaultValue={f.endereco ?? ""} className="field h-8 text-sm" placeholder="Rua, Av." />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wide text-ink-faint">Número</label>
+                <input name="numero" defaultValue={f.numero ?? ""} className="field h-8 text-sm" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wide text-ink-faint">CEP</label>
+              <input name="cep" defaultValue={f.cep ?? ""} className="field h-8 text-sm" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                <label className="text-[10px] uppercase tracking-wide text-ink-faint">Cidade</label>
+                <input name="cidade" defaultValue={f.cidade ?? ""} className="field h-8 text-sm" />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wide text-ink-faint">UF</label>
+                <input name="estado" defaultValue={f.estado ?? ""} className="field h-8 text-sm" maxLength={2} />
+              </div>
             </div>
           </div>
           {tiposLinha.length > 0 && (

@@ -7,8 +7,6 @@ import { BackButton } from "@/components/back-button";
 
 type Tipo = { id: string; nome: string; slug: string };
 
-const NAV_EXTRA = [{ slug: "cores", label: "Cores RAL" }];
-
 function SidebarInner({
   tipos,
   collapsed,

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function FornecedoresPage() {
   const admin = createAdminClient();
   const [{ data: fornecedores }, { data: tiposLinha }] = await Promise.all([
-    admin.from("fornecedores").select("id, nome, cnpj, email, telefone, contato, ativo, tipos").order("nome"),
+    admin.from("fornecedores").select("id, nome, razao_social, cnpj, email, telefone, contato, ativo, tipos, endereco, numero, bairro, cidade, estado, cep").order("nome"),
     admin.from("tipos_linha").select("nome, slug").order("ordem"),
   ]);
 
@@ -22,8 +22,12 @@ export default async function FornecedoresPage() {
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-ink-faint">Novo fornecedor</h2>
           <form action={criarFornecedor} className="card p-5 space-y-4">
             <div>
-              <label className="label">Nome <span className="text-red-500">*</span></label>
-              <input name="nome" required className="field" placeholder="Razão social ou nome fantasia" />
+              <label className="label">Nome Fantasia <span className="text-red-500">*</span></label>
+              <input name="nome" required className="field" placeholder="Nome fantasia ou comercial" />
+            </div>
+            <div>
+              <label className="label">Razão Social</label>
+              <input name="razao_social" className="field" placeholder="Razão social completa" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -35,13 +39,39 @@ export default async function FornecedoresPage() {
                 <input name="telefone" className="field" placeholder="(11) 99999-0000" />
               </div>
             </div>
-            <div>
-              <label className="label">E-mail</label>
-              <input name="email" type="email" className="field" />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">E-mail</label>
+                <input name="email" type="email" className="field" />
+              </div>
+              <div>
+                <label className="label">Contato</label>
+                <input name="contato" className="field" placeholder="Nome do responsável" />
+              </div>
             </div>
-            <div>
-              <label className="label">Contato</label>
-              <input name="contato" className="field" placeholder="Nome do responsável" />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="col-span-2">
+                <label className="label">Endereço</label>
+                <input name="endereco" className="field" placeholder="Rua, Av." />
+              </div>
+              <div>
+                <label className="label">Número</label>
+                <input name="numero" className="field" placeholder="123" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="label">CEP</label>
+                <input name="cep" className="field" placeholder="00000-000" />
+              </div>
+              <div>
+                <label className="label">Cidade</label>
+                <input name="cidade" className="field" />
+              </div>
+              <div>
+                <label className="label">Estado</label>
+                <input name="estado" className="field" placeholder="SP" maxLength={2} />
+              </div>
             </div>
             {tipos.length > 0 && (
               <div>

@@ -1,0 +1,302 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase-admin";
+import { PrintButton } from "./print-button";
+
+export const dynamic = "force-dynamic";
+
+function fmt(v: number, casas = 3) {
+  return v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+
+function DataRow({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div style={{ display: "flex", gap: 6, marginBottom: 3, fontSize: 11 }}>
+      <span style={{ fontWeight: 700, whiteSpace: "nowrap" }}>{label}:</span>
+      <span>{value ?? "—"}</span>
+    </div>
+  );
+}
+
+export default async function VisualizarPedidoPage({ params }: { params: { id: string } }) {
+  const admin = createAdminClient();
+
+  const [pedResult, itensResult, empResult, coresResult] = await Promise.all([
+    admin.from("pedidos_compra")
+      .select(`*,
+        obra:obras(id, nome, codigo, numero),
+        fornecedor:fornecedores(nome, razao_social, cnpj, telefone, email),
+        comprador:usuarios(nome),
+        forma_pagamento:formas_pagamento(nome)
+      `)
+      .eq("id", params.id)
+      .single(),
+    admin.from("vw_pedido_itens")
+      .select("*, produto:produtos(codigo_mestre, nome, peso_metro, tamanho_mm)")
+      .eq("pedido_id", params.id),
+    admin.from("empresa").select("*").eq("id", "default").maybeSingle(),
+    admin.from("cores_ral").select("id, codigo_ral, nome").order("codigo_ral"),
+  ]);
+
+  if (!pedResult.data) notFound();
+
+  const ped = pedResult.data;
+  const itens = itensResult.data ?? [];
+
+  const produtoIds = [...new Set(itens.map((i: any) => i.produto_id).filter(Boolean))];
+  const fornecedorId = (ped as any).fornecedor_id;
+
+  let imagensMap: Record<string, string> = {};
+  let aliasMap: Record<string, string> = {};
+  if (produtoIds.length > 0) {
+    const [arquivosRes, aliasRes] = await Promise.all([
+      admin.from("produto_arquivos")
+        .select("produto_id, url, url_preview, tipo")
+        .in("produto_id", produtoIds)
+        .order("criado_em", { ascending: true }),
+      fornecedorId
+        ? admin.from("produto_aliases")
+            .select("produto_id, alias")
+            .eq("fornecedor_id", fornecedorId)
+            .in("produto_id", produtoIds)
+        : Promise.resolve({ data: [] }),
+    ]);
+    for (const arq of arquivosRes.data ?? []) {
+      if (!imagensMap[arq.produto_id] && (arq.tipo?.startsWith("image") || arq.url_preview)) {
+        imagensMap[arq.produto_id] = arq.url_preview ?? arq.url;
+      }
+    }
+    for (const al of (aliasRes as any).data ?? []) {
+      aliasMap[al.produto_id] = al.alias;
+    }
+  }
+  const emp = (empResult.data ?? {}) as any;
+  const coresRaw = coresResult.data ?? [];
+  const forn = (ped.fornecedor as any) ?? {};
+  const obra = (ped.obra as any) ?? {};
+  const comprador = (ped.comprador as any) ?? {};
+  const formaPgto = (ped.forma_pagamento as any) ?? {};
+  const coresMap = Object.fromEntries((coresRaw ?? []).map((c: any) => [c.id, c]));
+
+  function endereco(e: any) {
+    const partes = [
+      e.endereco && e.numero ? `${e.endereco}, ${e.numero}` : e.endereco,
+      e.bairro,
+      e.cidade && e.estado ? `${e.cidade}/${e.estado}` : (e.cidade ?? e.estado),
+    ].filter(Boolean);
+    return partes.join(" – ") || null;
+  }
+
+  let totalProduto = 0;
+  let totalKg = 0;
+
+  const linhas = itens.map((item: any) => {
+    const tamanhoM = (item.produto?.tamanho_mm ?? 6000) / 1000;
+    const temTamanho = !!(item.produto?.tamanho_mm);
+    const totalItem = temTamanho
+      ? item.quantidade_pedida * tamanhoM * (item.preco_unitario ?? 0)
+      : item.quantidade_pedida * (item.preco_unitario ?? 0);
+    const pesoUnit = item.produto?.peso_metro ?? 0;
+    const totalItemKg = temTamanho
+      ? item.quantidade_pedida * tamanhoM * pesoUnit
+      : item.quantidade_pedida * pesoUnit;
+    totalProduto += totalItem;
+    totalKg += totalItemKg;
+    const cor = item.cor_id ? coresMap[item.cor_id] : null;
+    const thumb = imagensMap[item.produto_id] ?? null;
+    const codigoExibir = item.codigo_fornecedor || aliasMap[item.produto_id] || item.produto?.codigo_mestre || "—";
+    return { ...item, totalItem, totalItemKg, corNome: cor?.nome ?? "Natural", thumb, codigoExibir };
+  });
+
+  const pcNum = ped.numero ?? "—";
+  const dataEmissao = new Date().toLocaleDateString("pt-BR");
+
+  // Estilos inline para fidelidade ao PDF
+  const azul = "#1e3a5f";
+  const azulClaro = "#eaf0f8";
+  const cinzaLinha = "#e0e0e0";
+
+  const thStyle: React.CSSProperties = {
+    padding: "6px 8px", color: "white", fontWeight: 700, fontSize: 10,
+    textAlign: "center", whiteSpace: "pre-line", backgroundColor: azul,
+  };
+  const tdStyle: React.CSSProperties = { padding: "5px 8px", fontSize: 11, borderBottom: `1px solid ${cinzaLinha}` };
+
+  return (
+    <div className="min-h-full bg-gray-100">
+      {/* Toolbar — oculta ao imprimir */}
+      <div className="print:hidden sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface px-6 py-3 shadow-sm">
+        <Link href={`/compras/pedidos/${params.id}`} className="btn-ghost text-sm px-3 py-1.5">
+          ← Voltar ao pedido
+        </Link>
+        <span className="text-sm font-semibold text-ink">Visualização — PC {pcNum}</span>
+        <div className="ml-auto">
+          <PrintButton />
+        </div>
+      </div>
+
+      <style>{`@media print { @page { size: A4; margin: 10mm; } .print\\:hidden { display: none !important; } }`}</style>
+
+      {/* Folha A4 — 794px = 210mm a 96dpi */}
+      <div
+        className="mx-auto my-8 bg-white shadow-xl print:my-0 print:shadow-none print:w-full"
+        style={{ width: 794, minHeight: 1123, fontFamily: "Arial, Helvetica, sans-serif", fontSize: 12, color: "#1a1a1a", display: "flex", flexDirection: "column" }}
+      >
+        {/* ── Cabeçalho ─────────────────────────────────────── */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "20px 28px 14px", borderBottom: `3px solid ${azul}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            {emp.logo_url && (
+              <img src={emp.logo_url} alt="Logo" style={{ height: 108, maxWidth: 200, objectFit: "contain" }} />
+            )}
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700 }}>{emp.nome_fantasia ?? emp.nome ?? "EMPRESA"}</div>
+              <div style={{ fontSize: 10, color: "#555", marginTop: 3, maxWidth: 420 }}>
+                {[endereco(emp), emp.cep && `CEP: ${emp.cep}`, emp.cnpj && `CNPJ: ${emp.cnpj}`, emp.telefone].filter(Boolean).join("  |  ")}
+              </div>
+            </div>
+          </div>
+          <div style={{ textAlign: "right", paddingTop: 2 }}>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>Pedido de Compra</div>
+            <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", gap: 8, justifyContent: "flex-end" }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#555" }}>PC - Nº</span>
+              <span style={{ fontSize: 22, fontWeight: 700 }}>{pcNum}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Obra ──────────────────────────────────────────── */}
+        <div style={{ backgroundColor: azul, color: "white", padding: "7px 28px", display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontWeight: 700, fontSize: 12 }}>OBRA:</span>
+          <span style={{ fontSize: 12 }}>{obra.nome ? `${obra.nome}${obra.codigo ? ` - ${obra.codigo}` : ""}` : "—"}</span>
+        </div>
+
+        {/* ── Fornecedor / Emitente ─────────────────────────── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: `1px solid ${cinzaLinha}` }}>
+          <div style={{ padding: "10px 28px", borderRight: `1px solid ${cinzaLinha}` }}>
+            <div style={{ backgroundColor: azul, color: "white", padding: "3px 0", fontWeight: 700, fontSize: 11, textAlign: "center", marginBottom: 10 }}>FORNECEDOR</div>
+            <DataRow label="Fornecedor" value={forn.razao_social ?? forn.nome} />
+            <DataRow label="Endereço" value={endereco(forn)} />
+            <DataRow label="CEP" value={forn.cep} />
+            <DataRow label="CNPJ/CPF" value={forn.cnpj} />
+          </div>
+          <div style={{ padding: "10px 28px" }}>
+            <div style={{ backgroundColor: azul, color: "white", padding: "3px 0", fontWeight: 700, fontSize: 11, textAlign: "center", marginBottom: 10 }}>EMITENTE</div>
+            <DataRow label="Emitente" value={emp.nome_fantasia ?? emp.nome} />
+            <DataRow label="Endereço" value={endereco(emp)} />
+            <DataRow label="CEP" value={emp.cep} />
+            <DataRow label="CNPJ/CPF" value={emp.cnpj} />
+          </div>
+        </div>
+
+        {/* ── Cond. Pgto / Transporte ───────────────────────── */}
+        <div style={{ backgroundColor: azulClaro, borderBottom: `1px solid ${cinzaLinha}`, padding: "7px 28px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <div style={{ fontSize: 11 }}>
+            <strong>Cond. Pagamento: </strong>{formaPgto.nome ?? "—"}
+          </div>
+          <div style={{ fontSize: 11 }}>
+            <strong>Tipo Transporte: </strong>{(ped as any).tipo_transporte ?? "—"}
+          </div>
+        </div>
+
+        {/* ── Tabela de itens ───────────────────────────────── */}
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th style={{ ...thStyle, width: "5%" }}>FOTO</th>
+              <th style={{ ...thStyle, textAlign: "left", width: "10%" }}>CÓDIGO{"\n"}DO ITEM</th>
+              <th style={{ ...thStyle, textAlign: "left", width: "24%" }}>DESCRIÇÃO DO ITEM</th>
+              <th style={{ ...thStyle, width: "13%" }}>COR /{"\n"}ACABAMENTO</th>
+              <th style={{ ...thStyle, width: "10%" }}>QTD</th>
+              <th style={{ ...thStyle, width: "11%" }}>VLR UNIT{"\n"}(R$/m)</th>
+              <th style={{ ...thStyle, width: "10%" }}>PESO UNIT{"\n"}kg/m</th>
+              <th style={{ ...thStyle, width: "11%" }}>TOTAL ITEM{"\n"}(R$)</th>
+              <th style={{ ...thStyle, width: "9%" }}>TOTAL{"\n"}KG</th>
+            </tr>
+          </thead>
+          <tbody>
+            {linhas.length === 0 && (
+              <tr>
+                <td colSpan={9} style={{ ...tdStyle, textAlign: "center", color: "#888", padding: 20 }}>
+                  Nenhum item no pedido
+                </td>
+              </tr>
+            )}
+            {linhas.map((item: any, i: number) => (
+              <tr key={item.id} style={{ backgroundColor: i % 2 === 0 ? "white" : "#f7fafd" }}>
+                <td style={{ ...tdStyle, textAlign: "center", padding: "4px 6px" }}>
+                  {item.thumb ? (
+                    <img
+                      src={item.thumb}
+                      alt=""
+                      style={{ width: 36, height: 36, objectFit: "contain", display: "block", margin: "0 auto" }}
+                    />
+                  ) : null}
+                </td>
+                <td style={{ ...tdStyle, fontFamily: "monospace" }}>{item.codigoExibir}</td>
+                <td style={{ ...tdStyle, fontStyle: "italic" }}>{item.descricao_snapshot}</td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>{item.corNome}</td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>{fmt(item.quantidade_pedida)}</td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>R$ {fmt(item.preco_unitario ?? 0, 2)}</td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>{fmt(item.produto?.peso_metro ?? 0, 3)}</td>
+                <td style={{ ...tdStyle, textAlign: "right" }}>R$ {fmt(item.totalItem, 2)}</td>
+                <td style={{ ...tdStyle, textAlign: "right" }}>{fmt(item.totalItemKg, 3)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* ── Totais ────────────────────────────────────────── */}
+        <div style={{ borderTop: `2px solid ${azul}` }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 28px", backgroundColor: azulClaro, borderBottom: `1px solid ${cinzaLinha}` }}>
+            <span style={{ fontSize: 11 }} />
+            <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
+              <span style={{ fontWeight: 700, fontSize: 11 }}>TOTAL PRODUTO:</span>
+              <span style={{ fontSize: 11, fontWeight: 600, minWidth: 120, textAlign: "right" }}>R$ {fmt(totalProduto, 2)}</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "5px 28px", borderBottom: `1px solid ${cinzaLinha}` }}>
+            <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
+              <span style={{ fontWeight: 700, fontSize: 11 }}>TOTAL KG:</span>
+              <span style={{ fontSize: 11, fontWeight: 600, minWidth: 120, textAlign: "right" }}>{fmt(totalKg, 3)} kg</span>
+            </div>
+          </div>
+          <div style={{ backgroundColor: azul, color: "white", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 28px" }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>TOTAL DO PEDIDO:</span>
+            <div style={{ display: "flex", gap: 48, alignItems: "center" }}>
+              <span style={{ fontWeight: 700, fontSize: 13 }}>R$ {fmt(totalProduto, 2)}</span>
+              <span style={{ fontWeight: 700, fontSize: 13 }}>{fmt(totalKg, 3)} kg</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Observações ───────────────────────────────────── */}
+        <div style={{ padding: "12px 28px", borderTop: `1px solid ${cinzaLinha}`, minHeight: 80 }}>
+          <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 12 }}>Observações:</div>
+          <div style={{ fontSize: 11, color: "#333", whiteSpace: "pre-wrap" }}>{ped.observacoes ?? ""}</div>
+        </div>
+
+        {/* ── Empurra assinaturas para o fim da página ──────── */}
+        <div style={{ flex: 1 }} />
+
+        {/* ── Assinaturas ───────────────────────────────────── */}
+        <div style={{ borderTop: `1px solid ${cinzaLinha}`, padding: "16px 28px 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          <div>
+            <div style={{ fontSize: 10, color: "#888", marginBottom: 32 }}>Elaborador</div>
+            <div style={{ borderTop: `1px solid #aaa`, paddingTop: 6, fontSize: 11 }}>{comprador.nome ?? ""}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 10, color: "#888", marginBottom: 32 }}>Finalizador</div>
+            <div style={{ borderTop: `1px solid #aaa`, paddingTop: 6, fontSize: 11 }}>&nbsp;</div>
+          </div>
+        </div>
+
+        {/* ── Rodapé ────────────────────────────────────────── */}
+        <div style={{ borderTop: `1px solid ${cinzaLinha}`, padding: "4px 28px", display: "flex", justifyContent: "flex-end", backgroundColor: "#fafafa" }}>
+          <span style={{ fontSize: 9, color: "#888" }}>
+            {pcNum} | {dataEmissao} | Pag. 1 de 1
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
