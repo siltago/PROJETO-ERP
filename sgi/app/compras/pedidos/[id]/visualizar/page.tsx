@@ -135,13 +135,20 @@ export default async function VisualizarPedidoPage({ params }: { params: { id: s
         </div>
       </div>
 
-      <style>{`@media print { @page { size: A4; margin: 10mm; } .print\\:hidden { display: none !important; } }`}</style>
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 10mm; }
+          body * { visibility: hidden; }
+          #pdf-content, #pdf-content * { visibility: visible; }
+          #pdf-content { position: absolute; left: 0; top: 0; width: 794px; box-shadow: none !important; margin: 0 !important; }
+        }
+      `}</style>
 
       {/* Folha A4 — 794px = 210mm a 96dpi */}
       <div
         id="pdf-content"
         className="mx-auto my-8 bg-white shadow-xl print:my-0 print:shadow-none print:w-full"
-        style={{ width: 794, minHeight: 1123, fontFamily: "Arial, Helvetica, sans-serif", fontSize: 12, color: "#1a1a1a", display: "flex", flexDirection: "column" }}
+        style={{ width: 794, minHeight: 1123, fontFamily: "Arial, Helvetica, sans-serif", fontSize: 12, color: "#1a1a1a" }}
       >
         {/* ── Cabeçalho ─────────────────────────────────────── */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "20px 28px 14px", borderBottom: `3px solid ${azul}` }}>
@@ -276,11 +283,8 @@ export default async function VisualizarPedidoPage({ params }: { params: { id: s
           <div style={{ fontSize: 11, color: "#333", whiteSpace: "pre-wrap" }}>{ped.observacoes ?? ""}</div>
         </div>
 
-        {/* ── Empurra assinaturas para o fim da página ──────── */}
-        <div style={{ flex: 1 }} />
-
         {/* ── Assinaturas ───────────────────────────────────── */}
-        <div style={{ borderTop: `1px solid ${cinzaLinha}`, padding: "16px 28px 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div style={{ borderTop: `1px solid ${cinzaLinha}`, marginTop: 48, padding: "16px 28px 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
           <div>
             <div style={{ fontSize: 10, color: "#888", marginBottom: 32 }}>Elaborador</div>
             <div style={{ borderTop: `1px solid #aaa`, paddingTop: 6, fontSize: 11 }}>{comprador.nome ?? ""}</div>
