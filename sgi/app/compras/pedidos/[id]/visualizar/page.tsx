@@ -102,7 +102,9 @@ export default async function VisualizarPedidoPage({ params }: { params: { id: s
       : item.quantidade_pedida * pesoUnit;
     totalProduto += totalItem;
     totalKg += totalItemKg;
-    const cor = item.cor_id ? coresMap[item.cor_id] : null;
+    // cor por item → cor única do pedido → "Natural"
+    const corId = item.cor_id || (ped as any).cor_id || null;
+    const cor = corId ? coresMap[corId] : null;
     const thumb = imagensMap[item.produto_id] ?? null;
     const codigoExibir = item.codigo_fornecedor || aliasMap[item.produto_id] || item.produto?.codigo_mestre || "—";
     return { ...item, totalItem, totalItemKg, corNome: cor?.nome ?? "Natural", thumb, codigoExibir };
@@ -131,7 +133,7 @@ export default async function VisualizarPedidoPage({ params }: { params: { id: s
         </Link>
         <span className="text-sm font-semibold text-ink">Visualização — PC {pcNum}</span>
         <div className="ml-auto">
-          <PrintButton numero={pcNum} />
+          <PrintButton />
         </div>
       </div>
 
