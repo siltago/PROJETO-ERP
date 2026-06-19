@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
 
@@ -36,15 +37,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-xl font-bold text-white"
-            style={{ backgroundColor: "#0F4C81" }}
-          >
-            S
-          </div>
+          <Image src="/icon.png" alt="SquadFrame" width={52} height={52} />
           <div className="text-center">
-            <p className="font-display text-xl font-bold text-ink">SGI</p>
-            <p className="text-sm text-ink-faint">Sistema de Gestão Industrial</p>
+            <p className="font-display text-xl font-bold text-ink">SquadFrame</p>
+            <p className="text-sm text-ink-faint">Gestão Industrial Para Esquadrias</p>
           </div>
         </div>
 

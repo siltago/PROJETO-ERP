@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { getUsuarioAtual } from "@/lib/auth";
 import { HeaderUser } from "@/components/header-user";
@@ -13,8 +14,9 @@ const ThemeToggle = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "SGI — Gestão Industrial",
-  description: "Sistema de gestão para esquadrias e vidros",
+  title: "SquadFrame",
+  description: "Gestão Industrial Para Esquadrias",
+  icons: { icon: "/icon.png" },
 };
 
 export default async function RootLayout({
@@ -37,14 +39,9 @@ export default async function RootLayout({
 
             {/* Logo */}
             <Link href="/" className="flex shrink-0 items-center gap-2">
-              <div
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ backgroundColor: "#0a3660" }}
-              >
-                S
-              </div>
+              <Image src="/icon.png" alt="SquadFrame" width={36} height={36} className="shrink-0" />
               <span className="text-base font-bold leading-none text-white">
-                SGI
+                SquadFrame
               </span>
             </Link>
 
@@ -54,6 +51,7 @@ export default async function RootLayout({
                 { href: "/obras",    label: "Obras" },
                 { href: "/catalogo", label: "Catálogo" },
                 { href: "/compras",  label: "Compras" },
+                { href: "/tarefas",  label: "Tarefas" },
                 { href: "/usuarios", label: "Usuários" },
               ].map((item) => (
                 <Link

@@ -1,4 +1,4 @@
-# SGI — Sistema de Gestão Industrial
+# SquadFrame — Gestão Industrial Para Esquadrias
 
 Fundação do sistema: módulo de **Obras** + estrutura de **Usuários** e **Auditoria**.
 Stack: **Next.js 14** + **Supabase** (PostgreSQL gerenciado).
