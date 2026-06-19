@@ -261,7 +261,7 @@ export function UsuariosCliente({
       )}
 
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-3 gap-4">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: "Total", value: total },
           { label: "Ativos", value: ativos },
@@ -308,8 +308,8 @@ export function UsuariosCliente({
       </div>
 
       {/* Tabela */}
-      <div className="card overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="card overflow-x-auto">
+        <table className="w-full min-w-[600px] text-sm">
           <thead>
             <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
               <th className="px-5 py-3 font-medium">Usuário</th>

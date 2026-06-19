@@ -60,7 +60,7 @@ export default async function CatalogoPage({
   const labelNova = tipoAtual ? `Nova linha de ${tipoAtual.nome.toLowerCase()}` : "Nova linha";
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 sm:px-8 sm:py-8">
       {/* Cabeçalho */}
       <div className="flex items-end justify-between">
         <div>

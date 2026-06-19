@@ -46,7 +46,7 @@ export default async function ComprasPage() {
   stats[3].value = (c4.data ?? []).length;
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-2xl font-bold tracking-tight">Painel de Compras</h1>
       <p className="mt-1 text-sm text-ink-soft">Visão geral e pendências prioritárias.</p>
 
@@ -68,8 +68,8 @@ export default async function ComprasPage() {
         {(pendencias ?? []).length === 0 ? (
           <p className="text-sm text-ink-faint">Nenhuma pendência no momento.</p>
         ) : (
-          <div className="card overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="card overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
                   <th className="px-5 py-3 font-medium">Número</th>
