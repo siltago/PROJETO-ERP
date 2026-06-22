@@ -3,6 +3,7 @@
 import { createAdminClient as createClient } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getUsuarioAtual } from "@/lib/auth";
 
 export async function criarObra(formData: FormData) {
   const supabase = createClient();
@@ -221,4 +222,62 @@ export async function adicionarTipologia(obraId: string, formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath(`/obras/${obraId}`);
+}
+
+export async function editarObra(obraId: string, formData: FormData) {
+  const supabase = createClient();
+  const usuario = await getUsuarioAtual();
+  const podeEditar =
+    usuario?.permissoes?.includes("*") ||
+    usuario?.permissoes?.includes("obras.editar") ||
+    false;
+  if (!podeEditar) throw new Error("Sem permissão para editar obras.");
+
+  const nome = String(formData.get("nome") || "").trim();
+  const cliente_nome = String(formData.get("cliente_nome") || "").trim();
+  const endereco = String(formData.get("endereco") || "");
+  const cidade = String(formData.get("cidade") || "");
+  const estado = String(formData.get("estado") || "");
+  const cep = String(formData.get("cep") || "");
+  const data_prevista = String(formData.get("data_prevista") || "") || null;
+  const observacoes = String(formData.get("observacoes") || "");
+
+  if (!nome || !cliente_nome) throw new Error("Nome e cliente são obrigatórios.");
+
+  let cliente_id: string;
+  const { data: clienteExistente } = await supabase
+    .from("clientes")
+    .select("id")
+    .ilike("nome", cliente_nome)
+    .maybeSingle();
+
+  if (clienteExistente) {
+    cliente_id = clienteExistente.id;
+  } else {
+    const { data: novoCliente, error: errCliente } = await supabase
+      .from("clientes")
+      .insert({ nome: cliente_nome })
+      .select("id")
+      .single();
+    if (errCliente) throw new Error(errCliente.message);
+    cliente_id = novoCliente.id;
+  }
+
+  const { error } = await supabase
+    .from("obras")
+    .update({ nome, cliente_id, endereco, cidade, estado: estado || null, cep, data_prevista, observacoes })
+    .eq("id", obraId);
+  if (error) throw new Error(error.message);
+
+  await supabase.from("obra_historico").insert({
+    obra_id: obraId,
+    acao: "OBRA_EDITADA",
+    valor_novo: { nome, cliente_nome },
+    usuario_id: usuario?.id ?? null,
+  });
+
+  revalidatePath(`/obras/${obraId}`);
+  revalidatePath(`/obras/${obraId}/editar`);
+  revalidatePath("/obras");
+  return { id: obraId };
 }

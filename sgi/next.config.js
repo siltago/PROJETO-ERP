@@ -13,6 +13,14 @@ const nextConfig = {
       },
     ],
   },
+
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Desabilita cache de filesystem em dev para evitar chunks obsoletos
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;

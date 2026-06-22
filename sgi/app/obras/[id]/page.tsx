@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient as createClient } from "@/lib/supabase-admin";
+import { getUsuarioAtual } from "@/lib/auth";
 import { AbaProducao } from "./aba-producao";
 import { StatusObraSelector } from "./status-selector";
 import { BackButton } from "@/components/back-button";
+import { BtnAcaoProtegida } from "@/components/btn-acao-protegida";
 import { STATUS_PED_COR, STATUS_PED_LABEL, STATUS_SOL_COR, STATUS_SOL_LABEL } from "@/types/compras";
 import { PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/types/kanban";
 import { BtnExcluirTarefa } from "./btn-excluir-tarefa";
@@ -41,6 +43,11 @@ export default async function ObraDetalhePage({
 }) {
   const abaAtiva = searchParams.aba ?? "resumo";
   const supabase = createClient();
+  const usuario = await getUsuarioAtual();
+  const podeEditar =
+    usuario?.permissoes?.includes("*") ||
+    usuario?.permissoes?.includes("obras.editar") ||
+    false;
 
   const { data: obra } = await supabase
     .from("obras")
@@ -174,14 +181,23 @@ export default async function ObraDetalhePage({
             {obra.cidade ? ` · ${obra.cidade}/${obra.estado ?? ""}` : ""}
           </p>
         </div>
-        {abaAtiva === "pedidos" && (
-          <Link
-            href={`/compras/pedidos/novo?obra_id=${params.id}`}
-            className="btn-primary"
-          >
-            Novo pedido
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <BtnAcaoProtegida
+            href={`/obras/${params.id}/editar`}
+            label="Editar obra"
+            temPermissao={podeEditar}
+            acao="editar obras"
+            className="btn-ghost text-sm"
+          />
+          {abaAtiva === "pedidos" && (
+            <Link
+              href={`/compras/pedidos/novo?obra_id=${params.id}`}
+              className="btn-primary"
+            >
+              Novo pedido
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Abas */}
