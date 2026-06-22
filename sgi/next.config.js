@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Em Next.js 14.2+ serverComponentsExternalPackages saiu do experimental
-  serverExternalPackages: ["sharp", "dxf"],
+  experimental: {
+    serverComponentsExternalPackages: ["sharp", "dxf"],
+  },
 
   images: {
     remotePatterns: [

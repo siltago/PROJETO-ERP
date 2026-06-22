@@ -228,6 +228,18 @@ export async function cancelarTarefa(tarefaId: string) {
   return { ok: true };
 }
 
+export async function excluirTarefa(tarefaId: string) {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("tarefas")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", tarefaId);
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath("/tarefas");
+  revalidatePath("/");
+  return { ok: true };
+}
+
 export async function adicionarComentario(tarefaId: string, texto: string) {
   const admin = createAdminClient();
   const uid = await usuarioAtualId();

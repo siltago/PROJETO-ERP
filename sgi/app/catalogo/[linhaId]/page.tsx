@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { createAdminClient as createClient } from "@/lib/supabase-admin";
 import { NovaCategoriaInline } from "./nova-categoria-inline";
 import { ApagarLinhaBtn } from "./apagar-linha-btn";
+import { ImportarXml } from "./importar-xml";
+import { BtnAlterarUnidade } from "./btn-alterar-unidade";
 import { BackButton } from "@/components/back-button";
 
 export const dynamic = "force-dynamic";
@@ -95,6 +97,8 @@ export default async function LinhaPage({
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <ApagarLinhaBtn linhaId={params.linhaId} nomeLinha={linha.nome} />
+          <BtnAlterarUnidade linhaId={params.linhaId} />
+          <ImportarXml linhaId={params.linhaId} />
           <Link
             href={`/catalogo/${params.linhaId}/novo-produto`}
             className="btn-primary"

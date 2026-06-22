@@ -237,16 +237,18 @@ export async function atualizarPesosXml(
   const itens: Array<{ codigo: string; peso: number }> = JSON.parse(itensJson);
   if (!itens.length) throw new Error("Nenhum item para atualizar.");
 
-  let atualizados = 0;
-  for (const item of itens) {
-    const { error } = await supabase
-      .from("produtos")
-      .update({ peso_metro: item.peso })
-      .eq("linha_id", linhaId)
-      .eq("codigo_mestre", item.codigo);
-    if (!error) atualizados++;
-  }
+  const resultados = await Promise.all(
+    itens.map((item) =>
+      supabase
+        .from("produtos")
+        .update({ peso_metro: item.peso })
+        .eq("linha_id", linhaId)
+        .eq("codigo_mestre", item.codigo)
+        .then(({ error }) => !error),
+    ),
+  );
 
+  const atualizados = resultados.filter(Boolean).length;
   revalidatePath(`/catalogo/${linhaId}`);
   return { atualizados };
 }

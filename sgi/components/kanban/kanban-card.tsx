@@ -4,8 +4,9 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Tarefa } from "@/types/kanban";
 import { PRIORIDADE_COR, ORIGEM_COR, ORIGEM_LABEL } from "@/types/kanban";
-import { aceitarTarefa } from "@/app/tarefas/actions";
+import { aceitarTarefa, excluirTarefa } from "@/app/tarefas/actions";
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   tarefa: Tarefa;
@@ -32,6 +33,7 @@ function formatDate(dataLimite: string): string {
 
 export function KanbanCard({ tarefa, onClick }: Props) {
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   const {
     attributes,
@@ -62,6 +64,15 @@ export function KanbanCard({ tarefa, onClick }: Props) {
     });
   }
 
+  function handleExcluir(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!confirm("Excluir esta tarefa?")) return;
+    startTransition(async () => {
+      await excluirTarefa(tarefa.id);
+      router.refresh();
+    });
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -69,10 +80,20 @@ export function KanbanCard({ tarefa, onClick }: Props) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className={`rounded-xl border border-line bg-surface p-3 cursor-pointer hover:border-steel/40 hover:shadow-sm transition-all select-none ${
+      className={`group relative rounded-xl border border-line bg-surface p-3 cursor-pointer hover:border-steel/40 hover:shadow-sm transition-all select-none ${
         isFinalizado ? "opacity-60" : ""
       }`}
     >
+      <button
+        onClick={handleExcluir}
+        disabled={pending}
+        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity text-ink-faint hover:text-red-500 disabled:opacity-30 p-0.5 rounded"
+        title="Excluir tarefa"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+        </svg>
+      </button>
       <div className="flex gap-2">
         <div
           className="shrink-0 w-1 rounded-full self-stretch"

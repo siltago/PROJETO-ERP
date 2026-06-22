@@ -8,7 +8,7 @@ import {
   buscarUsuarios,
   editarTarefa,
   concluirTarefa,
-  cancelarTarefa,
+  excluirTarefa,
   adicionarComentario,
   adicionarLink,
   removerLink,
@@ -135,11 +135,11 @@ export function CardPanel({ tarefaId, onClose }: Props) {
     });
   }
 
-  async function handleCancelar() {
-    if (!confirm("Cancelar esta tarefa?")) return;
+  async function handleExcluir() {
+    if (!confirm("Excluir esta tarefa permanentemente? Esta ação não pode ser desfeita.")) return;
     startTransition(async () => {
-      const r = await cancelarTarefa(tarefaId);
-      if (r.ok) { flash("Tarefa cancelada"); await reload(); }
+      const r = await excluirTarefa(tarefaId);
+      if (r.ok) { onClose(); }
     });
   }
 
@@ -579,8 +579,8 @@ export function CardPanel({ tarefaId, onClose }: Props) {
             <button onClick={handleConcluir} disabled={pending} className="btn-primary flex-1 text-sm py-2">
               Concluir
             </button>
-            <button onClick={handleCancelar} disabled={pending} className="btn-ghost text-sm py-2 px-3 text-red-500 border-red-200 hover:bg-red-50">
-              Cancelar
+            <button onClick={handleExcluir} disabled={pending} className="btn-ghost text-sm py-2 px-3 text-red-500 border-red-200 hover:bg-red-50">
+              Excluir
             </button>
           </div>
         )}

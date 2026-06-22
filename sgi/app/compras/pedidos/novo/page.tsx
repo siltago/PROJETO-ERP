@@ -13,7 +13,7 @@ export default async function NovoPedidoPage({
 
   const [{ data: obras }, { data: fornecedores }, { data: solAprovadas }, { data: tipos }, { data: formas }, { data: coresRal }] =
     await Promise.all([
-      admin.from("obras").select("id, nome, codigo, numero").order("nome"),
+      admin.from("obras").select("id, nome, codigo, numero").is("deleted_at", null).order("nome"),
       admin.from("fornecedores").select("id, nome, tipos").eq("ativo", true).order("nome"),
       admin.from("solicitacoes_compra")
         .select("id, numero, obra:obras(id, nome), itens:solicitacao_itens(id, quantidade, unidade, observacoes, descricao_manual, produto:produtos(id, codigo_mestre, nome, unidade))")

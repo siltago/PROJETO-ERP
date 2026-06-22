@@ -15,7 +15,7 @@ export default async function EditarPedidoPage({ params }: { params: { id: strin
         .select("*, produto:produtos(id,codigo_mestre,nome,tamanho_mm,peso_metro,preco_metro)")
         .eq("pedido_id", params.id),
       admin.from("fornecedores").select("id,nome,ativo").order("nome"),
-      admin.from("obras").select("id,nome,codigo").order("nome"),
+      admin.from("obras").select("id,nome,codigo").is("deleted_at", null).order("nome"),
       admin.from("formas_pagamento").select("id,nome").eq("ativo", true).order("nome"),
     ]);
 

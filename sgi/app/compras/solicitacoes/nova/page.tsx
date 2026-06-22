@@ -9,6 +9,7 @@ export default async function NovaSolicitacaoPage() {
   const { data: obras } = await admin
     .from("obras")
     .select("id, nome, codigo")
+    .is("deleted_at", null)
     .order("nome");
 
   return (

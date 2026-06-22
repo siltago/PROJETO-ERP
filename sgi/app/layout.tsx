@@ -6,6 +6,8 @@ import { getUsuarioAtual } from "@/lib/auth";
 import { HeaderUser } from "@/components/header-user";
 import { UserProvider } from "@/components/user-provider";
 import { MobileNav } from "@/components/mobile-nav";
+import { BuscaGlobal } from "@/components/busca-global";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
@@ -66,6 +68,7 @@ export default async function RootLayout({
 
             {/* Direita */}
             <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+              <BuscaGlobal />
               <ThemeToggle />
               <HeaderUser usuario={usuario} />
             </div>
@@ -73,7 +76,9 @@ export default async function RootLayout({
         )}
 
         <UserProvider usuario={usuario}>
-          <main className={usuario ? "pt-14" : ""}>{children}</main>
+          <ToastProvider>
+            <main className={usuario ? "pt-14" : ""}>{children}</main>
+          </ToastProvider>
         </UserProvider>
       </body>
     </html>

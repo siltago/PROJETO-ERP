@@ -69,10 +69,6 @@ export default function CadastroPage() {
             <input name="nome" required className="field" placeholder="João da Silva" />
           </div>
           <div>
-            <label className="label">Empresa</label>
-            <input name="empresa" required className="field" placeholder="Acme Ltda" />
-          </div>
-          <div>
             <label className="label">E-mail</label>
             <input name="email" type="email" required className="field" placeholder="joao@acme.com" />
           </div>

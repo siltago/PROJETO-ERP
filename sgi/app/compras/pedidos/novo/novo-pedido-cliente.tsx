@@ -53,12 +53,16 @@ function itemPeso(it: Item) {
 }
 
 // ── BuscaProduto ──────────────────────────────────────────────────
-function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd }: {
-  tipoSlug: string; fornecedorId: string; nomeFornecedor: string; onAdd: (p: Produto) => void;
+function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd, onIncrement, existingIds }: {
+  tipoSlug: string; fornecedorId: string; nomeFornecedor: string;
+  onAdd: (p: Produto) => void;
+  onIncrement: (produtoId: string, delta: number) => void;
+  existingIds: Set<string>;
 }) {
   const [q, setQ] = useState("");
   const [resultados, setResultados] = useState<Produto[]>([]);
   const [aberto, setAberto] = useState(false);
+  const [qtdExtra, setQtdExtra] = useState<Record<string, number>>({});
   const timer = useRef<ReturnType<typeof setTimeout>>();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -92,10 +96,40 @@ function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd }: {
         <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface shadow-lg">
           {resultados.map((p) => {
             const temCodigoForn = p.codigo_do_fornecedor && p.codigo_do_fornecedor !== p.codigo_mestre;
+            const jaExiste = existingIds.has(p.id);
+            const qtd = qtdExtra[p.id] ?? 1;
+            if (jaExiste) {
+              return (
+                <div key={p.id} className="px-3 py-2 border-b border-line last:border-0 bg-amber-50/60">
+                  <div className="flex w-full items-center gap-3 mb-1.5">
+                    <span className="font-mono text-xs text-ink-faint w-24 shrink-0">{p.codigo_mestre}</span>
+                    <span className="flex-1 text-sm text-ink">{p.nome}</span>
+                    <span className="text-xs text-amber-600 font-medium shrink-0">Já no pedido</span>
+                  </div>
+                  <div className="flex items-center gap-2 pl-[6.5rem]">
+                    <span className="text-xs text-ink-faint">Adicionar mais:</span>
+                    <input
+                      type="number" min="1" step="any" value={qtd}
+                      onChange={(e) => setQtdExtra((prev) => ({ ...prev, [p.id]: parseFloat(e.target.value) || 1 }))}
+                      onClick={(e) => e.stopPropagation()}
+                      className="field h-7 w-20 text-xs font-mono"
+                    />
+                    <span className="text-xs text-ink-faint">{p.unidade}</span>
+                    <button
+                      type="button"
+                      onClick={() => { onIncrement(p.id, qtd); setQtdExtra((prev) => ({ ...prev, [p.id]: 1 })); setQ(""); setAberto(false); }}
+                      className="btn-primary h-7 px-3 text-xs"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              );
+            }
             return (
               <button key={p.id} type="button"
                 onClick={() => { onAdd(p); setQ(""); setAberto(false); }}
-                className="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-canvas">
+                className="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-canvas border-b border-line last:border-0">
                 <div className="flex w-full items-center gap-3">
                   <span className="font-mono text-xs text-ink-faint w-24 shrink-0">{p.codigo_mestre}</span>
                   <span className="flex-1 text-ink">{p.nome}</span>
@@ -204,6 +238,14 @@ export function NovoPedidoCliente({
     }
     // Volta para cor única ao trocar tipo (cores mudam)
     setModoCorPedido("unica");
+  }
+
+  function incrementarProduto(produtoId: string, delta: number) {
+    setItens((prev) => prev.map((it) =>
+      it.produto?.id === produtoId && !it.solicitacao_item_id
+        ? { ...it, quantidade_pedida: (it.quantidade_pedida ?? 0) + delta }
+        : it
+    ));
   }
 
   function addProduto(p: Produto) {
@@ -525,6 +567,8 @@ export function NovoPedidoCliente({
               fornecedorId={fornecedorId}
               nomeFornecedor={nomeFornecedorAtual}
               onAdd={addProduto}
+              onIncrement={incrementarProduto}
+              existingIds={new Set(itens.filter((i) => !i.solicitacao_item_id && i.produto).map((i) => i.produto!.id))}
             />
             {fornecedorId && tipoSelecionado && (
               <p className="mt-1 text-xs text-ink-faint">

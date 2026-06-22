@@ -4,7 +4,9 @@ import { createAdminClient as createClient } from "@/lib/supabase-admin";
 import { AbaProducao } from "./aba-producao";
 import { StatusObraSelector } from "./status-selector";
 import { BackButton } from "@/components/back-button";
-import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/types/compras";
+import { STATUS_PED_COR, STATUS_PED_LABEL, STATUS_SOL_COR, STATUS_SOL_LABEL } from "@/types/compras";
+import { PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/types/kanban";
+import { BtnExcluirTarefa } from "./btn-excluir-tarefa";
 
 /*
   SQL — rodar no Supabase para ativar a aba Produção:
@@ -52,7 +54,7 @@ export default async function ObraDetalhePage({
 
   if (!obra) notFound();
 
-  let historico: Array<{ acao: string; motivo: string | null; criado_em: string }> | null = null;
+  let historico: any[] | null = null;
   let lotes: Array<{
     id: string; nome: string; criado_em: string;
     tipologias: Array<{ id: string; nome: string; quantidade: number; status?: string | null; codigo_esquadria?: string | null; tipo?: string | null; largura_mm?: number | null; altura_mm?: number | null; tratamento?: string | null; descricao?: string | null; peso_unit?: number | null; preco_unit?: number | null }>;
@@ -60,6 +62,8 @@ export default async function ObraDetalhePage({
   let semLote: Array<{ id: string; nome: string; quantidade: number }> = [];
   let migracaoPendente = false;
   let pedidos: any[] | null = null;
+  let solicitacoes: any[] | null = null;
+  let tarefasObra: any[] | null = null;
 
   if (abaAtiva === "resumo") {
     const { data } = await supabase
@@ -68,6 +72,35 @@ export default async function ObraDetalhePage({
       .eq("obra_id", params.id)
       .order("criado_em", { ascending: false });
     historico = data;
+  }
+
+  if (abaAtiva === "historico") {
+    const { data } = await supabase
+      .from("obra_historico")
+      .select("acao, campo_alterado, valor_anterior, valor_novo, motivo, criado_em, usuario:usuarios(nome)")
+      .eq("obra_id", params.id)
+      .order("criado_em", { ascending: false });
+    historico = data;
+  }
+
+  if (abaAtiva === "compras") {
+    const { data } = await supabase
+      .from("solicitacoes_compra")
+      .select("id, numero, status, prioridade, criado_em, solicitante:usuarios(nome)")
+      .eq("obra_id", params.id)
+      .order("criado_em", { ascending: false });
+    solicitacoes = data ?? [];
+  }
+
+  if (abaAtiva === "tarefas") {
+    const { data } = await supabase
+      .from("tarefas")
+      .select("id, titulo, status, prioridade, data_limite, criado_em, responsavel:usuarios!usuario_responsavel_id(nome)")
+      .eq("obra_id", params.id)
+      .is("deleted_at", null)
+      .not("status", "in", "(CONCLUIDA,CANCELADA)")
+      .order("criado_em", { ascending: false });
+    tarefasObra = data ?? [];
   }
 
   if (abaAtiva === "producao") {
@@ -295,12 +328,184 @@ export default async function ObraDetalhePage({
           obraId={params.id}
           lotes={lotes ?? []}
           semLote={semLote ?? []}
-          migracaoPendente={lotes === null}
+          migracaoPendente={migracaoPendente}
         />
       )}
 
+      {/* Aba: Compras (Solicitações) */}
+      {abaAtiva === "compras" && (
+        <div className="mt-6">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-ink-soft">Solicitações de compra vinculadas a esta obra.</p>
+            <Link href={`/compras/solicitacoes/nova?obra_id=${params.id}`} className="btn-primary text-sm">
+              Nova solicitação
+            </Link>
+          </div>
+          {!solicitacoes || solicitacoes.length === 0 ? (
+            <div className="card flex flex-col items-center gap-3 py-16 text-center">
+              <p className="text-sm font-medium text-ink">Nenhuma solicitação para esta obra</p>
+              <Link href={`/compras/solicitacoes/nova?obra_id=${params.id}`} className="btn-primary mt-2">
+                Criar solicitação
+              </Link>
+            </div>
+          ) : (
+            <div className="card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                    <th className="px-5 py-3 font-medium">Nº</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium">Prioridade</th>
+                    <th className="px-5 py-3 font-medium">Solicitante</th>
+                    <th className="px-5 py-3 font-medium">Data</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {solicitacoes.map((s: any) => {
+                    const cor = STATUS_SOL_COR[s.status as keyof typeof STATUS_SOL_COR] ?? "#94a3b8";
+                    return (
+                      <tr key={s.id} className="border-b border-line last:border-0 hover:bg-canvas transition-colors">
+                        <td className="px-5 py-3">
+                          <Link href={`/compras/solicitacoes/${s.id}`} className="font-mono text-sm font-bold text-steel hover:underline">
+                            {s.numero}
+                          </Link>
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                            style={{ backgroundColor: cor + "20", color: cor }}>
+                            {STATUS_SOL_LABEL[s.status as keyof typeof STATUS_SOL_LABEL] ?? s.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-ink-soft text-xs">{s.prioridade ?? "—"}</td>
+                        <td className="px-5 py-3 text-ink-soft">{s.solicitante?.nome ?? "—"}</td>
+                        <td className="px-5 py-3 text-ink-faint text-xs">
+                          {new Date(s.criado_em).toLocaleDateString("pt-BR")}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Aba: Tarefas */}
+      {abaAtiva === "tarefas" && (
+        <div className="mt-6">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-ink-soft">Tarefas vinculadas a esta obra.</p>
+            <Link href={`/tarefas`} className="text-sm text-steel hover:underline">
+              Ver kanban completo →
+            </Link>
+          </div>
+          {!tarefasObra || tarefasObra.length === 0 ? (
+            <div className="card flex flex-col items-center gap-3 py-16 text-center">
+              <p className="text-sm font-medium text-ink">Nenhuma tarefa para esta obra</p>
+              <p className="text-xs text-ink-faint">Crie tarefas no kanban e vincule a esta obra.</p>
+              <Link href="/tarefas" className="btn-primary mt-2">Ir para Tarefas</Link>
+            </div>
+          ) : (
+            <div className="card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                    <th className="px-5 py-3 font-medium">Título</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium">Prioridade</th>
+                    <th className="px-5 py-3 font-medium">Responsável</th>
+                    <th className="px-5 py-3 font-medium">Prazo</th>
+                    <th className="px-2 py-3 w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {tarefasObra.map((t: any) => {
+                    const priorCor = PRIORIDADE_COR[t.prioridade as keyof typeof PRIORIDADE_COR] ?? "#94a3b8";
+                    const statusLabel: Record<string, string> = {
+                      SEM_DONO: "Sem dono", ACEITA: "Aceita", EM_ANDAMENTO: "Em andamento",
+                      AGUARDANDO: "Aguardando", CONCLUIDA: "Concluída", CANCELADA: "Cancelada",
+                    };
+                    const statusCor: Record<string, string> = {
+                      SEM_DONO: "#94a3b8", ACEITA: "#3b82f6", EM_ANDAMENTO: "#f59e0b",
+                      AGUARDANDO: "#8b5cf6", CONCLUIDA: "#10b981", CANCELADA: "#ef4444",
+                    };
+                    const sCor = statusCor[t.status] ?? "#94a3b8";
+                    const vencida = t.data_limite && new Date(t.data_limite) < new Date() && !["CONCLUIDA","CANCELADA"].includes(t.status);
+                    return (
+                      <tr key={t.id} className="group border-b border-line last:border-0 hover:bg-canvas transition-colors">
+                        <td className="px-5 py-3 font-medium text-ink max-w-xs truncate">{t.titulo}</td>
+                        <td className="px-5 py-3">
+                          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                            style={{ backgroundColor: sCor + "20", color: sCor }}>
+                            {statusLabel[t.status] ?? t.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: priorCor }}>
+                            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: priorCor }} />
+                            {PRIORIDADE_LABEL[t.prioridade as keyof typeof PRIORIDADE_LABEL] ?? t.prioridade}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-ink-soft text-sm">{t.responsavel?.nome ?? <span className="text-ink-faint">—</span>}</td>
+                        <td className={`px-5 py-3 text-xs ${vencida ? "text-red-500 font-medium" : "text-ink-faint"}`}>
+                          {t.data_limite ? new Date(t.data_limite).toLocaleDateString("pt-BR") : "—"}
+                        </td>
+                        <td className="px-2 py-3">
+                          <BtnExcluirTarefa tarefaId={t.id} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Aba: Histórico */}
+      {abaAtiva === "historico" && (
+        <div className="mt-6">
+          {!historico || historico.length === 0 ? (
+            <div className="card p-10 text-center">
+              <p className="text-sm text-ink-faint">Nenhum registro no histórico.</p>
+            </div>
+          ) : (
+            <div className="card divide-y divide-line">
+              {historico.map((h: any, i: number) => (
+                <div key={i} className="flex gap-4 px-5 py-4">
+                  <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-steel/10">
+                    <div className="h-2 w-2 rounded-full bg-steel" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-ink">
+                        {h.acao.replace(/_/g, " ").toLowerCase()}
+                      </span>
+                      {h.usuario?.nome && (
+                        <span className="text-xs text-ink-faint">por {h.usuario.nome}</span>
+                      )}
+                      <span className="ml-auto text-xs text-ink-faint shrink-0">
+                        {new Date(h.criado_em).toLocaleString("pt-BR")}
+                      </span>
+                    </div>
+                    {h.motivo && <p className="mt-0.5 text-xs text-ink-soft">{h.motivo}</p>}
+                    {h.valor_novo && typeof h.valor_novo === "object" && Object.keys(h.valor_novo).length > 0 && (
+                      <p className="mt-0.5 text-xs text-ink-faint font-mono">
+                        {JSON.stringify(h.valor_novo)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Abas em construção */}
-      {!["resumo", "pedidos", "producao"].includes(abaAtiva) && <AbaConstrucao />}
+      {!["resumo", "pedidos", "producao", "compras", "tarefas", "historico"].includes(abaAtiva) && <AbaConstrucao />}
     </div>
   );
 }

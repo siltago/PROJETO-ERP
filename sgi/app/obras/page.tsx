@@ -1,21 +1,28 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { StatusBadge } from "@/components/status-badge";
+import { Paginacao } from "@/components/paginacao";
 
 export const dynamic = "force-dynamic";
 
-export default async function ObrasPage() {
-  const supabase = createAdminClient();
+const POR_PAGINA = 25;
 
-  const { data: obras } = await supabase
+export default async function ObrasPage({ searchParams }: { searchParams: { page?: string } }) {
+  const supabase = createAdminClient();
+  const pagina = Math.max(1, parseInt(searchParams.page ?? "1"));
+  const from = (pagina - 1) * POR_PAGINA;
+
+  const { data: obras, count } = await supabase
     .from("obras")
     .select(
       `id, codigo, numero, nome, cidade, estado, data_prevista,
        cliente:clientes(nome),
-       status:obra_status(nome, cor)`
+       status:obra_status(nome, cor)`,
+      { count: "exact" }
     )
     .is("deleted_at", null)
-    .order("criado_em", { ascending: false });
+    .order("criado_em", { ascending: false })
+    .range(from, from + POR_PAGINA - 1);
 
   return (
     <div className="px-8 py-8">
@@ -96,6 +103,12 @@ export default async function ObrasPage() {
               ))}
             </tbody>
           </table>
+          <Paginacao
+            paginaAtual={pagina}
+            total={count ?? 0}
+            porPagina={POR_PAGINA}
+            buildUrl={(p) => `/obras?page=${p}`}
+          />
         </div>
       )}
     </div>

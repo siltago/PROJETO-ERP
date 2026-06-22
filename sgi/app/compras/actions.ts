@@ -83,6 +83,20 @@ export async function criarSolicitacao(formData: FormData) {
   }[] = JSON.parse(itensJson);
   if (!itens.length) throw new Error("Adicione ao menos um item.");
 
+  // Valida produtos do catálogo: rejeita inativos
+  const produtoIds = itens.map((i) => i.produto_id).filter(Boolean) as string[];
+  if (produtoIds.length > 0) {
+    const { data: inativos } = await admin
+      .from("produtos")
+      .select("codigo_mestre, nome")
+      .in("id", produtoIds)
+      .eq("status", false);
+    if (inativos && inativos.length > 0) {
+      const nomes = inativos.map((p) => `${p.codigo_mestre} — ${p.nome}`).join(", ");
+      throw new Error(`Produto(s) inativo(s) não podem ser solicitados: ${nomes}`);
+    }
+  }
+
   const { data: sol, error } = await admin
     .from("solicitacoes_compra")
     .insert({ obra_id: obra_id || null, origem, prioridade, justificativa, observacoes, solicitante_id: usuario_id })
@@ -186,6 +200,20 @@ export async function criarPedido(formData: FormData) {
     cor_id?: string | null;
   }[] = JSON.parse(itensJson);
   if (!itens.length) throw new Error("Adicione ao menos um item.");
+
+  // Valida produtos do catálogo: rejeita inativos
+  const produtoIdsPed = itens.map((i) => i.produto_id).filter(Boolean);
+  if (produtoIdsPed.length > 0) {
+    const { data: inativosPed } = await admin
+      .from("produtos")
+      .select("codigo_mestre, nome")
+      .in("id", produtoIdsPed)
+      .eq("status", false);
+    if (inativosPed && inativosPed.length > 0) {
+      const nomes = inativosPed.map((p) => `${p.codigo_mestre} — ${p.nome}`).join(", ");
+      throw new Error(`Produto(s) inativo(s) no pedido: ${nomes}`);
+    }
+  }
 
   // Para CHAPA: enriquece descricao_snapshot com dimensões (permanente — aparece em recebimento, histórico, etc.)
   const itensProcessados = itens.map((i) => {
