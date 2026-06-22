@@ -22,6 +22,22 @@ export default async function NovaObraPage() {
             <input name="nome" required className="field" placeholder="Ex: Fachada Edifício Valmet" />
           </div>
 
+          <div className="sm:col-span-2">
+            <label className="label">
+              Código de vínculo{" "}
+              <span className="font-normal text-ink-soft">(opcional — deixe em branco para gerar automaticamente)</span>
+            </label>
+            <input
+              name="codigo"
+              className="field font-mono"
+              placeholder="Ex: OB-2026-0042 ou P2024/156"
+              maxLength={20}
+            />
+            <p className="mt-1 text-xs text-ink-faint">
+              Se o código já existir no sistema, você será redirecionado para a obra cadastrada.
+            </p>
+          </div>
+
           <div>
             <label className="label">Cliente</label>
             <input name="cliente_nome" required className="field" placeholder="Nome do cliente" />

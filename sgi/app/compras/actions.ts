@@ -174,6 +174,7 @@ export async function criarPedido(formData: FormData) {
   const cor_id              = (formData.get("cor_id") as string | null) || null;
   const observacoes         = formData.get("observacoes") as string | null;
   const tipo_linha          = (formData.get("tipo_linha") as string | null) || null;
+  const numeroVinculo       = ((formData.get("numero_vinculo") as string | null) || "").trim() || null;
   const itensJson           = formData.get("itens") as string;
 
   if (!fornecedor_id) throw new Error("Selecione um fornecedor.");
@@ -199,7 +200,19 @@ export async function criarPedido(formData: FormData) {
     return i;
   });
 
-  const numero = await gerarNumeroPedido(admin, obra_id);
+  // Se número de vínculo fornecido, verifica se já existe e redireciona
+  if (numeroVinculo) {
+    const { data: pedidoExistente } = await admin
+      .from("pedidos_compra")
+      .select("id")
+      .eq("numero", numeroVinculo)
+      .maybeSingle();
+    if (pedidoExistente) {
+      redirect(`/compras/pedidos/${pedidoExistente.id}`);
+    }
+  }
+
+  const numero = numeroVinculo ?? await gerarNumeroPedido(admin, obra_id);
 
   const pedidoPayload: any = { numero, obra_id, fornecedor_id, forma_pagamento_id, comprador_id: usuario_id, observacoes, tipo_linha };
   if (cor_id) pedidoPayload.cor_id = cor_id;

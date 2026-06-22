@@ -136,6 +136,121 @@ export async function criarCategoria(linhaId: string, formData: FormData) {
   revalidatePath(`/catalogo/${linhaId}`);
 }
 
+// ─── Importação XML em massa ─────────────────────────────────
+
+export async function importarPerfisXml(
+  linhaId: string,
+  itensJson: string,
+) {
+  const supabase = createClient();
+
+  const itens: Array<{ codigo: string; peso: number }> = JSON.parse(itensJson);
+  if (!itens.length) throw new Error("Nenhum perfil para importar.");
+
+  // Descobre quais já existem nesta linha
+  const codigos = itens.map((i) => i.codigo);
+  const { data: existentes } = await supabase
+    .from("produtos")
+    .select("codigo_mestre")
+    .eq("linha_id", linhaId)
+    .in("codigo_mestre", codigos);
+  const existentesSet = new Set((existentes ?? []).map((e) => e.codigo_mestre));
+
+  const novos = itens.filter((i) => !existentesSet.has(i.codigo));
+  if (novos.length === 0) return { importados: 0, duplicatas: existentesSet.size };
+
+  const { data: inseridos, error } = await supabase
+    .from("produtos")
+    .insert(
+      novos.map((i) => ({
+        codigo_mestre: i.codigo,
+        nome:          i.codigo,
+        nome_tecnico:  i.codigo,
+        linha_id:      linhaId,
+        unidade:       "BARRA",
+        peso_metro:    i.peso,
+        tamanho_mm:    6000,
+      })),
+    )
+    .select("id");
+
+  if (error) throw new Error(error.message);
+
+  // Vincula automaticamente todas as cores RAL
+  const { data: cores } = await supabase.from("cores_ral").select("id, acabamento_id");
+  if (cores && cores.length > 0 && inseridos && inseridos.length > 0) {
+    await supabase.from("produto_cores").insert(
+      inseridos.flatMap((p) =>
+        cores.map((c) => {
+          const row: Record<string, string> = { produto_id: p.id, cor_id: c.id };
+          if (c.acabamento_id) row.acabamento_id = c.acabamento_id;
+          return row;
+        }),
+      ),
+    );
+  }
+
+  revalidatePath(`/catalogo/${linhaId}`);
+  return { importados: novos.length, duplicatas: existentesSet.size };
+}
+
+export async function atualizarUnidadeLinha(linhaId: string, de: string, para: string) {
+  const supabase = createClient();
+  // Conta antes
+  const { count: antes } = await supabase
+    .from("produtos")
+    .select("id", { count: "exact", head: true })
+    .eq("linha_id", linhaId)
+    .eq("unidade", de);
+  const { error } = await supabase
+    .from("produtos")
+    .update({ unidade: para })
+    .eq("linha_id", linhaId)
+    .eq("unidade", de);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/catalogo/${linhaId}`);
+  return { atualizados: antes ?? 0 };
+}
+
+export async function definirComprimentoLinha(linhaId: string, tamanho_mm: number) {
+  const supabase = createClient();
+  const { count: antes } = await supabase
+    .from("produtos")
+    .select("id", { count: "exact", head: true })
+    .eq("linha_id", linhaId)
+    .is("tamanho_mm", null);
+  const { error } = await supabase
+    .from("produtos")
+    .update({ tamanho_mm })
+    .eq("linha_id", linhaId)
+    .is("tamanho_mm", null);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/catalogo/${linhaId}`);
+  return { atualizados: antes ?? 0 };
+}
+
+export async function atualizarPesosXml(
+  linhaId: string,
+  itensJson: string,
+) {
+  const supabase = createClient();
+  const itens: Array<{ codigo: string; peso: number }> = JSON.parse(itensJson);
+  if (!itens.length) throw new Error("Nenhum item para atualizar.");
+
+  let atualizados = 0;
+  for (const item of itens) {
+    const { error } = await supabase
+      .from("produtos")
+      .update({ peso_metro: item.peso })
+      .eq("linha_id", linhaId)
+      .eq("codigo_mestre", item.codigo);
+    if (!error) atualizados++;
+  }
+
+  revalidatePath(`/catalogo/${linhaId}`);
+  return { atualizados };
+}
+
 // ─── Produto ─────────────────────────────────────────────────
 
 export async function criarProduto(linhaId: string, formData: FormData) {
@@ -431,6 +546,14 @@ export async function deletarArquivo(
 
 export async function deletarProduto(linhaId: string, produtoId: string) {
   const supabase = createClient();
+
+  // Remove itens de solicitação vinculados a este produto
+  const { error: errSol } = await supabase
+    .from("solicitacao_itens")
+    .delete()
+    .eq("produto_id", produtoId);
+  if (errSol) throw new Error(`Erro ao desvincular solicitações: ${errSol.message}`);
+
   const { error } = await supabase
     .from("produtos")
     .delete()

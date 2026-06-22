@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient as createClient } from "@/lib/supabase-admin";
-import { StatusBadge } from "@/components/status-badge";
 import { AbaProducao } from "./aba-producao";
+import { StatusObraSelector } from "./status-selector";
 import { BackButton } from "@/components/back-button";
 import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/types/compras";
 
@@ -43,7 +43,7 @@ export default async function ObraDetalhePage({
   const { data: obra } = await supabase
     .from("obras")
     .select(
-      `*, numero, cliente:clientes(nome, documento),
+      `*, numero, status_id, cliente:clientes(nome, documento),
        status:obra_status(nome, cor)`
     )
     .eq("id", params.id)
@@ -53,7 +53,12 @@ export default async function ObraDetalhePage({
   if (!obra) notFound();
 
   let historico: Array<{ acao: string; motivo: string | null; criado_em: string }> | null = null;
-  let tipologias: Array<{ id: string; nome: string; quantidade: number }> | null = null;
+  let lotes: Array<{
+    id: string; nome: string; criado_em: string;
+    tipologias: Array<{ id: string; nome: string; quantidade: number; status?: string | null; codigo_esquadria?: string | null; tipo?: string | null; largura_mm?: number | null; altura_mm?: number | null; tratamento?: string | null; descricao?: string | null; peso_unit?: number | null; preco_unit?: number | null }>;
+  }> = [];
+  let semLote: Array<{ id: string; nome: string; quantidade: number }> = [];
+  let migracaoPendente = false;
   let pedidos: any[] | null = null;
 
   if (abaAtiva === "resumo") {
@@ -66,13 +71,38 @@ export default async function ObraDetalhePage({
   }
 
   if (abaAtiva === "producao") {
-    const { data, error } = await supabase
-      .from("tipologias_obra")
-      .select("id, nome, quantidade")
-      .eq("obra_id", params.id)
-      .order("nome", { ascending: true });
-    if (error) console.error("[tipologias_obra] erro ao buscar:", error);
-    tipologias = data;
+    const [resLotes, resSemLote] = await Promise.all([
+      supabase
+        .from("lotes_obra")
+        .select("id, nome, criado_em, tipologias:tipologias_obra(id, nome, quantidade, status, codigo_esquadria, tipo, largura_mm, altura_mm, tratamento, descricao, peso_unit, preco_unit)")
+        .eq("obra_id", params.id)
+        .order("criado_em", { ascending: true }),
+      supabase
+        .from("tipologias_obra")
+        .select("id, nome, quantidade")
+        .eq("obra_id", params.id)
+        .is("lote_id", null)
+        .order("criado_em", { ascending: true }),
+    ]);
+
+    if (resLotes.error) {
+      console.error("[lotes_obra] erro:", resLotes.error.message);
+      migracaoPendente = true;
+    } else {
+      lotes = resLotes.data ?? [];
+    }
+
+    // Se a coluna lote_id não existe ainda, busca tudo sem o filtro IS NULL
+    if (resSemLote.error) {
+      const { data } = await supabase
+        .from("tipologias_obra")
+        .select("id, nome, quantidade")
+        .eq("obra_id", params.id)
+        .order("criado_em", { ascending: true });
+      semLote = data ?? [];
+    } else {
+      semLote = resSemLote.data ?? [];
+    }
   }
 
   if (abaAtiva === "pedidos") {
@@ -99,7 +129,10 @@ export default async function ObraDetalhePage({
             )}
             <span className="font-mono text-xs font-medium text-ink-faint">{obra.codigo}</span>
             {obra.status && (
-              <StatusBadge nome={obra.status.nome} cor={obra.status.cor} />
+              <StatusObraSelector
+                obraId={params.id}
+                statusAtual={{ id: obra.status_id, nome: obra.status.nome, cor: obra.status.cor }}
+              />
             )}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">{obra.nome}</h1>
@@ -258,7 +291,12 @@ export default async function ObraDetalhePage({
 
       {/* Aba: Produção */}
       {abaAtiva === "producao" && (
-        <AbaProducao obraId={params.id} tipologias={tipologias ?? []} />
+        <AbaProducao
+          obraId={params.id}
+          lotes={lotes ?? []}
+          semLote={semLote ?? []}
+          migracaoPendente={lotes === null}
+        />
       )}
 
       {/* Abas em construção */}
