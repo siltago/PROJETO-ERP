@@ -47,6 +47,20 @@ export async function criarTarefaAutomatica({
     colunaId = coluna?.id ?? null;
   }
 
+  // Idempotência via SELECT + INSERT condicional.
+  // Evita upsert com partial index (PostgREST não infere WHERE clause do índice).
+  if (entidade_ref && entidade_ref_id) {
+    const { data: existente } = await admin
+      .from("tarefas")
+      .select("id")
+      .eq("entidade_ref", entidade_ref)
+      .eq("entidade_ref_id", entidade_ref_id)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+    if (existente?.id) return existente; // já existe — idempotente
+  }
+
   const payload = {
     titulo,
     descricao: descricao ?? null,
@@ -65,15 +79,12 @@ export async function criarTarefaAutomatica({
 
   const { data, error } = await admin
     .from("tarefas")
-    .upsert(payload, {
-      onConflict: "entidade_ref,entidade_ref_id",
-      ignoreDuplicates: true,
-    })
+    .insert(payload)
     .select("id")
-    .maybeSingle();
+    .single();
 
-  if (error) return null;
-  if (!data?.id) return null; // duplicata ignorada — card já existe
+  if (error) throw new Error(`criarTarefaAutomatica: ${error.message}`);
+  if (!data?.id) return null;
 
   await admin.from("tarefa_historico").insert({
     tarefa_id: data.id,

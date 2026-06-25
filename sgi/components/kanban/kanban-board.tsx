@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useCallback } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -42,16 +42,83 @@ export function KanbanBoard({ colunas, tarefas: tarefasIniciais, modo, usuarioId
     setTarefas(tarefasIniciais);
   }, [tarefasIniciais]);
 
+  // Atualiza um card localmente sem re-fetch completo.
+  // Preserva dados joined (responsavel, etiquetas) que não vêm no payload realtime.
+  const atualizarCardLocal = useCallback((payload: Record<string, any>) => {
+    setTarefas((prev) => {
+      const exists = prev.some((t) => t.id === payload.id);
+      if (!exists) return prev;
+
+      return prev.map((t) => {
+        if (t.id !== payload.id) return t;
+        return {
+          ...t,
+          titulo:                 payload.titulo                 ?? t.titulo,
+          status:                 payload.status                 ?? t.status,
+          coluna_id:              payload.coluna_id              ?? t.coluna_id,
+          ordem:                  payload.ordem                  ?? t.ordem,
+          prioridade:             payload.prioridade             ?? t.prioridade,
+          data_limite:            payload.data_limite,
+          usuario_responsavel_id: payload.usuario_responsavel_id ?? t.usuario_responsavel_id,
+          deleted_at:             payload.deleted_at,
+          concluida_em:           payload.concluida_em           ?? t.concluida_em,
+          aceita_em:              payload.aceita_em              ?? t.aceita_em,
+          // Dados joined preservados — não vêm no payload realtime
+          responsavel:      t.responsavel,
+          etiquetas:        t.etiquetas,
+          _checklist_total: t._checklist_total,
+          _checklist_done:  t._checklist_done,
+          _tem_arquivos:    t._tem_arquivos,
+          _tem_links:       t._tem_links,
+        };
+      });
+    });
+  }, []);
+
   useEffect(() => {
     const supabase = createClient();
+
+    // Filtra por setor (modo setor) ou por responsável (modo pessoal).
+    // Elimina ruído de outros setores/usuários — sem router.refresh() global.
+    const filterStr = setorId
+      ? `setor_id=eq.${setorId}`
+      : usuarioId
+        ? `usuario_responsavel_id=eq.${usuarioId}`
+        : undefined;
+
+    const channelName = `kanban-${setorId ?? usuarioId ?? "global"}`;
+
     const channel = supabase
-      .channel("kanban-board-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "tarefas" }, () => {
-        router.refresh();
-      })
+      .channel(channelName)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tarefas",
+          ...(filterStr ? { filter: filterStr } : {}),
+        },
+        (payload) => {
+          atualizarCardLocal(payload.new as Record<string, any>);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "tarefas",
+          ...(filterStr ? { filter: filterStr } : {}),
+        },
+        () => {
+          // Novo card precisa de dados joined (responsavel, etiquetas)
+          router.refresh();
+        }
+      )
       .subscribe();
+
     return () => { supabase.removeChannel(channel); };
-  }, [router]);
+  }, [setorId, usuarioId, router, atualizarCardLocal]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -133,8 +200,6 @@ export function KanbanBoard({ colunas, tarefas: tarefasIniciais, modo, usuarioId
       });
     }
   }
-
-  const colSemDono = colunas[0];
 
   return (
     <>

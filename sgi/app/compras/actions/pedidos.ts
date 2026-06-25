@@ -69,7 +69,7 @@ export async function criarPedido(formData: FormData) {
     p_observacoes:        observacoes,
     p_tipo_linha:         tipo_linha,
     p_cor_id:             cor_id,
-    p_itens:              JSON.stringify(itensProcessados),
+    p_itens:              itensProcessados,
   });
   if (error) throw new Error(error.message);
 
@@ -164,7 +164,7 @@ export async function editarPedido(id: string, formData: FormData) {
     p_cor_id:             cor_id,
     p_observacoes:        observacoes,
     p_prazo_entrega:      prazo_entrega,
-    p_itens:              JSON.stringify(itensProcessados),
+    p_itens:              itensProcessados,
   });
   if (error) throw new Error(error.message);
 

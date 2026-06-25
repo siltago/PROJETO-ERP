@@ -2,6 +2,14 @@ export type ColunaTipo = 'PADRAO' | 'CUSTOM';
 export type TarefaOrigem = 'MANUAL' | 'COMPRA' | 'PRODUCAO' | 'QUALIDADE' | 'EXPEDICAO' | 'OBRA';
 export type TarefaPrioridade = 'BAIXA' | 'MEDIA' | 'ALTA' | 'CRITICA';
 export type TarefaStatus = 'SEM_DONO' | 'ACEITA' | 'EM_ANDAMENTO' | 'AGUARDANDO' | 'CONCLUIDA' | 'CANCELADA';
+export type ParticipantePapel = 'responsavel' | 'colaborador' | 'observador';
+export type NotificacaoTipo =
+  | 'tarefa_atribuida'
+  | 'tarefa_comentario'
+  | 'pedido_aprovado'
+  | 'pedido_aguardando_aprovacao'
+  | 'solicitacao_aprovada'
+  | 'solicitacao_rejeitada';
 
 export type Coluna = {
   id: string; nome: string; ordem: number; tipo: ColunaTipo;
@@ -10,6 +18,24 @@ export type Coluna = {
 };
 
 export type Etiqueta = { id: string; nome: string; cor: string; setor_id: string | null; };
+
+export type TarefaParticipante = {
+  tarefa_id: string;
+  usuario_id: string;
+  papel: ParticipantePapel;
+  criado_em: string;
+  usuario?: { id: string; nome: string };
+};
+
+export type Notificacao = {
+  id: string;
+  usuario_id: string;
+  tipo: NotificacaoTipo;
+  tarefa_id: string | null;
+  payload: Record<string, unknown>;
+  lida: boolean;
+  criado_em: string;
+};
 
 export type Tarefa = {
   id: string; titulo: string; descricao: string | null;
@@ -23,6 +49,7 @@ export type Tarefa = {
   criado_em: string; deleted_at: string | null;
   responsavel?: { id: string; nome: string } | null;
   etiquetas?: Etiqueta[];
+  participantes?: TarefaParticipante[];
   checklist?: ChecklistItem[];
   _checklist_total?: number; _checklist_done?: number;
   _tem_arquivos?: boolean; _tem_links?: boolean;

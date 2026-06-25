@@ -2,6 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Link from "next/link";
 import type { Tarefa } from "@/types/kanban";
 import { PRIORIDADE_COR, ORIGEM_COR, ORIGEM_LABEL } from "@/types/kanban";
 import { aceitarTarefa, excluirTarefa } from "@/app/tarefas/actions";
@@ -84,16 +85,26 @@ export function KanbanCard({ tarefa, onClick }: Props) {
         isFinalizado ? "opacity-60" : ""
       }`}
     >
-      <button
-        onClick={handleExcluir}
-        disabled={pending}
-        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity text-ink-faint hover:text-red-500 disabled:opacity-30 p-0.5 rounded"
-        title="Excluir tarefa"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-        </svg>
-      </button>
+      <div className="absolute right-1 top-1 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Link
+          href={`/tarefas/${tarefa.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex h-6 w-6 items-center justify-center rounded text-ink-faint hover:text-steel hover:bg-canvas transition-colors"
+          title="Abrir em página dedicada"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </Link>
+        <button
+          onClick={handleExcluir}
+          disabled={pending}
+          className="flex h-6 w-6 items-center justify-center rounded text-ink-faint hover:text-red-500 hover:bg-canvas disabled:opacity-30 transition-colors"
+          title="Excluir tarefa"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      </div>
       <div className="flex gap-2">
         <div
           className="shrink-0 w-1 rounded-full self-stretch"

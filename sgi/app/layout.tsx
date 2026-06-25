@@ -3,11 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { getUsuarioAtual } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { HeaderUser } from "@/components/header-user";
 import { UserProvider } from "@/components/user-provider";
 import { MobileNav } from "@/components/mobile-nav";
 import { BuscaGlobal } from "@/components/busca-global";
 import { ToastProvider } from "@/components/toast";
+import { NotificacoesBadge } from "@/components/notificacoes/notificacoes-badge";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
@@ -27,6 +29,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const usuario = await getUsuarioAtual();
+
+  let naoLidasCount = 0;
+  if (usuario) {
+    const admin = createAdminClient();
+    const { count } = await admin
+      .from("notificacoes")
+      .select("id", { count: "exact", head: true })
+      .eq("usuario_id", usuario.id)
+      .eq("lida", false);
+    naoLidasCount = count ?? 0;
+  }
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
@@ -69,6 +82,7 @@ export default async function RootLayout({
             {/* Direita */}
             <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
               <BuscaGlobal />
+              <NotificacoesBadge usuarioId={usuario!.id} naoLidasIniciais={naoLidasCount} />
               <ThemeToggle />
               <HeaderUser usuario={usuario} />
             </div>

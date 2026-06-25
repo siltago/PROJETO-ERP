@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
   const like = `%${q}%`;
 
-  const [obras, produtos, fornecedores, pedidos] = await Promise.all([
+  const [obras, produtos, fornecedores, pedidos, tarefas] = await Promise.all([
     admin.from("obras")
       .select("id, nome, codigo, numero, cliente:clientes(nome)")
       .ilike("nome", like)
@@ -27,6 +27,12 @@ export async function GET(req: NextRequest) {
       .select("id, numero, status, fornecedor:fornecedores(nome)")
       .ilike("numero", like)
       .limit(4),
+    admin.from("tarefas")
+      .select("id, titulo, status, setor:setores(nome)")
+      .textSearch("titulo_tsv", q, { type: "websearch", config: "portuguese" })
+      .is("deleted_at", null)
+      .not("status", "in", '("CONCLUIDA","CANCELADA")')
+      .limit(5),
   ]);
 
   const resultados = [
@@ -57,6 +63,13 @@ export async function GET(req: NextRequest) {
       titulo: p.numero,
       subtitulo: p.fornecedor?.nome ?? "Pedido de compra",
       href: `/compras/pedidos/${p.id}`,
+    })),
+    ...(tarefas.data ?? []).map((t: any) => ({
+      tipo: "tarefa" as const,
+      id: t.id,
+      titulo: t.titulo,
+      subtitulo: t.setor?.nome ?? t.status,
+      href: `/tarefas/${t.id}`,
     })),
   ];
 

@@ -42,19 +42,22 @@ export async function garantirColunasCompras(setorId: string): Promise<Record<st
 
   const { data: existentes } = await admin
     .from("colunas_kanban")
-    .select("id, nome")
-    .eq("setor_id", setorId)
-    .eq("tipo", "PADRAO");
+    .select("id, nome, tipo")
+    .eq("setor_id", setorId);
 
+  // Mapa nome→id: se houver duplicatas, prefere tipo PADRAO, senão primeira ocorrência
   const mapa: Record<string, string> = {};
-  for (const c of existentes ?? []) mapa[c.nome] = c.id;
+  for (const c of existentes ?? []) {
+    if (!mapa[c.nome] || c.tipo === "PADRAO") mapa[c.nome] = c.id;
+  }
 
   const faltam = COLUNAS_COMPRAS.filter((c) => !mapa[c.nome]);
   if (faltam.length > 0) {
-    const { data: criadas } = await admin
+    const { data: criadas, error: errCols } = await admin
       .from("colunas_kanban")
       .insert(faltam.map((c) => ({ ...c, setor_id: setorId, usuario_id: null, cor: null })))
       .select("id, nome");
+    if (errCols) throw new Error(`garantirColunasCompras: ${errCols.message}`);
     for (const c of criadas ?? []) mapa[c.nome] = c.id;
   }
 

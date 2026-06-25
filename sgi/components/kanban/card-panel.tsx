@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
-import type { TarefaComentario, TarefaHistorico, TarefaLink, TarefaArquivo, ChecklistItem, Tarefa, Etiqueta } from "@/types/kanban";
+import React, { useEffect, useRef, useState, useTransition } from "react";
+import type { TarefaComentario, TarefaHistorico, TarefaLink, TarefaArquivo, ChecklistItem, Tarefa, Etiqueta, TarefaParticipante } from "@/types/kanban";
 import { PRIORIDADE_COR } from "@/types/kanban";
+import Link from "next/link";
 import {
   buscarDetalhesTarefa,
   buscarUsuarios,
@@ -21,12 +22,21 @@ import {
   desvincularEtiqueta,
   criarEtiqueta,
   atribuirTarefa,
+  adicionarParticipante,
+  removerParticipante,
 } from "@/app/tarefas/actions";
 import { createClient } from "@/lib/supabase-client";
+
+const PAPEL_LABEL: Record<string, string> = {
+  responsavel: "Responsável",
+  colaborador: "Colaborador",
+  observador: "Observador",
+};
 
 interface Props {
   tarefaId: string;
   onClose: () => void;
+  standalone?: boolean;
 }
 
 function RelativeTime({ ts }: { ts: string }) {
@@ -38,7 +48,7 @@ function RelativeTime({ ts }: { ts: string }) {
   return <span>{d.toLocaleDateString("pt-BR")}</span>;
 }
 
-export function CardPanel({ tarefaId, onClose }: Props) {
+export function CardPanel({ tarefaId, onClose, standalone = false }: Props) {
   const [dados, setDados] = useState<Awaited<ReturnType<typeof buscarDetalhesTarefa>> | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +61,7 @@ export function CardPanel({ tarefaId, onClose }: Props) {
   const [showAddEtiqueta, setShowAddEtiqueta] = useState(false);
   const [showAddLink, setShowAddLink] = useState(false);
   const [showResponsavelPicker, setShowResponsavelPicker] = useState(false);
+  const [showParticipantePicker, setShowParticipantePicker] = useState(false);
   const [usuarios, setUsuarios] = useState<{ id: string; nome: string }[]>([]);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -236,6 +247,9 @@ export function CardPanel({ tarefaId, onClose }: Props) {
   }
 
   if (loading) {
+    if (standalone) {
+      return <div className="flex items-center justify-center py-20 text-ink-faint text-sm">Carregando...</div>;
+    }
     return (
       <div className="fixed inset-0 z-50 flex" onClick={onClose}>
         <div className="flex-1" />
@@ -260,37 +274,34 @@ export function CardPanel({ tarefaId, onClose }: Props) {
   const checkPct = checkTotal > 0 ? Math.round((checkDone / checkTotal) * 100) : 0;
   const isFinalizado = tarefa.status === "CONCLUIDA" || tarefa.status === "CANCELADA";
 
-  return (
-    <div className="fixed inset-0 z-50 flex" onClick={onClose}>
-      <div className="flex-1" />
-      <div
-        className="relative w-full max-w-lg h-full bg-surface border-l border-line flex flex-col overflow-hidden shadow-2xl"
-        style={{ animation: "slideInRight 0.2s ease-out" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
-
-        <div className="flex items-center justify-between px-4 py-3 border-b border-line shrink-0">
-          <div className="flex items-center gap-2">
-            <div
-              className="h-3 w-1.5 rounded-full"
-              style={{ backgroundColor: PRIORIDADE_COR[tarefa.prioridade] }}
-            />
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-              {tarefa.origem}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {statusMsg && (
-              <span className="text-xs text-steel font-medium">{statusMsg}</span>
-            )}
+  const painel = (
+    <>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-line shrink-0">
+        <div className="flex items-center gap-2">
+          <div
+            className="h-3 w-1.5 rounded-full"
+            style={{ backgroundColor: PRIORIDADE_COR[tarefa.prioridade] }}
+          />
+          <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            {tarefa.origem}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {statusMsg && (
+            <span className="text-xs text-steel font-medium">{statusMsg}</span>
+          )}
+          <Link href={`/tarefas/${tarefaId}`} className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-canvas transition-colors" title="Abrir link permanente">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </Link>
+          {!standalone && (
             <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-canvas transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-          </div>
+          )}
         </div>
+      </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+      <div className={standalone ? "overflow-y-auto px-4 py-4 space-y-5" : "flex-1 overflow-y-auto px-4 py-4 space-y-5"}>
           <div>
             <input
               key={tarefa.titulo}
@@ -380,6 +391,86 @@ export function CardPanel({ tarefaId, onClose }: Props) {
                     ))}
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* Participantes */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="label mb-0">Participantes</label>
+              <button
+                onClick={() => setShowParticipantePicker((p) => !p)}
+                className="text-xs text-steel hover:underline"
+              >
+                + Adicionar
+              </button>
+            </div>
+
+            {showParticipantePicker && (
+              <div className="mb-2 rounded-lg border border-line bg-surface shadow-sm overflow-hidden">
+                <div className="max-h-40 overflow-y-auto">
+                  {usuarios
+                    .filter((u) => !(dados.participantes ?? []).some((p: TarefaParticipante) => p.usuario_id === u.id))
+                    .map((u) => (
+                      <div key={u.id} className="flex items-center gap-2 px-3 py-2 hover:bg-canvas">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-steel/15 text-xs font-bold text-steel">
+                          {u.nome[0].toUpperCase()}
+                        </div>
+                        <span className="flex-1 text-sm text-ink">{u.nome}</span>
+                        <div className="flex gap-1">
+                          {(["colaborador", "observador"] as const).map((papel) => (
+                            <button
+                              key={papel}
+                              onClick={() => {
+                                startTransition(async () => {
+                                  await adicionarParticipante(tarefaId, u.id, papel);
+                                  setShowParticipantePicker(false);
+                                  await reload();
+                                });
+                              }}
+                              className="text-xs rounded border border-line px-1.5 py-0.5 hover:border-steel hover:text-steel transition-colors"
+                            >
+                              {papel === "colaborador" ? "Colab." : "Obs."}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  {usuarios.filter((u) => !(dados.participantes ?? []).some((p: TarefaParticipante) => p.usuario_id === u.id)).length === 0 && (
+                    <p className="px-3 py-3 text-xs text-ink-faint">Todos os usuários já são participantes.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-1.5">
+              {(dados.participantes ?? []).map((p: TarefaParticipante) => (
+                <div
+                  key={p.usuario_id}
+                  className="flex items-center gap-1 rounded-full border border-line bg-canvas pl-1 pr-2 py-0.5 text-xs"
+                >
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel/15 text-xs font-bold text-steel">
+                    {p.usuario?.nome[0]?.toUpperCase() ?? "?"}
+                  </div>
+                  <span className="text-ink">{p.usuario?.nome}</span>
+                  <span className="text-ink-faint">· {PAPEL_LABEL[p.papel] ?? p.papel}</span>
+                  <button
+                    onClick={() => {
+                      startTransition(async () => {
+                        await removerParticipante(tarefaId, p.usuario_id);
+                        await reload();
+                      });
+                    }}
+                    className="ml-0.5 text-ink-faint hover:text-red-500 transition-colors"
+                    title="Remover participante"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {!(dados.participantes ?? []).length && (
+                <span className="text-xs text-ink-faint">Nenhum participante ainda.</span>
               )}
             </div>
           </div>
@@ -584,7 +675,30 @@ export function CardPanel({ tarefaId, onClose }: Props) {
             </button>
           </div>
         )}
+    </>
+  );
+
+  if (standalone) {
+    return (
+      <div className="flex flex-col bg-surface border border-line rounded-2xl overflow-hidden mx-4 my-4 shadow-sm">
+        {painel}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
+      <div className="fixed inset-0 z-50 flex" onClick={onClose}>
+        <div className="flex-1" />
+        <div
+          className="relative w-full max-w-lg h-full bg-surface border-l border-line flex flex-col overflow-hidden shadow-2xl"
+          style={{ animation: "slideInRight 0.2s ease-out" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {painel}
+        </div>
+      </div>
+    </>
   );
 }

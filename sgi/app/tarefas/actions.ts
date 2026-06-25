@@ -139,11 +139,33 @@ export async function moverCard(
 export async function aceitarTarefa(tarefaId: string) {
   const admin = createAdminClient();
   const uid = await usuarioAtualId();
+  if (!uid) return { ok: false, erro: "Não autenticado" };
 
-  const { error } = await admin
+  // Busca setor da tarefa para encontrar coluna "Aceitas"
+  const { data: tarefa } = await admin
     .from("tarefas")
-    .update({ status: "ACEITA", aceita_em: new Date().toISOString() })
-    .eq("id", tarefaId);
+    .select("setor_id, coluna_id")
+    .eq("id", tarefaId)
+    .single();
+
+  let colunaAceitasId: string | null = null;
+  if (tarefa?.setor_id) {
+    const { data: col } = await admin
+      .from("colunas_kanban")
+      .select("id")
+      .eq("setor_id", tarefa.setor_id)
+      .ilike("nome", "%aceita%")
+      .limit(1)
+      .maybeSingle();
+    colunaAceitasId = col?.id ?? null;
+  }
+
+  const { error } = await admin.from("tarefas").update({
+    status: "ACEITA",
+    aceita_em: new Date().toISOString(),
+    usuario_responsavel_id: uid,
+    ...(colunaAceitasId ? { coluna_id: colunaAceitasId } : {}),
+  }).eq("id", tarefaId);
 
   if (error) return { ok: false, erro: error.message };
 
@@ -151,7 +173,7 @@ export async function aceitarTarefa(tarefaId: string) {
     tarefa_id: tarefaId,
     usuario_id: uid,
     acao: "ACEITA",
-    dados: null,
+    dados: { coluna_anterior: tarefa?.coluna_id ?? null },
   });
 
   revalidatePath("/tarefas");
@@ -162,6 +184,12 @@ export async function aceitarTarefa(tarefaId: string) {
 export async function atribuirTarefa(tarefaId: string, novoUsuarioId: string) {
   const admin = createAdminClient();
   const uid = await usuarioAtualId();
+
+  const { data: tarefa } = await admin
+    .from("tarefas")
+    .select("titulo")
+    .eq("id", tarefaId)
+    .single();
 
   const { error } = await admin
     .from("tarefas")
@@ -176,6 +204,16 @@ export async function atribuirTarefa(tarefaId: string, novoUsuarioId: string) {
     acao: "ATRIBUIDA",
     dados: { usuario_responsavel_id: novoUsuarioId },
   });
+
+  // Notifica o novo responsável se não for o próprio usuário
+  if (novoUsuarioId !== uid) {
+    await admin.from("notificacoes").insert({
+      usuario_id: novoUsuarioId,
+      tipo: "tarefa_atribuida",
+      tarefa_id: tarefaId,
+      payload: { titulo: tarefa?.titulo ?? "", atribuido_por: uid },
+    }).then(() => {});
+  }
 
   revalidatePath("/tarefas");
   revalidatePath("/");
@@ -209,10 +247,31 @@ export async function cancelarTarefa(tarefaId: string) {
   const admin = createAdminClient();
   const uid = await usuarioAtualId();
 
-  const { error } = await admin
+  // Busca coluna terminal (Concluído) do setor da tarefa
+  const { data: tarefa } = await admin
     .from("tarefas")
-    .update({ status: "CANCELADA" })
-    .eq("id", tarefaId);
+    .select("setor_id")
+    .eq("id", tarefaId)
+    .single();
+
+  let colunaTerminalId: string | null = null;
+  if (tarefa?.setor_id) {
+    const { data: cols } = await admin
+      .from("colunas_kanban")
+      .select("id, nome")
+      .eq("setor_id", tarefa.setor_id);
+    const terminal = cols?.find((c) =>
+      c.nome.toLowerCase().includes("conclu") ||
+      c.nome.toLowerCase().includes("cancelad") ||
+      c.nome === "done"
+    );
+    colunaTerminalId = terminal?.id ?? null;
+  }
+
+  const { error } = await admin.from("tarefas").update({
+    status: "CANCELADA",
+    ...(colunaTerminalId ? { coluna_id: colunaTerminalId } : {}),
+  }).eq("id", tarefaId);
 
   if (error) return { ok: false, erro: error.message };
 
@@ -258,6 +317,21 @@ export async function adicionarComentario(tarefaId: string, texto: string) {
     acao: "COMENTARIO_ADICIONADO",
     dados: null,
   });
+
+  // Notifica responsável se não for o próprio comentador
+  const { data: tarefa } = await admin
+    .from("tarefas")
+    .select("titulo, usuario_responsavel_id")
+    .eq("id", tarefaId)
+    .single();
+  if (tarefa?.usuario_responsavel_id && tarefa.usuario_responsavel_id !== uid) {
+    await admin.from("notificacoes").insert({
+      usuario_id: tarefa.usuario_responsavel_id,
+      tipo: "tarefa_comentario",
+      tarefa_id: tarefaId,
+      payload: { titulo: tarefa.titulo ?? "", comentado_por: uid },
+    }).then(() => {});
+  }
 
   revalidatePath("/tarefas");
   return { ok: true };
@@ -645,7 +719,7 @@ export async function buscarUsuarios() {
 export async function buscarDetalhesTarefa(tarefaId: string) {
   const admin = createAdminClient();
 
-  const [tarefaRes, comentariosRes, checklistRes, linksRes, arquivosRes, historicoRes] =
+  const [tarefaRes, comentariosRes, checklistRes, linksRes, arquivosRes, historicoRes, participantesRes] =
     await Promise.all([
       admin
         .from("tarefas")
@@ -680,6 +754,11 @@ export async function buscarDetalhesTarefa(tarefaId: string) {
         .select("*, usuario:usuarios(nome)")
         .eq("tarefa_id", tarefaId)
         .order("criado_em"),
+      admin
+        .from("tarefa_participantes")
+        .select("*, usuario:usuarios(id, nome)")
+        .eq("tarefa_id", tarefaId)
+        .order("criado_em"),
     ]);
 
   if (!tarefaRes.data) return null;
@@ -696,7 +775,155 @@ export async function buscarDetalhesTarefa(tarefaId: string) {
     links: linksRes.data ?? [],
     arquivos: arquivosRes.data ?? [],
     historico: historicoRes.data ?? [],
+    participantes: participantesRes.data ?? [],
   };
+}
+
+export async function adicionarParticipante(
+  tarefaId: string,
+  usuarioId: string,
+  papel: "colaborador" | "observador" = "colaborador"
+) {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+
+  const { data: usuario } = await admin
+    .from("usuarios")
+    .select("nome")
+    .eq("id", usuarioId)
+    .single();
+
+  const { error } = await admin.from("tarefa_participantes").upsert({
+    tarefa_id: tarefaId,
+    usuario_id: usuarioId,
+    papel,
+  }, { onConflict: "tarefa_id,usuario_id" });
+
+  if (error) return { ok: false, erro: error.message };
+
+  await admin.from("tarefa_historico").insert({
+    tarefa_id: tarefaId,
+    usuario_id: uid,
+    acao: "PARTICIPANTE_ADICIONADO",
+    dados: { usuario_id: usuarioId, papel, nome: usuario?.nome },
+  });
+
+  if (usuarioId !== uid) {
+    const { data: tarefa } = await admin
+      .from("tarefas")
+      .select("titulo")
+      .eq("id", tarefaId)
+      .single();
+    await admin.from("notificacoes").insert({
+      usuario_id: usuarioId,
+      tipo: "tarefa_atribuida",
+      tarefa_id: tarefaId,
+      payload: { titulo: tarefa?.titulo ?? "", atribuido_por: uid, papel },
+    }).then(() => {});
+  }
+
+  revalidatePath("/tarefas");
+  return { ok: true };
+}
+
+export async function removerParticipante(tarefaId: string, usuarioId: string) {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+
+  const { error } = await admin
+    .from("tarefa_participantes")
+    .delete()
+    .eq("tarefa_id", tarefaId)
+    .eq("usuario_id", usuarioId);
+
+  if (error) return { ok: false, erro: error.message };
+
+  await admin.from("tarefa_historico").insert({
+    tarefa_id: tarefaId,
+    usuario_id: uid,
+    acao: "PARTICIPANTE_REMOVIDO",
+    dados: { usuario_id: usuarioId },
+  });
+
+  revalidatePath("/tarefas");
+  return { ok: true };
+}
+
+export async function buscarNotificacoes(limite: number = 20) {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+  if (!uid) return { notificacoes: [], naoLidas: 0 };
+
+  const [notifRes, countRes] = await Promise.all([
+    admin
+      .from("notificacoes")
+      .select("*")
+      .eq("usuario_id", uid)
+      .order("criado_em", { ascending: false })
+      .limit(limite),
+    admin
+      .from("notificacoes")
+      .select("*", { count: "exact", head: true })
+      .eq("usuario_id", uid)
+      .eq("lida", false),
+  ]);
+
+  return {
+    notificacoes: notifRes.data ?? [],
+    naoLidas: countRes.count ?? 0,
+  };
+}
+
+export async function marcarNotificacaoLida(notificacaoId: string) {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+  if (!uid) return { ok: false };
+
+  await admin
+    .from("notificacoes")
+    .update({ lida: true })
+    .eq("id", notificacaoId)
+    .eq("usuario_id", uid);
+
+  return { ok: true };
+}
+
+export async function marcarTodasNotificacoesLidas() {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+  if (!uid) return { ok: false };
+
+  await admin
+    .from("notificacoes")
+    .update({ lida: true })
+    .eq("usuario_id", uid)
+    .eq("lida", false);
+
+  return { ok: true };
+}
+
+export async function buscarTarefasGlobal(termo: string) {
+  const admin = createAdminClient();
+  const uid = await usuarioAtualId();
+  if (!uid || !termo.trim()) return [];
+
+  const { data } = await admin
+    .from("tarefas")
+    .select(`
+      id, titulo, status, prioridade, setor_id, criado_em,
+      setor:setores(nome),
+      responsavel:usuarios!usuario_responsavel_id(nome)
+    `)
+    .textSearch("titulo_tsv", termo.trim(), { type: "websearch", config: "portuguese" })
+    .is("deleted_at", null)
+    .limit(20);
+
+  return (data ?? []) as unknown as Array<{
+    id: string; titulo: string; status: string; prioridade: string;
+    setor_id: string | null; criado_em: string;
+    setor: { nome: string } | null;
+    responsavel: { nome: string } | null;
+  }>;
 }
 
 export async function sincronizarTarefasCompras(): Promise<{ criadas: number; corrigidas: number; erros: number }> {
