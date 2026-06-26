@@ -50,13 +50,25 @@ export async function pushConsumerHandler(event: DomainEvent): Promise<void> {
     // ── Pedidos ──────────────────────────────────────────────────────────────
 
     case EVENTS.PURCHASE_ORDER_AWAITING_APPROVAL: {
+      const admin = createAdminClient();
+      const { data: ped } = await admin
+        .from("pedidos_compra")
+        .select("numero, tipo_linha, obras(nome)")
+        .eq("id", p.order_id)
+        .single();
+
+      const tipo = ped?.tipo_linha ?? "compras";
+      const numero = ped?.numero ?? "";
+      const obra = (ped?.obras as any)?.nome ?? "";
+      const obraLabel = obra ? ` · ${obra}` : "";
+
       const userIds = await getUsersWithPermission("compras.pedido.aprovar");
       await push(userIds, {
-        title: "Pedido aguardando aprovação",
-        body: `Pedido ${p.numero ?? ""} precisa de aprovação`,
+        title: `Pedido de ${tipo} aguardando aprovação`,
+        body: `Pedido ${numero}${obraLabel} está aguardando aprovação`,
         url: `/compras/pedidos/${p.order_id}`,
         tag: `pedido-aprovacao-${p.order_id}`,
-        actions: [{ action: "open", title: "Abrir pedido" }],
+        actions: [{ action: "open", title: "Ver pedido" }],
       });
       break;
     }
