@@ -111,6 +111,9 @@ export async function alterarStatusPedido(
     .single();
   if (!ped) throw new Error("Pedido não encontrado.");
 
+  // Idempotência: se já está no status alvo (double-click ou estado stale), ignora
+  if (ped.status === status) return;
+
   validarTransicaoPedido(ped.status, status);
 
   const { error } = await admin.from("pedidos_compra").update({ status }).eq("id", id);

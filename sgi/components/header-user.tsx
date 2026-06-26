@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-client";
+import { usePwa } from "@/components/pwa-provider";
 import type { UsuarioAtual } from "@/lib/auth";
 
 export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
   const [aberto, setAberto] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [showIOSModal, setShowIOSModal] = useState(false);
   const router = useRouter();
+  const { isOnline, canInstall, installApp, showIOSInstructions, pushPermission, requestPushPermission } = usePwa();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -129,6 +132,17 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
 
             {/* Ações */}
             <div className="py-1">
+              {/* Status de conexão */}
+              <div className="flex items-center gap-2 px-4 py-1.5">
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: isOnline ? "#10b981" : "#ef4444" }}
+                />
+                <span className="text-xs text-ink-faint">{isOnline ? "Online" : "Offline"}</span>
+              </div>
+
+              <div className="my-1 border-t border-line" />
+
               <Link
                 href="/perfil"
                 onClick={() => setAberto(false)}
@@ -140,6 +154,51 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                 </svg>
                 Meu perfil
               </Link>
+
+              {/* Instalar aplicativo (Chrome/Edge/Android) */}
+              {canInstall && (
+                <button
+                  onClick={async () => { setAberto(false); await installApp(); }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                    <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                  Instalar aplicativo
+                </button>
+              )}
+
+              {/* iOS Safari: mostrar instruções */}
+              {showIOSInstructions && (
+                <button
+                  onClick={() => { setAberto(false); setShowIOSModal(true); }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                    <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                  Instalar no iPhone
+                </button>
+              )}
+
+              {/* Ativar notificações push */}
+              {pushPermission === "default" && (
+                <button
+                  onClick={async () => { setAberto(false); await requestPushPermission(); }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  Ativar notificações
+                </button>
+              )}
+
+              <div className="my-1 border-t border-line" />
+
               <button
                 onClick={handleLogout}
                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-red-600"
@@ -154,6 +213,38 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
             </div>
           </div>
         </>
+      )}
+
+      {/* Modal de instrução para iOS */}
+      {showIOSModal && (
+        <div className="fixed inset-0 z-[300] flex items-end justify-center bg-black/50 p-4" onClick={() => setShowIOSModal(false)}>
+          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-bold text-ink mb-1">Instalar no iPhone</h3>
+            <p className="text-sm text-ink-soft mb-4">Para adicionar o SquadFrame à sua tela de início:</p>
+            <ol className="space-y-3 text-sm text-ink">
+              <li className="flex items-start gap-2">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">1</span>
+                Toque em <strong className="mx-1">Compartilhar</strong>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                na barra do Safari
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">2</span>
+                Role para baixo e toque em <strong className="ml-1">Adicionar à Tela de Início</strong>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">3</span>
+                Confirme tocando em <strong className="ml-1">Adicionar</strong>
+              </li>
+            </ol>
+            <button
+              onClick={() => setShowIOSModal(false)}
+              className="mt-5 w-full rounded-lg bg-steel py-2.5 text-sm font-semibold text-white"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

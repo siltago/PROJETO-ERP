@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -10,6 +10,8 @@ import { MobileNav } from "@/components/mobile-nav";
 import { BuscaGlobal } from "@/components/busca-global";
 import { ToastProvider } from "@/components/toast";
 import { NotificacoesBadge } from "@/components/notificacoes/notificacoes-badge";
+import { PwaProvider } from "@/components/pwa-provider";
+import { OfflineBanner, UpdateBanner } from "@/components/pwa-banners";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
@@ -17,10 +19,36 @@ const ThemeToggle = dynamic(
   { ssr: false }
 );
 
+export const viewport: Viewport = {
+  themeColor: "#0F4C81",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "SquadFrame",
   description: "Gestão Industrial Para Esquadrias",
-  icons: { icon: "/icon.png" },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SquadFrame",
+    startupImage: "/icon.png",
+  },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/icon.png",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "msapplication-TileColor": "#0F4C81",
+    "msapplication-tap-highlight": "no",
+  },
 };
 
 export default async function RootLayout({
@@ -41,9 +69,14 @@ export default async function RootLayout({
     naoLidasCount = count ?? 0;
   }
 
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
+        <PwaProvider usuarioId={usuario?.id} vapidPublicKey={vapidPublicKey}>
+        <UpdateBanner />
+        <OfflineBanner />
         {usuario && (
           <header
             className="fixed inset-x-0 top-0 z-50 flex items-center gap-2 px-3 sm:gap-3 sm:px-5"
@@ -94,6 +127,7 @@ export default async function RootLayout({
             <main className={usuario ? "pt-14" : ""}>{children}</main>
           </ToastProvider>
         </UserProvider>
+        </PwaProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { historicoConsumerHandler } from "./historico.consumer";
 import { assinaturaConsumerHandler } from "./assinatura.consumer";
 import { dashboardConsumerHandler } from "./dashboard.consumer";
 import { notificacoesConsumerHandler } from "./notificacoes.consumer";
+import { pushConsumerHandler } from "./push.consumer";
 
 export type ConsumerFn = (event: DomainEvent) => Promise<void>;
 
@@ -24,4 +25,5 @@ export const OBSERVER_CONSUMERS: ConsumerFn[] = [
   assinaturaConsumerHandler,
   dashboardConsumerHandler,
   notificacoesConsumerHandler,
+  pushConsumerHandler,
 ];
