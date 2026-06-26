@@ -104,7 +104,7 @@ export async function alterarStatusPedido(
 
   const { data: ped } = await admin
     .from("pedidos_compra")
-    .select("status")
+    .select("status, obra_id")
     .eq("id", id)
     .single();
   if (!ped) throw new Error("Pedido não encontrado.");
@@ -118,6 +118,7 @@ export async function alterarStatusPedido(
   if (tipoEvento) {
     await emitirEvento(tipoEvento, {
       order_id:    id,
+      obra_id:     ped.obra_id || null,
       status_novo: status,
       usuario_id,
       dados:       { observacoes },

@@ -16,6 +16,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
       if (p.request_id) revalidatePath(`/compras/solicitacoes/${p.request_id}`);
       revalidatePath("/");
       revalidatePath("/tarefas");
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.PURCHASE_REQUEST_DELETED:
@@ -28,6 +29,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
       revalidatePath("/compras/pedidos");
       revalidatePath("/");
       revalidatePath("/tarefas");
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.PURCHASE_ORDER_APPROVED:
@@ -36,6 +38,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
       if (p.order_id) revalidatePath(`/compras/pedidos/${p.order_id}`);
       revalidatePath("/compras/solicitacoes");
       revalidatePath("/tarefas");
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.PURCHASE_ORDER_AWAITING_APPROVAL:
@@ -47,6 +50,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
       revalidatePath("/compras/pedidos");
       if (p.order_id) revalidatePath(`/compras/pedidos/${p.order_id}`);
       revalidatePath("/tarefas");
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.PURCHASE_ORDER_EDITED:
@@ -54,6 +58,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
         revalidatePath(`/compras/pedidos/${p.order_id}`);
         revalidatePath(`/compras/pedidos/${p.order_id}/editar`);
       }
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.PURCHASE_ORDER_DELETED:
@@ -65,6 +70,7 @@ export async function dashboardConsumerHandler(event: DomainEvent): Promise<void
       revalidatePath("/compras");
       revalidatePath("/compras/pedidos");
       if (p.order_id) revalidatePath(`/compras/pedidos/${p.order_id}`);
+      if (p.obra_id) revalidatePath(`/obras/${p.obra_id}`);
       break;
 
     case EVENTS.SUPPLIER_CREATED:

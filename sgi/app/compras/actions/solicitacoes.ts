@@ -93,7 +93,7 @@ export async function alterarStatusSolicitacao(
 
   const { data: sol } = await admin
     .from("solicitacoes_compra")
-    .select("status")
+    .select("status, obra_id")
     .eq("id", id)
     .single();
   if (!sol) throw new Error("Solicitação não encontrada.");
@@ -111,6 +111,7 @@ export async function alterarStatusSolicitacao(
 
   await emitirEvento(tipoEvento, {
     request_id:  id,
+    obra_id:     sol.obra_id || null,
     usuario_id,
     status_novo: status,
     dados:       { observacoes },
