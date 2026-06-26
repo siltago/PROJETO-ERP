@@ -31,23 +31,10 @@ export const metadata: Metadata = {
   title: "SquadFrame",
   description: "Gestão Industrial Para Esquadrias",
   manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "SquadFrame",
-    startupImage: "/icon.png",
-  },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
     shortcut: "/icon.png",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "msapplication-TileColor": "#0F4C81",
-    "msapplication-tap-highlight": "no",
   },
 };
 
@@ -73,6 +60,15 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        {/* iOS PWA standalone — precisam ser tags literais para o Safari reconhecer */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="SquadFrame" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#0F4C81" />
+      </head>
       <body>
         <PwaProvider usuarioId={usuario?.id} vapidPublicKey={vapidPublicKey}>
         <UpdateBanner />
