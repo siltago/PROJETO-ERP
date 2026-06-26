@@ -105,7 +105,7 @@ export default async function ProdutoPage({
 
   return (
     <div className="px-8 py-8">
-      <BackButton href={`/catalogo/${params.linhaId}`} />
+      <BackButton href={linha?.tipo ? `/catalogo?tipo=${linha.tipo.toLowerCase()}` : `/catalogo/${params.linhaId}`} />
 
       {/* Cabeçalho */}
       <div className="mt-4">

@@ -22,11 +22,13 @@ function SidebarInner({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const aba = searchParams.get("aba");
+  // aceita ?tipo= (novo) e ?aba= (compat)
+  const tipoParam = (searchParams.get("tipo") ?? searchParams.get("aba") ?? "").toUpperCase();
   const onCatalogRoot = pathname === "/catalogo";
 
-  const isActive = (slug: string) => onCatalogRoot && aba === slug;
-  const isFirstActive = onCatalogRoot && !aba && tipos.length > 0;
+  const isActive = (slug: string) =>
+    onCatalogRoot && tipoParam === slug.toUpperCase();
+  const isFirstActive = onCatalogRoot && !tipoParam && tipos.length > 0;
 
   const items = [
     ...tipos.map((t) => ({ slug: t.slug, label: t.nome })),
@@ -39,7 +41,7 @@ function SidebarInner({
       : (isActive(slug) || (slug === tipos[0]?.slug && isFirstActive));
     return (
       <Link
-        href={`/catalogo?aba=${slug}`}
+        href={`/catalogo?tipo=${slug.toLowerCase()}`}
         title={collapsed ? label : undefined}
         className={`flex items-center gap-3 mx-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
           active ? "bg-steel/10 text-steel" : "text-ink-soft hover:bg-canvas hover:text-ink"
