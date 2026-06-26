@@ -5,15 +5,15 @@ const CACHE_VERSION = 'v1';
 const CACHE_NAME = `squadframe-${CACHE_VERSION}`;
 
 const STATIC_PREFIXES = ['/_next/static/', '/fonts/'];
-const STATIC_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.svg', '.ico', '.woff', '.woff2', '.webmanifest'];
+const STATIC_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.svg', '.ico', '.woff', '.woff2'];
 const NETWORK_ONLY_HOSTS = ['supabase.co', 'supabase.in'];
-const NETWORK_ONLY_PATHS = ['/api/', '/login', '/auth/'];
+const NETWORK_ONLY_PATHS = ['/api/', '/login', '/auth/', '/manifest.webmanifest', '/sw.js'];
 
 // ── Install ──────────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(['/icon.png', '/manifest.webmanifest']).catch(() => {}))
+      .then(cache => cache.addAll(['/icon.png']).catch(() => {}))
       .then(() => self.skipWaiting())
   );
 });
