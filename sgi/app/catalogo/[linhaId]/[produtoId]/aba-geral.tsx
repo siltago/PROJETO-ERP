@@ -31,6 +31,7 @@ export function AbaGeral({
   const [pending, start] = useTransition();
   const [linhaIdSelecionada, setLinhaIdSelecionada] = useState(linhaId);
   const [categoriaIdSelecionada, setCategoriaIdSelecionada] = useState((produto.categoria as any)?.id ?? "");
+  const [statusAtivo, setStatusAtivo] = useState(produto.status);
   const router = useRouter();
 
   const labels = specLabels(tipoUnidade);
@@ -165,13 +166,10 @@ export function AbaGeral({
             <div className="flex items-center gap-3">
               <label className="label mb-0">Status</label>
               <label className="relative inline-flex cursor-pointer items-center gap-2 text-sm">
-                <input type="hidden" name="status" value="false" />
+                <input type="hidden" name="status" value="false" disabled={statusAtivo} />
                 <input type="checkbox" name="status" value="true"
-                  defaultChecked={produto.status}
-                  onChange={(e) => {
-                    const hidden = e.currentTarget.form?.querySelector('input[name="status"][type="hidden"]') as HTMLInputElement | null;
-                    if (hidden) hidden.disabled = e.currentTarget.checked;
-                  }}
+                  checked={statusAtivo}
+                  onChange={(e) => setStatusAtivo(e.target.checked)}
                   className="h-4 w-4 rounded" />
                 <span className="text-ink-soft">Ativo</span>
               </label>
