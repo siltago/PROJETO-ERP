@@ -226,9 +226,17 @@ export default async function CatalogoPage({
         query = query.in("categoria_id", categoriaIds);
       }
 
-      // Busca textual
+      // Busca textual — inclui aliases
       if (filtroQ) {
-        query = query.or(`codigo_mestre.ilike.%${filtroQ}%,nome.ilike.%${filtroQ}%`);
+        const { data: aliasMatches } = await supabase
+          .from("produto_aliases")
+          .select("produto_id")
+          .ilike("alias", `%${filtroQ}%`);
+        const aliasIds = (aliasMatches ?? []).map((a: any) => a.produto_id);
+        const orClause = aliasIds.length > 0
+          ? `codigo_mestre.ilike.%${filtroQ}%,nome.ilike.%${filtroQ}%,id.in.(${aliasIds.join(",")})`
+          : `codigo_mestre.ilike.%${filtroQ}%,nome.ilike.%${filtroQ}%`;
+        query = query.or(orClause);
       }
 
       // Ordenação

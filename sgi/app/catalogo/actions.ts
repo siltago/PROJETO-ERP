@@ -479,7 +479,7 @@ export async function adicionarAlias(
   linhaId: string,
   alias: string,
   fornecedorId?: string | null,
-  specs?: { peso_metro?: number | null; preco_metro?: number | null; tamanho_mm?: number | null }
+  specs?: { peso_metro?: number | null; preco_metro?: number | null; tamanho_mm?: number | null; preco_kg?: number | null }
 ) {
   await verificarPermissao("catalogo.editar");
   const supabase = createClient();
@@ -492,6 +492,7 @@ export async function adicionarAlias(
   if (specs?.peso_metro != null)  row.peso_metro  = specs.peso_metro;
   if (specs?.preco_metro != null) row.preco_metro = specs.preco_metro;
   if (specs?.tamanho_mm != null)  row.tamanho_mm  = specs.tamanho_mm;
+  if (specs?.preco_kg != null)    row.preco_kg    = specs.preco_kg;
 
   const { error } = await supabase.from("produto_aliases").insert(row);
   if (error) throw new Error(error.message);
@@ -505,7 +506,7 @@ export async function editarAlias(
   linhaId: string,
   alias: string,
   fornecedorId?: string | null,
-  specs?: { peso_metro?: number | null; preco_metro?: number | null; tamanho_mm?: number | null }
+  specs?: { peso_metro?: number | null; preco_metro?: number | null; tamanho_mm?: number | null; preco_kg?: number | null }
 ) {
   await verificarPermissao("catalogo.editar");
   const supabase = createClient();
@@ -517,6 +518,7 @@ export async function editarAlias(
     peso_metro:  specs?.peso_metro  ?? null,
     preco_metro: specs?.preco_metro ?? null,
     tamanho_mm:  specs?.tamanho_mm  ?? null,
+    preco_kg:    specs?.preco_kg    ?? null,
   };
   const { error } = await supabase.from("produto_aliases").update(row).eq("id", aliasId);
   if (error) throw new Error(error.message);

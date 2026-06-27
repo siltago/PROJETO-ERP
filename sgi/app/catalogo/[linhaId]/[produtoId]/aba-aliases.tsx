@@ -9,51 +9,131 @@ type Alias = {
   id: string; alias: string;
   fornecedor?: { id: string; nome: string } | null;
   peso_metro?: number | null; preco_metro?: number | null; tamanho_mm?: number | null;
+  preco_kg?: number | null;
 };
 type Fornecedor = { id: string; nome: string };
 
-function SpecsDisplay({ a, tipoUnidade }: { a: Alias; tipoUnidade?: string | null }) {
-  const labels = specLabels(tipoUnidade);
-  const sufixoPeso  = (tipoUnidade === "CHAPA" || tipoUnidade === "M2") ? "kg/m²" : "kg/m";
-  const sufixoPreco = (tipoUnidade === "CHAPA" || tipoUnidade === "M2") ? "/m²" : "/m";
-  const specs = [
-    a.tamanho_mm  != null && labels.tamanho && `${Number(a.tamanho_mm).toLocaleString("pt-BR")} mm`,
-    a.peso_metro  != null && `${Number(a.peso_metro).toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${sufixoPeso}`,
-    a.preco_metro != null && `${Number(a.preco_metro).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}${sufixoPreco}`,
-  ].filter(Boolean);
-  if (!specs.length) return <span className="text-ink-faint italic text-xs">—</span>;
-  return <span className="text-xs text-ink-soft">{specs.join(" · ")}</span>;
+// Resolve specs efetivas do alias, herdando do produto mestre quando não informado
+function resolveSpecs(a: Alias, masterPeso?: number | null, masterTamanho?: number | null) {
+  const pesoEfetivo = a.peso_metro ?? masterPeso ?? null;
+  return {
+    pesoEfetivo,
+    tamanhoEfetivo: a.tamanho_mm ?? masterTamanho ?? null,
+    // preco_kg tem prioridade: preco_metro = peso × preco_kg
+    precoMetroEfetivo: a.preco_kg != null && pesoEfetivo != null
+      ? pesoEfetivo * a.preco_kg
+      : a.preco_metro ?? null,
+  };
 }
 
-function SpecsInputs({ a, tipoUnidade }: { a?: Alias; tipoUnidade?: string | null }) {
+function SpecsDisplay({ a, tipoUnidade, masterPeso, masterTamanho }: {
+  a: Alias; tipoUnidade?: string | null;
+  masterPeso?: number | null; masterTamanho?: number | null;
+}) {
   const labels = specLabels(tipoUnidade);
+  const isBarra = tipoUnidade?.toUpperCase() === "BARRA";
+  const sufixoPeso  = (tipoUnidade === "CHAPA" || tipoUnidade === "M2") ? "kg/m²" : "kg/m";
+  const sufixoPreco = (tipoUnidade === "CHAPA" || tipoUnidade === "M2") ? "/m²" : "/m";
+
+  const { pesoEfetivo, tamanhoEfetivo, precoMetroEfetivo } = resolveSpecs(a, masterPeso, masterTamanho);
+
+  const partes: string[] = [];
+
+  if (labels.tamanho && tamanhoEfetivo != null) {
+    const herdado = a.tamanho_mm == null;
+    partes.push(`${Number(tamanhoEfetivo).toLocaleString("pt-BR")} mm${herdado ? " (herdado)" : ""}`);
+  }
+  if (pesoEfetivo != null) {
+    const herdado = a.peso_metro == null;
+    partes.push(`${Number(pesoEfetivo).toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${sufixoPeso}${herdado ? " (herdado)" : ""}`);
+  }
+  if (isBarra && a.preco_kg != null) {
+    partes.push(`${Number(a.preco_kg).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/kg`);
+  }
+  if (precoMetroEfetivo != null) {
+    const calc = isBarra && a.preco_kg != null;
+    partes.push(`${Number(precoMetroEfetivo).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}${sufixoPreco}${calc ? " (calc.)" : ""}`);
+  }
+
+  if (!partes.length) return <span className="text-ink-faint italic text-xs">—</span>;
+  return <span className="text-xs text-ink-soft">{partes.join(" · ")}</span>;
+}
+
+function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
+  a?: Alias; tipoUnidade?: string | null;
+  masterPeso?: number | null; masterTamanho?: number | null;
+}) {
+  const labels = specLabels(tipoUnidade);
+  const isBarra = tipoUnidade?.toUpperCase() === "BARRA";
   const showTamanho = !!labels.tamanho;
+  const pesoParaCalculo = a?.peso_metro ?? masterPeso ?? null;
+  const [precoKg, setPrecoKg] = useState<string>(a?.preco_kg != null ? String(a.preco_kg) : "");
+
+  const precoMetroPreview = (() => {
+    const kg = parseFloat(precoKg.replace(",", "."));
+    if (!isNaN(kg) && kg > 0 && pesoParaCalculo != null) return kg * pesoParaCalculo;
+    return null;
+  })();
+
   return (
-    <div className="flex flex-wrap gap-2 mt-1">
-      {showTamanho && (
-        <div className="min-w-[90px] flex-1">
-          <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.tamanho}</label>
-          <input name="tamanho_mm" type="number" step="any" min="0"
-            defaultValue={a?.tamanho_mm ?? ""} className="field h-7 text-xs" placeholder="6000" />
+    <div className="space-y-2 mt-1">
+      <div className="flex flex-wrap gap-2">
+        {showTamanho && (
+          <div className="min-w-[90px] flex-1">
+            <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.tamanho}</label>
+            <input name="tamanho_mm" type="number" step="any" min="0"
+              defaultValue={a?.tamanho_mm ?? ""}
+              className="field h-7 text-xs"
+              placeholder={masterTamanho ? `${masterTamanho} (mestre)` : "6000"} />
+          </div>
+        )}
+        <div className="min-w-[80px] flex-1">
+          <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.peso}</label>
+          <input name="peso_metro" type="number" step="any" min="0"
+            defaultValue={a?.peso_metro ?? ""}
+            className="field h-7 text-xs"
+            placeholder={masterPeso ? `${masterPeso} (mestre)` : "1.23"} />
         </div>
+        {isBarra ? (
+          <div className="min-w-[80px] flex-1">
+            <label className="text-[10px] uppercase tracking-wide text-ink-faint">Preço/kg (R$/kg)</label>
+            <input name="preco_kg" type="number" step="any" min="0"
+              value={precoKg}
+              onChange={(e) => setPrecoKg(e.target.value)}
+              className="field h-7 text-xs"
+              placeholder="Ex: 18.50" />
+          </div>
+        ) : (
+          <div className="min-w-[80px] flex-1">
+            <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.preco}</label>
+            <input name="preco_metro" type="number" step="any" min="0"
+              defaultValue={a?.preco_metro ?? ""}
+              className="field h-7 text-xs" placeholder="12.50" />
+          </div>
+        )}
+      </div>
+      {isBarra && precoMetroPreview != null && (
+        <p className="text-[11px] text-ink-soft">
+          ={" "}
+          <span className="font-medium">
+            {precoMetroPreview.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/m
+          </span>{" "}
+          <span className="text-ink-faint">(peso × preço/kg)</span>
+        </p>
       )}
-      <div className="min-w-[80px] flex-1">
-        <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.peso}</label>
-        <input name="peso_metro" type="number" step="any" min="0"
-          defaultValue={a?.peso_metro ?? ""} className="field h-7 text-xs" placeholder="1.23" />
-      </div>
-      <div className="min-w-[80px] flex-1">
-        <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.preco}</label>
-        <input name="preco_metro" type="number" step="any" min="0"
-          defaultValue={a?.preco_metro ?? ""} className="field h-7 text-xs" placeholder="12.50" />
-      </div>
+      {isBarra && precoKg !== "" && pesoParaCalculo == null && (
+        <p className="text-[11px] text-amber-600">
+          Informe o peso (aqui ou no produto mestre) para calcular o preço/m.
+        </p>
+      )}
     </div>
   );
 }
 
-function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis }: {
+function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis, masterPeso, masterTamanho }: {
   a: Alias; produtoId: string; linhaId: string;
   tipoUnidade?: string | null; fornecedoresDisponiveis: Fornecedor[];
+  masterPeso?: number | null; masterTamanho?: number | null;
 }) {
   const [editando, setEditando] = useState(false);
   const [aliasVal, setAliasVal] = useState(a.alias);
@@ -62,14 +142,16 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis 
   const [pendDel, startDel] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const router = useRouter();
+  const isBarra = tipoUnidade?.toUpperCase() === "BARRA";
 
   function salvar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const specs = {
       peso_metro:  parseFloat(String(fd.get("peso_metro")  || "").replace(",", ".")) || null,
-      preco_metro: parseFloat(String(fd.get("preco_metro") || "").replace(",", ".")) || null,
+      preco_metro: isBarra ? null : parseFloat(String(fd.get("preco_metro") || "").replace(",", ".")) || null,
       tamanho_mm:  parseFloat(String(fd.get("tamanho_mm")  || "").replace(",", ".")) || null,
+      preco_kg:    isBarra ? parseFloat(String(fd.get("preco_kg") || "").replace(",", ".")) || null : null,
     };
     setErro(null);
     startEdit(async () => {
@@ -110,7 +192,7 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis 
                 </select>
               </div>
             </div>
-            <SpecsInputs a={a} tipoUnidade={tipoUnidade} />
+            <SpecsInputs a={a} tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
             {erro && <p className="text-xs text-red-500">{erro}</p>}
             <div className="flex gap-2 pt-1">
               <button type="submit" disabled={pendEdit || !aliasVal.trim()}
@@ -130,7 +212,9 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis 
       <td className="px-4 py-2.5 text-sm text-ink-soft">
         {(a.fornecedor as any)?.nome ?? <span className="text-ink-faint italic">—</span>}
       </td>
-      <td className="px-4 py-2.5"><SpecsDisplay a={a} tipoUnidade={tipoUnidade} /></td>
+      <td className="px-4 py-2.5">
+        <SpecsDisplay a={a} tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
+      </td>
       <td className="px-4 py-2.5">
         <div className="flex gap-1 justify-end">
           <button onClick={() => setEditando(true)} title="Editar"
@@ -153,9 +237,10 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis 
   );
 }
 
-export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedoresDisponiveis = [] }: {
+export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedoresDisponiveis = [], masterPeso, masterTamanho }: {
   produtoId: string; linhaId: string;
   aliases: Alias[]; tipoUnidade?: string | null; fornecedoresDisponiveis?: Fornecedor[];
+  masterPeso?: number | null; masterTamanho?: number | null;
 }) {
   const [showForm, setShowForm] = useState(false);
   const [valor, setValor] = useState("");
@@ -163,6 +248,7 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
   const [erro, setErro] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  const isBarra = tipoUnidade?.toUpperCase() === "BARRA";
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -170,8 +256,9 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
     const fd = new FormData(e.currentTarget);
     const specs = {
       peso_metro:  parseFloat(String(fd.get("peso_metro")  || "").replace(",", ".")) || null,
-      preco_metro: parseFloat(String(fd.get("preco_metro") || "").replace(",", ".")) || null,
+      preco_metro: isBarra ? null : parseFloat(String(fd.get("preco_metro") || "").replace(",", ".")) || null,
       tamanho_mm:  parseFloat(String(fd.get("tamanho_mm")  || "").replace(",", ".")) || null,
+      preco_kg:    isBarra ? parseFloat(String(fd.get("preco_kg") || "").replace(",", ".")) || null : null,
     };
     setErro(null);
     startTransition(async () => {
@@ -186,7 +273,9 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
   return (
     <div className="mt-6 space-y-4">
       <p className="text-sm text-ink-faint">
-        Aliases são códigos alternativos — geralmente o código usado por cada fornecedor. Cada alias pode ter especificações técnicas próprias.
+        Aliases são códigos alternativos usados por cada fornecedor.
+        {isBarra && " Para perfis comprados por peso, informe o preço/kg — o sistema calcula o preço/m automaticamente no pedido."}
+        {" "}Peso e comprimento do produto mestre são herdados se não informados.
       </p>
 
       {aliases.length > 0 ? (
@@ -203,7 +292,8 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
             <tbody>
               {aliases.map((a) => (
                 <AliasRow key={a.id} a={a} produtoId={produtoId} linhaId={linhaId}
-                  tipoUnidade={tipoUnidade} fornecedoresDisponiveis={fornecedoresDisponiveis} />
+                  tipoUnidade={tipoUnidade} fornecedoresDisponiveis={fornecedoresDisponiveis}
+                  masterPeso={masterPeso} masterTamanho={masterTamanho} />
               ))}
             </tbody>
           </table>
@@ -234,7 +324,7 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
               </select>
             </div>
           </div>
-          <SpecsInputs tipoUnidade={tipoUnidade} />
+          <SpecsInputs tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
           {erro && <p className="text-xs text-red-500">{erro}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => { setShowForm(false); setErro(null); }} className="btn-ghost">Cancelar</button>

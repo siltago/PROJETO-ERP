@@ -12,7 +12,7 @@ const POR_PAGINA = 30;
 
 export default async function PedidosPage({
   searchParams,
-}: { searchParams: { status?: string; fornecedor?: string; page?: string } }) {
+}: { searchParams: { status?: string; fornecedor?: string; page?: string; q?: string } }) {
   const usuario = await getUsuarioAtual();
   const podeCriar =
     usuario?.permissoes?.includes("*") ||
@@ -21,6 +21,17 @@ export default async function PedidosPage({
   const admin = createAdminClient();
   const pagina = Math.max(1, parseInt(searchParams.page ?? "1"));
   const from = (pagina - 1) * POR_PAGINA;
+  const filtroQ = searchParams.q?.trim() ?? "";
+
+  // Quando há busca por item: resolve pedido_ids a partir de pedido_itens
+  let pedidoIdsFromItem: string[] | null = null;
+  if (filtroQ) {
+    const { data: itemMatches } = await admin
+      .from("pedido_itens")
+      .select("pedido_id")
+      .or(`codigo_fornecedor.ilike.%${filtroQ}%,descricao_snapshot.ilike.%${filtroQ}%`);
+    pedidoIdsFromItem = Array.from(new Set((itemMatches ?? []).map((i: any) => i.pedido_id)));
+  }
 
   let q = admin
     .from("pedidos_compra")
@@ -30,6 +41,14 @@ export default async function PedidosPage({
 
   if (searchParams.status) q = q.eq("status", searchParams.status);
   if (searchParams.fornecedor) q = q.eq("fornecedor_id", searchParams.fornecedor);
+  if (pedidoIdsFromItem !== null) {
+    if (pedidoIdsFromItem.length === 0) {
+      // Nenhum item encontrado — retorna vazio
+      q = q.in("id", ["00000000-0000-0000-0000-000000000000"]);
+    } else {
+      q = q.in("id", pedidoIdsFromItem);
+    }
+  }
 
   const { data: pedidos, count } = await q;
 
@@ -51,20 +70,48 @@ export default async function PedidosPage({
         )}
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/compras/pedidos"
+      {/* Busca por código de item */}
+      <form method="GET" action="/compras/pedidos" className="mt-6">
+        {searchParams.status && <input type="hidden" name="status" value={searchParams.status} />}
+        {searchParams.fornecedor && <input type="hidden" name="fornecedor" value={searchParams.fornecedor} />}
+        <div className="relative max-w-sm">
+          <input
+            name="q"
+            defaultValue={filtroQ}
+            placeholder="Buscar por código ou item…"
+            className="field h-9 w-full pl-8 text-sm"
+          />
+          <svg className="absolute left-2.5 top-2.5 text-ink-faint" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          {filtroQ && (
+            <a href="/compras/pedidos" className="absolute right-2.5 top-2.5 text-ink-faint hover:text-ink">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </a>
+          )}
+        </div>
+      </form>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href={filtroQ ? `/compras/pedidos?q=${encodeURIComponent(filtroQ)}` : "/compras/pedidos"}
           className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!searchParams.status ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
           Todos
         </Link>
-        {statuses.map((s) => (
-          <Link key={s} href={`/compras/pedidos?status=${s}`}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
-            {STATUS_PED_LABEL[s as keyof typeof STATUS_PED_LABEL]}
-          </Link>
-        ))}
+        {statuses.map((s) => {
+          const params = new URLSearchParams({ status: s });
+          if (filtroQ) params.set("q", filtroQ);
+          return (
+            <Link key={s} href={`/compras/pedidos?${params}`}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+              {STATUS_PED_LABEL[s as keyof typeof STATUS_PED_LABEL]}
+            </Link>
+          );
+        })}
       </div>
 
-      <div className="mt-6 card overflow-x-auto">
+      <div className="mt-4 card overflow-x-auto">
         <PedidosLista pedidos={(pedidos ?? []) as any} />
         <Paginacao
           paginaAtual={pagina}
@@ -75,6 +122,7 @@ export default async function PedidosPage({
             params.set("page", String(p));
             if (searchParams.status) params.set("status", searchParams.status);
             if (searchParams.fornecedor) params.set("fornecedor", searchParams.fornecedor);
+            if (filtroQ) params.set("q", filtroQ);
             return `/compras/pedidos?${params}`;
           }}
         />

@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     // Busca alias vinculado a este fornecedor — pode sobrescrever specs do produto
     const { data: aliasRows } = await admin
       .from("produto_aliases")
-      .select("produto_id, alias, peso_metro, preco_metro, tamanho_mm")
+      .select("produto_id, alias, peso_metro, preco_metro, tamanho_mm, preco_kg")
       .eq("fornecedor_id", fornecedorId)
       .in("produto_id", prodIds);
 
@@ -63,13 +63,17 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(produtos.map((p: any) => {
       const al = aliasMap.get(p.id);
-      // Alias sobrescreve specs se tiver valor próprio
+      const pesoEfetivo = al?.peso_metro ?? p.peso_metro ?? null;
+      // preco_kg × peso calcula preco_metro para barras compradas por peso
+      const precoMetroEfetivo = al?.preco_kg != null && pesoEfetivo != null
+        ? pesoEfetivo * al.preco_kg
+        : al?.preco_metro ?? p.preco_metro ?? null;
       return {
         id: p.id, codigo_mestre: p.codigo_mestre, nome: p.nome, unidade: p.unidade,
         codigo_do_fornecedor: al?.alias ?? (p.fornecedor_mestre_id === fornecedorId ? p.codigo_mestre : null),
-        peso_metro:  al?.peso_metro  ?? p.peso_metro  ?? null,
-        preco_metro: al?.preco_metro ?? p.preco_metro ?? null,
-        tamanho_mm:  al?.tamanho_mm  ?? p.tamanho_mm  ?? null,
+        peso_metro:  pesoEfetivo,
+        preco_metro: precoMetroEfetivo,
+        tamanho_mm:  al?.tamanho_mm ?? p.tamanho_mm ?? null,
       };
     }));
   }

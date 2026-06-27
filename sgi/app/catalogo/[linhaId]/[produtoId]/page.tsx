@@ -105,7 +105,7 @@ export default async function ProdutoPage({
   if (abaAtiva === "aliases") {
     const { data: al } = await supabase
       .from("produto_aliases")
-      .select("id, alias, peso_metro, preco_metro, tamanho_mm, fornecedor:fornecedores(id, nome)")
+      .select("id, alias, peso_metro, preco_metro, tamanho_mm, preco_kg, fornecedor:fornecedores(id, nome)")
       .eq("produto_id", params.produtoId)
       .order("alias");
     aliases = al ?? [];
@@ -195,6 +195,8 @@ export default async function ProdutoPage({
           aliases={aliases}
           tipoUnidade={tipoUnidade}
           fornecedoresDisponiveis={fornecedoresDisponiveis}
+          masterPeso={produto.peso_metro ?? null}
+          masterTamanho={produto.tamanho_mm ?? null}
         />
       )}
 
