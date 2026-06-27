@@ -64,10 +64,16 @@ const COMPRAS_GRUPOS: { key: string; label: string }[] = [
   { key: "compras.solicitacao",    label: "Solicitações" },
   { key: "compras.pedido",         label: "Pedidos" },
   { key: "compras.recebimento",    label: "Recebimentos" },
-  { key: "compras.fornecedor",     label: "Fornecedores" },
+  { key: "compras.fornecedor",     label: "Fornecedores (legado)" },
   { key: "compras.documento",      label: "Documentos" },
   { key: "compras.anotacao",       label: "Anotações" },
   { key: "compras.formapagamento", label: "Formas de pagamento" },
+];
+
+const CATALOGO_EXTRA_GRUPOS: { key: string; label: string }[] = [
+  { key: "catalogo.fornecedor", label: "Fornecedores" },
+  { key: "catalogo.linha",      label: "Linhas" },
+  { key: "catalogo.categoria",  label: "Categorias" },
 ];
 
 // ─── Card de cargo (sortable) ─────────────────────────────────
@@ -295,6 +301,58 @@ function CargoCard({
               </tbody>
             </table>
           </div>
+
+          {/* Catálogo — permissões granulares (fornecedores, linhas, categorias) */}
+          {!isAdmin && (() => {
+            const todosExtra = permissoes.filter((p) => p.modulo.startsWith("catalogo."));
+            if (!todosExtra.length) return null;
+            const todosMarcados = todosExtra.every((p) => permsIds.has(p.id));
+            return (
+              <div className="mt-3 overflow-hidden rounded-lg border border-line">
+                <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
+                  <span className="text-xs font-medium text-ink-soft">Catálogo (gestão)</span>
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+                    <input type="checkbox"
+                      checked={todosMarcados}
+                      onChange={(e) => {
+                        const ids = todosExtra.map((p) => p.id);
+                        setPermsIds((prev) => {
+                          const n = new Set(prev);
+                          ids.forEach((id) => (e.target.checked ? n.add(id) : n.delete(id)));
+                          return n;
+                        });
+                      }}
+                      className="h-3.5 w-3.5 rounded accent-steel"
+                    />
+                    Tudo
+                  </label>
+                </div>
+                <div className="divide-y divide-line">
+                  {CATALOGO_EXTRA_GRUPOS.map(({ key, label }) => {
+                    const grupoPerms = todosExtra.filter((p) => p.modulo === key);
+                    if (!grupoPerms.length) return null;
+                    return (
+                      <div key={key} className="px-3 py-2">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                          {grupoPerms.map((p) => (
+                            <label key={p.id} className="flex cursor-pointer items-center gap-2">
+                              <input type="checkbox"
+                                checked={permsIds.has(p.id)}
+                                onChange={() => togglePerm(p.id)}
+                                className="h-3.5 w-3.5 rounded accent-steel"
+                              />
+                              <span className="text-xs text-ink">{p.nome}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Compras — permissões granulares */}
           {!isAdmin && (() => {

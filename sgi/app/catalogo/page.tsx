@@ -71,7 +71,7 @@ export default async function CatalogoPage({
   const tipoSlug =
     tipoParam === "CORES"
       ? "cores"
-      : slugsValidos.find((s) => s === tipoParam) ?? tiposList[0]?.slug ?? "";
+      : slugsValidos.find((s) => s.toUpperCase() === tipoParam) ?? tiposList[0]?.slug ?? "";
   const tipoAtual = tiposList.find((t) => t.slug === tipoSlug);
 
   // ── Aba Cores RAL ────────────────────────────────────────────
@@ -276,7 +276,9 @@ export default async function CatalogoPage({
     const [{ data: fLista }, { data: tiposLista }] = await Promise.all([
       supabase.from("fornecedores").select(
         "id, nome, razao_social, cnpj, email, telefone, contato, ativo, tipos, endereco, numero, complemento, bairro, cidade, estado, cep"
-      ).order("nome"),
+      )
+        .contains("tipos", [tipoSlug])
+        .order("nome"),
       supabase.from("tipos_linha").select("nome, slug").order("ordem"),
     ]);
     fornecedoresGerenciar = fLista ?? [];
@@ -392,6 +394,7 @@ export default async function CatalogoPage({
         <GerenciarFornecedores
           fornecedores={fornecedoresGerenciar}
           tiposLinha={tiposLinhaGerenciar}
+          tipoAtual={tipoSlug}
         />
       )}
       {gerenciar === "linhas" && (

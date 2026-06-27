@@ -18,9 +18,11 @@ type TipoLinha = { nome: string; slug: string };
 export function GerenciarFornecedores({
   fornecedores,
   tiposLinha,
+  tipoAtual,
 }: {
   fornecedores: Fornecedor[];
   tiposLinha: TipoLinha[];
+  tipoAtual?: string;
 }) {
   const podeCriar = usePode("catalogo.fornecedor.criar", "compras.fornecedor.criar");
   const [aberto, setAberto] = useState(false);
@@ -92,7 +94,9 @@ export function GerenciarFornecedores({
                   <div className="mt-1 flex flex-wrap gap-3">
                     {tiposLinha.map((t) => (
                       <label key={t.slug} className="flex items-center gap-2 cursor-pointer text-sm">
-                        <input type="checkbox" name="tipos" value={t.slug} className="rounded" />
+                        <input type="checkbox" name="tipos" value={t.slug}
+                          defaultChecked={!!tipoAtual && t.slug === tipoAtual}
+                          className="rounded" />
                         {t.nome}
                       </label>
                     ))}
@@ -112,7 +116,18 @@ export function GerenciarFornecedores({
         </div>
       )}
 
-      <FornecedoresLista fornecedores={fornecedores} tiposLinha={tiposLinha} />
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-xs text-ink-faint">
+            Exibindo fornecedores vinculados a esta aba.
+          </p>
+          <a href="/compras/fornecedores" target="_blank"
+            className="text-xs text-steel hover:underline">
+            Ver todos →
+          </a>
+        </div>
+        <FornecedoresLista fornecedores={fornecedores} tiposLinha={tiposLinha} />
+      </div>
     </div>
   );
 }
