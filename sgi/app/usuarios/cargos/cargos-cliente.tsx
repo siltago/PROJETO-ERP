@@ -41,9 +41,9 @@ type Cargo = {
   permissao_ids: string[];
 };
 
-// "compras" é tratado como seção separada abaixo do grid
+// "compras" e "catalogo" são tratados como seções separadas abaixo do grid
 const MODULOS = [
-  "obras", "catalogo", "producao",
+  "obras", "producao",
   "qualidade", "expedicao", "tarefas", "usuarios", "cargos",
 ] as const;
 
@@ -70,7 +70,8 @@ const COMPRAS_GRUPOS: { key: string; label: string }[] = [
   { key: "compras.formapagamento", label: "Formas de pagamento" },
 ];
 
-const CATALOGO_EXTRA_GRUPOS: { key: string; label: string }[] = [
+const CATALOGO_GRUPOS: { key: string; label: string }[] = [
+  { key: "catalogo",            label: "Geral" },
   { key: "catalogo.fornecedor", label: "Fornecedores" },
   { key: "catalogo.linha",      label: "Linhas" },
   { key: "catalogo.categoria",  label: "Categorias" },
@@ -162,7 +163,7 @@ function CargoCard({
     });
   }
 
-  const MODULOS_DISPLAY = [...MODULOS, "compras"] as const;
+  const MODULOS_DISPLAY = [...MODULOS, "catalogo", "compras"] as const;
   const modulosAtivos = MODULOS_DISPLAY.filter((m) =>
     permissoes
       .filter((p) => p.modulo === m || p.modulo.startsWith(m + "."))
@@ -302,34 +303,27 @@ function CargoCard({
             </table>
           </div>
 
-          {/* Catálogo — permissões granulares (fornecedores, linhas, categorias) */}
+          {/* Catálogo — todas as permissões (geral + fornecedores/linhas/categorias) */}
           {!isAdmin && (() => {
-            const todosExtra = permissoes.filter((p) => p.modulo.startsWith("catalogo."));
-            if (!todosExtra.length) return null;
-            const todosMarcados = todosExtra.every((p) => permsIds.has(p.id));
+            const todosCatalogo = permissoes.filter((p) => p.chave.startsWith("catalogo."));
+            if (!todosCatalogo.length) return null;
+            const todosMarcados = todosCatalogo.every((p) => permsIds.has(p.id));
             return (
               <div className="mt-3 overflow-hidden rounded-lg border border-line">
                 <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
-                  <span className="text-xs font-medium text-ink-soft">Catálogo (gestão)</span>
+                  <span className="text-xs font-medium text-ink-soft">Catálogo</span>
                   <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
                     <input type="checkbox"
                       checked={todosMarcados}
-                      onChange={(e) => {
-                        const ids = todosExtra.map((p) => p.id);
-                        setPermsIds((prev) => {
-                          const n = new Set(prev);
-                          ids.forEach((id) => (e.target.checked ? n.add(id) : n.delete(id)));
-                          return n;
-                        });
-                      }}
+                      onChange={(e) => toggleModulo("catalogo", e.target.checked)}
                       className="h-3.5 w-3.5 rounded accent-steel"
                     />
                     Tudo
                   </label>
                 </div>
                 <div className="divide-y divide-line">
-                  {CATALOGO_EXTRA_GRUPOS.map(({ key, label }) => {
-                    const grupoPerms = todosExtra.filter((p) => p.modulo === key);
+                  {CATALOGO_GRUPOS.map(({ key, label }) => {
+                    const grupoPerms = todosCatalogo.filter((p) => p.modulo === key);
                     if (!grupoPerms.length) return null;
                     return (
                       <div key={key} className="px-3 py-2">
