@@ -174,9 +174,15 @@ export default async function CatalogoPage({
   }
 
   // ── Stats globais do tipo (sem filtros de produto) ───────────
-  const totalLinhas       = linhasDoTipo.length;
-  const totalFornecedores = fornecedoresDisponiveis.length;
-  const totalCategorias   = categoriasNomes.length;
+  const totalLinhas     = linhasDoTipo.length;
+  const totalCategorias = categoriasNomes.length;
+
+  // Conta fornecedores vinculados a este tipo (pelo campo tipos[])
+  const { count: fornCount } = await supabase
+    .from("fornecedores")
+    .select("*", { count: "exact", head: true })
+    .contains("tipos", [tipoSlug]);
+  const totalFornecedores = fornCount ?? 0;
 
   // ── Query de produtos ────────────────────────────────────────
   let items: CatalogItem[] = [];
