@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getUsuarioAtual } from "@/lib/auth";
+import { getTiposLinha, getFornecedores, getFormasPagamento, getCoresRal } from "@/lib/cached-queries";
 import { NovoPedidoCliente } from "./novo-pedido-cliente";
 import { BackButton } from "@/components/back-button";
 
@@ -19,17 +20,20 @@ export default async function NovoPedidoPage({
 
   const admin = createAdminClient();
 
-  const [{ data: obras }, { data: fornecedores }, { data: solAprovadas }, { data: tipos }, { data: formas }, { data: coresRal }] =
+  const [{ data: obras }, { data: solAprovadas }, tipos, fornecedores, formas, coresRalBase] =
     await Promise.all([
       admin.from("obras").select("id, nome, codigo, numero").is("deleted_at", null).order("nome"),
-      admin.from("fornecedores").select("id, nome, tipos").eq("ativo", true).order("nome"),
       admin.from("solicitacoes_compra")
         .select("id, numero, obra:obras(id, nome), itens:solicitacao_itens(id, quantidade, unidade, observacoes, descricao_manual, produto:produtos(id, codigo_mestre, nome, unidade))")
         .eq("status", "APROVADA"),
-      admin.from("tipos_linha").select("id, nome, slug, unidade").order("ordem"),
-      admin.from("formas_pagamento").select("id, nome").eq("ativo", true).order("nome"),
-      admin.from("cores_ral").select("id, codigo_ral, nome, hex, tipos").order("codigo_ral"),
+      getTiposLinha(),
+      getFornecedores(),
+      getFormasPagamento(),
+      getCoresRal(),
     ]);
+
+  // cores_ral cached query não inclui tipos[] — busca rápida via cache ou fallback
+  const coresRal = coresRalBase as any[];
 
   const fromId = searchParams.from ?? null;
   const fromSolicitacao = fromId
@@ -48,11 +52,11 @@ export default async function NovoPedidoPage({
       <div className="mt-6">
         <NovoPedidoCliente
           obras={obras ?? []}
-          fornecedores={fornecedores ?? []}
+          fornecedores={fornecedores as any[]}
           solicitacoesAprovadas={(solAprovadas ?? []) as any}
-          tiposLinha={tipos ?? []}
-          formasPagamento={formas ?? []}
-          coresRal={(coresRal ?? []) as any}
+          tiposLinha={tipos as any[]}
+          formasPagamento={formas as any[]}
+          coresRal={coresRal}
           fromSolicitacao={(fromSolicitacao ?? null) as any}
           fromObraId={fromObraId}
         />

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getTiposLinha, getCoresRal } from "@/lib/cached-queries";
 import { BackButton } from "@/components/back-button";
 import { RealtimeRefresher } from "@/components/realtime-refresher";
 import { PedidoCliente } from "./pedido-cliente";
@@ -13,7 +14,7 @@ export default async function PedidoPage({ params }: { params: { id: string } })
   const admin = createAdminClient();
 
   // Queries sobre tabelas que definitivamente existem
-  const [{ data: ped }, { data: itens }, { data: recebimentos }, { data: hist }, { data: tiposLinha }] =
+  const [{ data: ped }, { data: itens }, { data: recebimentos }, { data: hist }, tiposLinha] =
     await Promise.all([
       admin.from("pedidos_compra")
         .select("*, obra:obras(id,nome,codigo), fornecedor:fornecedores(nome,email,telefone), comprador:usuarios(nome), forma_pagamento:formas_pagamento(nome)")
@@ -28,7 +29,7 @@ export default async function PedidoPage({ params }: { params: { id: string } })
         .select("*, usuario:usuarios(nome)")
         .eq("entidade", "pedido").eq("entidade_id", params.id)
         .order("criado_em", { ascending: false }),
-      admin.from("tipos_linha").select("id, nome, slug").order("ordem"),
+      getTiposLinha(),
     ]);
 
   if (!ped) notFound();
@@ -46,15 +47,14 @@ export default async function PedidoPage({ params }: { params: { id: string } })
         .select("*, usuario:usuarios(nome)")
         .eq("pedido_id", params.id).order("criado_em", { ascending: false }),
     ]).catch(() => [{ data: [] }, { data: [] }]),
-    Promise.resolve(admin.from("cores_ral").select("id, codigo_ral, nome, hex").order("codigo_ral"))
-      .then((r) => r.data ?? []).catch((): any[] => []),
+    getCoresRal().catch((): any[] => []),
   ]);
 
   const coresRal = coresRalResult as any[];
 
   const cor = STATUS_PED_COR[ped.status as keyof typeof STATUS_PED_COR];
   const tipoNome = ped.tipo_linha
-    ? (tiposLinha ?? []).find((t: any) => t.slug === ped.tipo_linha)?.nome ?? ped.tipo_linha
+    ? tiposLinha.find((t: any) => t.slug === ped.tipo_linha)?.nome ?? ped.tipo_linha
     : null;
 
   return (
