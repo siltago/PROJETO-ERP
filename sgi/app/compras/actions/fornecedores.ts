@@ -12,12 +12,13 @@ import { EVENTS } from "@/core/events/event-types";
 export async function criarFormaPagamento(formData: FormData) {
   await verificarPermissao(PERMISSIONS.COMPRAS_FORMA_PAGAMENTO_GERENCIAR);
   const admin = createAdminClient();
-  const nome      = (formData.get("nome") as string).trim();
-  const descricao = (formData.get("descricao") as string | null)?.trim() || null;
+  const nome                 = (formData.get("nome") as string).trim();
+  const descricao            = (formData.get("descricao") as string | null)?.trim() || null;
+  const is_faturamento_direto = formData.get("is_faturamento_direto") === "true";
   if (!nome) throw new Error("Nome é obrigatório.");
-  const { error } = await admin.from("formas_pagamento").insert({ nome, descricao });
+  const { error } = await admin.from("formas_pagamento").insert({ nome, descricao, is_faturamento_direto });
   if (error) throw new Error(error.message);
-  revalidatePath("/compras/fornecedores");
+  revalidatePath("/compras/formas-pagamento");
 }
 
 export async function alterarFormaPagamento(id: string, ativo: boolean) {

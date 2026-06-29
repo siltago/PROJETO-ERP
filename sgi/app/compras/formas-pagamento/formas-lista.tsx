@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { usePode } from "@/components/user-provider";
 import { alterarFormaPagamento, excluirFormasPagamento } from "@/app/compras/actions";
 
-type FormasPagamento = { id: string; nome: string; descricao: string | null; ativo: boolean };
+type FormasPagamento = { id: string; nome: string; descricao: string | null; ativo: boolean; is_faturamento_direto: boolean };
 
 export function FormasPagamentoLista({ formas }: { formas: FormasPagamento[] }) {
   const podeExcluir = usePode("compras.formapagamento.gerenciar");
@@ -73,7 +73,14 @@ export function FormasPagamentoLista({ formas }: { formas: FormasPagamento[] }) 
                   onChange={(e) => toggleItem(fp.id, e.target.checked)} className="rounded shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-ink">{fp.nome}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-medium text-ink">{fp.nome}</p>
+                  {fp.is_faturamento_direto && (
+                    <span className="rounded-full bg-steel/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-steel">
+                      Faturamento Direto
+                    </span>
+                  )}
+                </div>
                 {fp.descricao && <p className="text-xs text-ink-faint">{fp.descricao}</p>}
               </div>
               {!modoExcluir && (

@@ -7,7 +7,7 @@ import { calcMedida, calcPesoTotal, calcPrecoUnit } from "@/lib/tipo-unidade";
 
 type Obra = { id: string; nome: string; codigo: string; numero?: number | null };
 type Fornecedor = { id: string; nome: string; tipos?: string[] | null };
-type FormaPagamento = { id: string; nome: string };
+type FormaPagamento = { id: string; nome: string; is_faturamento_direto?: boolean };
 type TipoLinha = { id: string; nome: string; slug: string; unidade?: string | null }
 type CorRal = { id: string; codigo_ral: string; nome: string | null; hex: string | null; tipos: string[] };
 type Produto = {
@@ -209,6 +209,7 @@ export function NovoPedidoCliente({
   const [fornecedorId, setFornecedorId] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [modoCorPedido, setModoCorPedido] = useState<"unica" | "por-item">("unica");
+  const [formaPagId, setFormaPagId] = useState("");
   const [pending, start] = useTransition();
   const pendingFn = useRef<(() => Promise<void>) | null>(null);
   const [modalAcao, setModalAcao] = useState<string | null>(null);
@@ -446,15 +447,33 @@ export function NovoPedidoCliente({
             </div>
             <div>
               <label className="label">Forma de pagamento <span className="text-ink-faint font-normal">(opcional)</span></label>
-              <select name="forma_pagamento_id" className="field">
+              <select
+                name="forma_pagamento_id"
+                className="field"
+                onChange={(e) => setFormaPagId(e.target.value)}
+                value={formaPagId}
+              >
                 <option value="">Não definida</option>
                 {formasPagamento.map((fp) => <option key={fp.id} value={fp.id}>{fp.nome}</option>)}
               </select>
-              {formasPagamento.length === 0 && (
-                <p className="mt-1 text-xs text-ink-faint">
-                  Cadastre em <a href="/compras/formas-pagamento" className="underline">Formas de Pagamento</a>
-                </p>
-              )}
+              {(() => {
+                const forma = formasPagamento.find((f) => f.id === formaPagId);
+                if (forma?.is_faturamento_direto) {
+                  return (
+                    <p className="mt-1 text-xs text-steel font-medium">
+                      O valor será debitado da carteira da obra ao emitir o pedido.
+                    </p>
+                  );
+                }
+                if (formasPagamento.length === 0) {
+                  return (
+                    <p className="mt-1 text-xs text-ink-faint">
+                      Cadastre em <a href="/compras/formas-pagamento" className="underline">Formas de Pagamento</a>
+                    </p>
+                  );
+                }
+                return null;
+              })()}
             </div>
             {coresRal.length > 0 && (
               <div className="sm:col-span-2">

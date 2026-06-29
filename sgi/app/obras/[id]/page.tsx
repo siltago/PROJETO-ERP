@@ -11,15 +11,17 @@ import { DashboardTab } from "./dashboard-tab";
 import { WorkspaceTab } from "./workspace-tab";
 import { TimelineTab } from "./timeline-tab";
 import { ConfigTab } from "./config-tab";
+import { FinanceiroTab } from "./financeiro-tab";
 
 export const dynamic = "force-dynamic";
 
 const ABAS = [
-  { label: "Dashboard",    slug: "dashboard"  },
-  { label: "Workspace",    slug: "workspace"  },
-  { label: "Produção",     slug: "producao"   },
-  { label: "Timeline",     slug: "timeline"   },
-  { label: "Configuração", slug: "config"     },
+  { label: "Dashboard",    slug: "dashboard"   },
+  { label: "Workspace",    slug: "workspace"   },
+  { label: "Produção",     slug: "producao"    },
+  { label: "Timeline",     slug: "timeline"    },
+  { label: "Financeiro",   slug: "financeiro"  },
+  { label: "Configuração", slug: "config"      },
 ] as const;
 
 type AbaSlug = typeof ABAS[number]["slug"];
@@ -153,6 +155,10 @@ export default async function ObraPage({
 
       {aba === "timeline" && (
         <TimelineTab obraId={params.id} />
+      )}
+
+      {aba === "financeiro" && (
+        <FinanceiroTab obraId={params.id} />
       )}
 
       {aba === "config" && (

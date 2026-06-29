@@ -93,11 +93,12 @@ export default async function RootLayout({
             {/* Navegação desktop */}
             <nav className="hidden sm:flex flex-1 items-center gap-0.5 px-2">
               {[
-                { href: "/obras",    label: "Obras" },
-                { href: "/catalogo", label: "Catálogo" },
-                { href: "/compras",  label: "Compras" },
-                { href: "/tarefas",  label: "Tarefas" },
-                { href: "/usuarios", label: "Usuários" },
+                { href: "/obras",      label: "Obras" },
+                { href: "/catalogo",  label: "Catálogo" },
+                { href: "/compras",   label: "Compras" },
+                { href: "/financeiro", label: "Financeiro" },
+                { href: "/tarefas",   label: "Tarefas" },
+                { href: "/usuarios",  label: "Usuários" },
               ].map((item) => (
                 <Link
                   key={item.href}

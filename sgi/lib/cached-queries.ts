@@ -37,7 +37,8 @@ export const getFormasPagamento = unstable_cache(
     const admin = createAdminClient();
     const { data } = await admin
       .from("formas_pagamento")
-      .select("id, nome")
+      .select("id, nome, is_faturamento_direto")
+      .eq("ativo", true)
       .order("nome");
     return data ?? [];
   },
@@ -50,7 +51,7 @@ export const getCoresRal = unstable_cache(
     const admin = createAdminClient();
     const { data } = await admin
       .from("cores_ral")
-      .select("id, codigo_ral, nome, hex")
+      .select("id, codigo_ral, nome, hex, tipos")
       .order("codigo_ral");
     return data ?? [];
   },

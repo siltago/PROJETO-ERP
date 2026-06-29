@@ -77,6 +77,18 @@ export async function criarPedido(formData: FormData) {
 
   const { id: pedidoId } = result as { id: string; numero: string };
 
+  // Se a forma de pagamento for Faturamento Direto, marcar usa_carteira
+  if (forma_pagamento_id) {
+    const { data: forma } = await admin
+      .from("formas_pagamento")
+      .select("is_faturamento_direto")
+      .eq("id", forma_pagamento_id)
+      .single();
+    if (forma?.is_faturamento_direto) {
+      await admin.from("pedidos_compra").update({ usa_carteira: true }).eq("id", pedidoId);
+    }
+  }
+
   await emitirEvento(EVENTS.PURCHASE_ORDER_CREATED, {
     order_id:     pedidoId,
     numero,
@@ -106,7 +118,7 @@ export async function alterarStatusPedido(
 
   const { data: ped } = await admin
     .from("pedidos_compra")
-    .select("status, obra_id")
+    .select("status, obra_id, usa_carteira, debito_registrado")
     .eq("id", id)
     .single();
   if (!ped) throw new Error("Pedido não encontrado.");
@@ -115,6 +127,28 @@ export async function alterarStatusPedido(
   if (ped.status === status) return;
 
   validarTransicaoPedido(ped.status, status);
+
+  // Débito da carteira ao emitir o pedido (AGUARDANDO_RECEBIMENTO ou EMITIDO).
+  // Feito ANTES do UPDATE de status para que uma falha de débito não deixe o
+  // pedido com status avançado mas sem debito_registrado.
+  const deveDebitar =
+    ped.usa_carteira &&
+    !ped.debito_registrado &&
+    (status === "AGUARDANDO_RECEBIMENTO" || status === "EMITIDO");
+
+  if (deveDebitar) {
+    await verificarPermissao(PERMISSIONS.FINANCEIRO_PEDIDO_CONFIRMAR_DEBITO);
+    const { error: errDebito } = await admin.rpc("confirmar_debito_carteira", {
+      p_pedido_id:  id,
+      p_usuario_id: usuario_id,
+    });
+    if (errDebito) {
+      throw new Error(
+        `Não foi possível debitar a carteira: ${errDebito.message}. ` +
+        `Verifique se há saldo suficiente ou faça um depósito antes de emitir.`
+      );
+    }
+  }
 
   const { error } = await admin.from("pedidos_compra").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -185,6 +219,30 @@ export async function editarPedido(id: string, formData: FormData) {
   return { id };
 }
 
+export async function confirmarDebitoPedido(pedidoId: string) {
+  await verificarPermissao(PERMISSIONS.FINANCEIRO_PEDIDO_CONFIRMAR_DEBITO);
+
+  const admin = createAdminClient();
+  const usuario_id = await getUsuarioId();
+
+  const { data: ped } = await admin
+    .from("pedidos_compra")
+    .select("usa_carteira, debito_registrado, status")
+    .eq("id", pedidoId)
+    .single();
+
+  if (!ped) throw new Error("Pedido não encontrado.");
+  if (!ped.usa_carteira) throw new Error("Este pedido não usa faturamento direto.");
+  if (ped.debito_registrado) throw new Error("Débito já foi registrado.");
+
+  const { error } = await admin.rpc("confirmar_debito_carteira", {
+    p_pedido_id:  pedidoId,
+    p_usuario_id: usuario_id,
+  });
+
+  if (error) throw new Error(error.message);
+}
+
 export async function adicionarAnotacao(pedidoId: string, texto: string) {
   await verificarPermissao(PERMISSIONS.COMPRAS_ANOTACAO_CRIAR);
   if (!texto.trim()) throw new Error("Anotação não pode estar vazia.");
@@ -234,7 +292,7 @@ export async function registrarValorFinal(pedidoId: string, valorFinal: number) 
   });
 
   revalidatePath(`/compras/pedidos/${pedidoId}`);
-  revalidatePath("/compras/financeiro");
+  revalidatePath("/financeiro");
 }
 
 export async function excluirPedidos(ids: string[]) {

@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { alterarStatusPedido, registrarValorFinal } from "@/app/compras/actions";
+import { alterarStatusPedido, registrarValorFinal, confirmarDebitoPedido } from "@/app/compras/actions";
 import { AssinarModal } from "@/components/assinar-modal";
 import { usePode } from "@/components/user-provider";
 
@@ -47,9 +47,33 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
   );
   const [pendingVF, startVF] = useTransition();
   const [erroVF, setErroVF] = useState<string | null>(null);
+  const [pendingDebito, startDebito] = useTransition();
+  const [erroDebito, setErroDebito] = useState<string | null>(null);
+  const [okDebito, setOkDebito] = useState(false);
   const router = useRouter();
 
   const podeEditarAgora = podeCriar && ["RASCUNHO", "AGUARDANDO_APROVACAO"].includes(pedido.status);
+
+  // Débito pendente: pedido emitido com FD mas sem débito registrado (sem carteira ou saldo insuficiente na época)
+  const STATUS_POS_EMISSAO = ["AGUARDANDO_RECEBIMENTO", "EMITIDO", "RECEBIDO_PARCIAL", "RECEBIDO", "FINALIZADO"];
+  const temDebitoPendente =
+    pedido.usa_carteira &&
+    !pedido.debito_registrado &&
+    STATUS_POS_EMISSAO.includes(pedido.status);
+
+  function handleConfirmarDebito() {
+    setErroDebito(null);
+    setOkDebito(false);
+    startDebito(async () => {
+      try {
+        await confirmarDebitoPedido(pedido.id);
+        setOkDebito(true);
+        router.refresh();
+      } catch (e: any) {
+        setErroDebito(e.message);
+      }
+    });
+  }
   const transicoes = (TRANSICOES[pedido.status] ?? []).filter((t) => {
     if (t.status === "APROVADO")  return podeAprovar;
     if (t.status === "CANCELADO") return podeCancelar;
@@ -103,6 +127,32 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
           onConfirm={async () => { setModalAcao(null); await pendingFn.current?.(); }}
           onCancel={() => setModalAcao(null)}
         />
+      )}
+
+      {/* Banner de débito pendente */}
+      {temDebitoPendente && (
+        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/40 dark:bg-amber-900/20">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                Débito pendente na carteira
+              </p>
+              <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">
+                Este pedido usa faturamento direto mas o débito ainda não foi registrado.
+                {" "}Verifique se há saldo na carteira desta obra/fornecedor e confirme o débito.
+              </p>
+              {erroDebito && <p className="mt-1 text-xs text-red-600">{erroDebito}</p>}
+              {okDebito && <p className="mt-1 text-xs text-green-700">Débito registrado com sucesso.</p>}
+            </div>
+            <button
+              disabled={pendingDebito}
+              onClick={handleConfirmarDebito}
+              className="shrink-0 rounded-card border border-amber-300 bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+            >
+              {pendingDebito ? "Debitando…" : "Confirmar débito"}
+            </button>
+          </div>
+        </div>
       )}
 
       <div className="flex flex-col items-end gap-2">

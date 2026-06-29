@@ -45,6 +45,13 @@ export const PERMISSIONS = {
   // Obras (já existente no sistema)
   OBRAS_CRIAR: "obras.criar",
   OBRAS_EDITAR: "obras.editar",
+
+  // Financeiro — carteiras e faturamento direto
+  FINANCEIRO_CARTEIRA_VER:       "financeiro.carteira.ver",
+  FINANCEIRO_CARTEIRA_DEPOSITAR: "financeiro.carteira.depositar",
+  FINANCEIRO_PEDIDO_FAT_DIRETO:  "financeiro.pedido.faturamento_direto.usar",
+  FINANCEIRO_PEDIDO_CONFIRMAR_DEBITO: "financeiro.pedido.confirmar_debito",
+  FINANCEIRO_DASHBOARD_VER:      "financeiro.dashboard.ver",
 } as const;
 
 export type PermissionKey = typeof PERMISSIONS[keyof typeof PERMISSIONS];

@@ -50,7 +50,7 @@ const MODULOS = [
 const ACOES = ["criar", "editar", "alterar_status", "apagar"] as const;
 
 const MODULO_LABEL: Record<string, string> = {
-  obras: "Obras", catalogo: "Catálogo", compras: "Compras",
+  obras: "Obras", catalogo: "Catálogo", compras: "Compras", financeiro: "Financeiro",
   producao: "Produção", qualidade: "Qualidade", expedicao: "Expedição",
   tarefas: "Tarefas", usuarios: "Usuários", cargos: "Cargos",
 };
@@ -75,6 +75,12 @@ const CATALOGO_GRUPOS: { key: string; label: string }[] = [
   { key: "catalogo.fornecedor", label: "Fornecedores" },
   { key: "catalogo.linha",      label: "Linhas" },
   { key: "catalogo.categoria",  label: "Categorias" },
+];
+
+const FINANCEIRO_GRUPOS: { key: string; label: string }[] = [
+  { key: "financeiro.carteira",  label: "Carteiras" },
+  { key: "financeiro.pedido",    label: "Pedidos (débito/carteira)" },
+  { key: "financeiro.dashboard", label: "Dashboard" },
 ];
 
 // ─── Card de cargo (sortable) ─────────────────────────────────
@@ -163,7 +169,7 @@ function CargoCard({
     });
   }
 
-  const MODULOS_DISPLAY = [...MODULOS, "catalogo", "compras"] as const;
+  const MODULOS_DISPLAY = [...MODULOS, "catalogo", "compras", "financeiro"] as const;
   const modulosAtivos = MODULOS_DISPLAY.filter((m) =>
     permissoes
       .filter((p) => p.modulo === m || p.modulo.startsWith(m + "."))
@@ -369,6 +375,51 @@ function CargoCard({
                 <div className="divide-y divide-line">
                   {COMPRAS_GRUPOS.map(({ key, label }) => {
                     const grupoPerms = todosCompras.filter((p) => p.modulo === key);
+                    if (!grupoPerms.length) return null;
+                    return (
+                      <div key={key} className="px-3 py-2">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                          {grupoPerms.map((p) => (
+                            <label key={p.id} className="flex cursor-pointer items-center gap-2">
+                              <input type="checkbox"
+                                checked={permsIds.has(p.id)}
+                                onChange={() => togglePerm(p.id)}
+                                className="h-3.5 w-3.5 rounded accent-steel"
+                              />
+                              <span className="text-xs text-ink">{p.nome}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Financeiro — permissões granulares */}
+          {!isAdmin && (() => {
+            const todosFinanceiro = permissoes.filter((p) => p.chave.startsWith("financeiro."));
+            if (!todosFinanceiro.length) return null;
+            const todosMarcados = todosFinanceiro.every((p) => permsIds.has(p.id));
+            return (
+              <div className="mt-3 overflow-hidden rounded-lg border border-line">
+                <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
+                  <span className="text-xs font-medium text-ink-soft">Financeiro</span>
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+                    <input type="checkbox"
+                      checked={todosMarcados}
+                      onChange={(e) => toggleModulo("financeiro", e.target.checked)}
+                      className="h-3.5 w-3.5 rounded accent-steel"
+                    />
+                    Tudo
+                  </label>
+                </div>
+                <div className="divide-y divide-line">
+                  {FINANCEIRO_GRUPOS.map(({ key, label }) => {
+                    const grupoPerms = todosFinanceiro.filter((p) => p.modulo === key || p.chave.startsWith(key + "."));
                     if (!grupoPerms.length) return null;
                     return (
                       <div key={key} className="px-3 py-2">
