@@ -26,8 +26,8 @@ export default async function FinanceiroPage({
   const usuario = await getUsuarioAtual();
   if (!usuario) notFound();
 
-  const podeDashboard = usuario.permissoes?.includes("*") || usuario.permissoes?.includes(PERMISSIONS.FINANCEIRO_DASHBOARD_VER);
-  const podeCarteiras = usuario.permissoes?.includes("*") || usuario.permissoes?.includes(PERMISSIONS.FINANCEIRO_CARTEIRA_VER);
+  const podeDashboard = !!(usuario.permissoes?.includes("*") || usuario.permissoes?.includes(PERMISSIONS.FINANCEIRO_DASHBOARD_VER));
+  const podeCarteiras = !!(usuario.permissoes?.includes("*") || usuario.permissoes?.includes(PERMISSIONS.FINANCEIRO_CARTEIRA_VER));
 
   if (!podeDashboard && !podeCarteiras) {
     return (
