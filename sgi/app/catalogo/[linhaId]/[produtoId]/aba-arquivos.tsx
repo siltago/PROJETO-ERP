@@ -111,7 +111,7 @@ export function AbaArquivos({
     setErro(null);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const file = fd.get("arquivo") as File;
