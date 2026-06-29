@@ -171,6 +171,7 @@ export async function editarPedido(id: string, formData: FormData) {
     p_observacoes:        observacoes,
     p_prazo_entrega:      prazo_entrega,
     p_itens:              itensProcessados,
+    p_usuario_id:         usuario_id,
   });
   if (error) throw new Error(error.message);
 
@@ -246,6 +247,7 @@ export async function excluirPedidos(ids: string[]) {
   // RPC atômica: cascade delete + retorna sol_ids e storage_paths para os consumers
   const { data: result, error } = await admin.rpc("excluir_pedidos_cascade", {
     p_pedido_ids: ids,
+    p_usuario_id: usuario_id,
   });
   if (error) throw new Error(error.message);
 

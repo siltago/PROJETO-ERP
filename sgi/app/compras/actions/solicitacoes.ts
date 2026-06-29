@@ -142,7 +142,8 @@ export async function excluirSolicitacoes(ids: string[]) {
 
   // RPC atômica: delete itens + delete solicitações em uma única transação
   const { error } = await admin.rpc("excluir_solicitacoes_cascade", {
-    p_sol_ids: ids,
+    p_sol_ids:    ids,
+    p_usuario_id: usuario_id,
   });
   if (error) throw new Error(error.message);
 
