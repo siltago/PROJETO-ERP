@@ -118,7 +118,7 @@ export async function alterarStatusPedido(
 
   const { data: ped } = await admin
     .from("pedidos_compra")
-    .select("status, obra_id, usa_carteira, debito_registrado")
+    .select("status, obra_id, usa_carteira, debito_registrado, comprador_id, numero")
     .eq("id", id)
     .single();
   if (!ped) throw new Error("Pedido não encontrado.");
@@ -143,6 +143,17 @@ export async function alterarStatusPedido(
       p_usuario_id: usuario_id,
     });
     if (errDebito) {
+      if (ped.comprador_id) {
+        await admin.from("notificacoes").insert({
+          usuario_id: ped.comprador_id,
+          tipo: "debito_carteira_falhou",
+          payload: {
+            order_id: id,
+            numero: ped.numero,
+            motivo: errDebito.message,
+          },
+        });
+      }
       throw new Error(
         `Não foi possível debitar a carteira: ${errDebito.message}. ` +
         `Verifique se há saldo suficiente ou faça um depósito antes de emitir.`

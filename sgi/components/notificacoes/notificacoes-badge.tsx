@@ -17,6 +17,7 @@ const TIPO_LABEL: Record<string, string> = {
   pedido_aguardando_aprovacao: "Pedido aguardando aprovação",
   solicitacao_aprovada:        "Solicitação aprovada",
   solicitacao_rejeitada:       "Solicitação rejeitada",
+  debito_carteira_falhou:      "Débito da carteira não realizado",
 };
 
 function resolverLink(n: Notificacao): { href: string; label: string } | null {
@@ -28,6 +29,7 @@ function resolverLink(n: Notificacao): { href: string; label: string } | null {
       break;
     case "pedido_aguardando_aprovacao":
     case "pedido_aprovado":
+    case "debito_carteira_falhou":
       if (p.order_id) return { href: `/compras/pedidos/${p.order_id}`, label: p.numero ?? "Ver pedido" };
       break;
     case "solicitacao_aprovada":
