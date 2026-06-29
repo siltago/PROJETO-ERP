@@ -44,6 +44,19 @@ export default async function CarteiraDetailPage({
     .order("criado_em", { ascending: false })
     .limit(200);
 
+  const pedidoIds = (movimentacoes ?? [])
+    .filter((m) => m.referencia_tipo === "pedido" && m.referencia_id)
+    .map((m) => m.referencia_id as string);
+
+  let pedidosMap: Record<string, string> = {};
+  if (pedidoIds.length > 0) {
+    const { data: pedidos } = await admin
+      .from("pedidos_compra")
+      .select("id, numero")
+      .in("id", pedidoIds);
+    for (const p of pedidos ?? []) pedidosMap[p.id] = p.numero;
+  }
+
   const obra = carteira.obra as any;
   const forn = carteira.fornecedor as any;
 
@@ -131,12 +144,16 @@ export default async function CarteiraDetailPage({
                 </td>
                 <td className="px-5 py-2.5 text-ink-soft">
                   {m.descricao ?? (m.referencia_tipo === "pedido" ? (
-                    <Link
-                      href={`/compras/pedidos/${m.referencia_id}`}
-                      className="text-steel hover:underline text-xs font-mono"
-                    >
-                      Ver pedido
-                    </Link>
+                    pedidosMap[m.referencia_id as string] ? (
+                      <Link
+                        href={`/compras/pedidos/${m.referencia_id}`}
+                        className="text-steel hover:underline text-xs font-mono"
+                      >
+                        {pedidosMap[m.referencia_id as string]}
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-ink-faint italic">Pedido excluído</span>
+                    )
                   ) : "—")}
                 </td>
                 <td className="px-5 py-2.5 text-xs text-ink-faint">
