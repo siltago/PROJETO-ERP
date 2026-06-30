@@ -28,7 +28,7 @@ export async function registrarRecebimento(
     p_responsavel_id:   usuario_id,
     p_data_recebimento: dataRecebimento,
     p_observacoes:      observacoes,
-    p_itens:            JSON.stringify(itemsValidos),
+    p_itens:            itemsValidos,
   });
   if (error) throw new Error(error.message);
 

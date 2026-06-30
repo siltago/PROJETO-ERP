@@ -11,7 +11,8 @@ type Transicao = { label: string; status: string; variant: "primary" | "ghost" |
 
 const TRANSICOES: Record<string, Transicao[]> = {
   RASCUNHO:               [{ label: "Enviar aprovação", status: "AGUARDANDO_APROVACAO", variant: "primary" }, { label: "Cancelar", status: "CANCELADO", variant: "danger" }],
-  AGUARDANDO_APROVACAO:   [{ label: "Aprovar", status: "APROVADO", variant: "primary" }, { label: "Rejeitar", status: "CANCELADO", variant: "danger" }],
+  AGUARDANDO_APROVACAO:   [{ label: "Aprovar", status: "APROVADO", variant: "primary" }, { label: "Rejeitar", status: "REJEITADO", variant: "danger" }],
+  REJEITADO:              [{ label: "Devolver para edição", status: "RASCUNHO", variant: "primary" }, { label: "Cancelar pedido", status: "CANCELADO", variant: "danger" }],
   APROVADO:               [{ label: "Emitir pedido", status: "AGUARDANDO_RECEBIMENTO", variant: "primary" }, { label: "Cancelar", status: "CANCELADO", variant: "danger" }],
   EMITIDO:                [{ label: "Emitir pedido", status: "AGUARDANDO_RECEBIMENTO", variant: "primary" }],
   AGUARDANDO_RECEBIMENTO: [],
@@ -24,6 +25,8 @@ const TRANSICOES: Record<string, Transicao[]> = {
 const ACAO_LABEL: Record<string, string> = {
   AGUARDANDO_APROVACAO: "Enviar para Aprovação",
   APROVADO: "Aprovar Pedido de Compra",
+  REJEITADO: "Rejeitar Pedido",
+  RASCUNHO: "Devolver para Edição",
   EMITIDO: "Emitir Pedido de Compra",
   AGUARDANDO_RECEBIMENTO: "Marcar como Aguardando Recebimento",
   FINALIZADO: "Finalizar Pedido",
@@ -52,7 +55,7 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
   const [okDebito, setOkDebito] = useState(false);
   const router = useRouter();
 
-  const podeEditarAgora = podeCriar && ["RASCUNHO", "AGUARDANDO_APROVACAO"].includes(pedido.status);
+  const podeEditarAgora = podeCriar && ["RASCUNHO", "AGUARDANDO_APROVACAO", "REJEITADO"].includes(pedido.status);
 
   // Débito pendente: pedido emitido com FD mas sem débito registrado (sem carteira ou saldo insuficiente na época)
   const STATUS_POS_EMISSAO = ["AGUARDANDO_RECEBIMENTO", "EMITIDO", "RECEBIDO_PARCIAL", "RECEBIDO", "FINALIZADO"];
@@ -76,12 +79,16 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
   }
   const transicoes = (TRANSICOES[pedido.status] ?? []).filter((t) => {
     if (t.status === "APROVADO")  return podeAprovar;
+    // A partir de REJEITADO, aprovador e comprador podem devolver ou cancelar
+    if (pedido.status === "REJEITADO") return podeAprovar || podeCriar || (t.status === "CANCELADO" && podeCancelar);
     if (t.status === "CANCELADO") return podeCancelar;
     return podeCriar;
   });
 
   function handleAcao(status: string) {
-    if (status === "CANCELADO") { setAcaoPendente(status); setShowObs(true); return; }
+    if (["CANCELADO", "REJEITADO", "RASCUNHO"].includes(status)) {
+      setAcaoPendente(status); setShowObs(true); return;
+    }
     pedirAssinatura(status, "");
   }
 
@@ -101,7 +108,8 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
   const podeRegistrarRecebimento =
     podeCriar && ["AGUARDANDO_RECEBIMENTO", "RECEBIDO_PARCIAL"].includes(pedido.status);
 
-  const statusPermiteValorFinal = ["AGUARDANDO_RECEBIMENTO", "RECEBIDO_PARCIAL", "RECEBIDO", "FINALIZADO"].includes(pedido.status);
+  // Valor final só editável enquanto aguarda recebimento — some após o primeiro recebimento ser registrado
+  const statusPermiteValorFinal = pedido.status === "AGUARDANDO_RECEBIMENTO";
   const podeRegistrarValorFinal = podeCriar && statusPermiteValorFinal;
 
   function salvarValorFinal() {

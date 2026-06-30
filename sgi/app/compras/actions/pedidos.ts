@@ -13,6 +13,7 @@ import { getUsuario, getUsuarioId, gerarNumeroPedido, enriquecerItensChapa } fro
 const STATUS_PARA_EVENTO: Record<string, string> = {
   AGUARDANDO_APROVACAO:   EVENTS.PURCHASE_ORDER_AWAITING_APPROVAL,
   APROVADO:               EVENTS.PURCHASE_ORDER_APPROVED,
+  REJEITADO:              EVENTS.PURCHASE_ORDER_CANCELLED,
   EMITIDO:                EVENTS.PURCHASE_ORDER_EMITTED,
   AGUARDANDO_RECEBIMENTO: EVENTS.PURCHASE_ORDER_SENT,
   CANCELADO:              EVENTS.PURCHASE_ORDER_CANCELLED,
@@ -109,6 +110,7 @@ export async function alterarStatusPedido(
 ) {
   const permissaoNecessaria =
     status === "APROVADO"  ? PERMISSIONS.COMPRAS_PEDIDO_APROVAR  :
+    status === "REJEITADO" ? PERMISSIONS.COMPRAS_PEDIDO_APROVAR  :
     status === "CANCELADO" ? PERMISSIONS.COMPRAS_PEDIDO_CANCELAR :
     PERMISSIONS.COMPRAS_PEDIDO_CRIAR;
   await verificarPermissao(permissaoNecessaria);

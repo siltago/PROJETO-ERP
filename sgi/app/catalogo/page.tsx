@@ -2,7 +2,6 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getUsuarioAtual } from "@/lib/auth";
 import { AbaCoresCatalogo } from "./aba-cores-catalogo";
-import { NovaAbaInline } from "./nova-aba-inline";
 import { GerenciarAba } from "./gerenciar-aba";
 import { FilterBar } from "./filter-bar";
 import { GerenciarFornecedores } from "./gerenciar-fornecedores";
@@ -87,7 +86,6 @@ export default async function CatalogoPage({
             <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">Catálogo</p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight">Cores RAL</h1>
           </div>
-          <NovaAbaInline />
         </div>
         <AbaCoresCatalogo cores={cores ?? []} tiposLinha={tiposList as any} />
       </div>
@@ -367,13 +365,20 @@ export default async function CatalogoPage({
           {tipoAtual && (
             <GerenciarAba aba={tipoAtual as { id: string; nome: string; slug: string; unidade?: string | null }} />
           )}
-          <NovaAbaInline />
           {podeCriar && (
             <Link
               href={`/catalogo/nova-linha?tipo=${tipoSlug.toLowerCase()}`}
               className="btn-secondary text-sm"
             >
               Nova linha
+            </Link>
+          )}
+          {podeCriar && filtroLinha && (
+            <Link
+              href={`/catalogo/${filtroLinha}/novo-produto`}
+              className="btn-primary text-sm"
+            >
+              Novo item
             </Link>
           )}
         </div>

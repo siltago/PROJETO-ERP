@@ -1,5 +1,5 @@
 export type StatusSolicitacao = 'ABERTA' | 'AGUARDANDO_APROVACAO' | 'APROVADA' | 'REJEITADA' | 'CANCELADA' | 'EM_PEDIDO';
-export type StatusPedido = 'RASCUNHO' | 'AGUARDANDO_APROVACAO' | 'APROVADO' | 'EMITIDO' | 'AGUARDANDO_RECEBIMENTO' | 'RECEBIDO_PARCIAL' | 'RECEBIDO' | 'FINALIZADO' | 'CANCELADO';
+export type StatusPedido = 'RASCUNHO' | 'AGUARDANDO_APROVACAO' | 'APROVADO' | 'REJEITADO' | 'EMITIDO' | 'AGUARDANDO_RECEBIMENTO' | 'RECEBIDO_PARCIAL' | 'RECEBIDO' | 'FINALIZADO' | 'CANCELADO';
 export type Prioridade = 'BAIXA' | 'NORMAL' | 'ALTA' | 'URGENTE';
 export type Origem = 'OBRA' | 'ADMINISTRATIVO' | 'MANUTENCAO';
 
@@ -24,6 +24,7 @@ export const STATUS_PED_LABEL: Record<StatusPedido, string> = {
   RASCUNHO: 'Rascunho',
   AGUARDANDO_APROVACAO: 'Aguard. Aprovação',
   APROVADO: 'Aprovado',
+  REJEITADO: 'Rejeitado',
   EMITIDO: 'Emitido',
   AGUARDANDO_RECEBIMENTO: 'Aguard. Recebimento',
   RECEBIDO_PARCIAL: 'Recebido Parcial',
@@ -35,12 +36,13 @@ export const STATUS_PED_COR: Record<StatusPedido, string> = {
   RASCUNHO: '#6b7280',
   AGUARDANDO_APROVACAO: '#f59e0b',
   APROVADO: '#10b981',
+  REJEITADO: '#ef4444',
   EMITIDO: '#3b82f6',
   AGUARDANDO_RECEBIMENTO: '#8b5cf6',
   RECEBIDO_PARCIAL: '#f97316',
   RECEBIDO: '#10b981',
   FINALIZADO: '#1e293b',
-  CANCELADO: '#ef4444',
+  CANCELADO: '#6b7280',
 };
 
 export const PRIORIDADE_LABEL: Record<Prioridade, string> = {

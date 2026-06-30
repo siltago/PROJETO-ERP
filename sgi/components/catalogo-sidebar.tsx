@@ -4,17 +4,21 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { BackButton } from "@/components/back-button";
+import { NovaAbaInline } from "@/app/catalogo/nova-aba-inline";
 
 type Tipo = { id: string; nome: string; slug: string };
+type Linha = { id: string; nome: string; tipo: string };
 
 function SidebarInner({
   tipos,
+  linhas,
   collapsed,
   setCollapsed,
   mobileOpen,
   setMobileOpen,
 }: {
   tipos: Tipo[];
+  linhas: Linha[];
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
   mobileOpen: boolean;
@@ -22,43 +26,20 @@ function SidebarInner({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // aceita ?tipo= (novo) e ?aba= (compat)
-  const tipoParam = (searchParams.get("tipo") ?? searchParams.get("aba") ?? "").toUpperCase();
+  const tipoParam = (searchParams.get("tipo") ?? searchParams.get("aba") ?? "").toLowerCase();
+  const linhaParam = searchParams.get("linha") ?? "";
   const onCatalogRoot = pathname === "/catalogo";
 
-  const isActive = (slug: string) =>
-    onCatalogRoot && tipoParam === slug.toUpperCase();
-  const isFirstActive = onCatalogRoot && !tipoParam && tipos.length > 0;
+  // Agrupa linhas por slug do tipo
+  const linhasPorTipo: Record<string, Linha[]> = {};
+  for (const l of linhas) {
+    if (!linhasPorTipo[l.tipo]) linhasPorTipo[l.tipo] = [];
+    linhasPorTipo[l.tipo].push(l);
+  }
 
-  const items = [
-    ...tipos.map((t) => ({ slug: t.slug, label: t.nome })),
-    { slug: "cores", label: "Cores RAL" },
-  ];
-
-  const NavLink = ({ slug, label }: { slug: string; label: string }) => {
-    const active = slug === "cores"
-      ? isActive("cores")
-      : (isActive(slug) || (slug === tipos[0]?.slug && isFirstActive));
-    return (
-      <Link
-        href={`/catalogo?tipo=${slug.toLowerCase()}`}
-        title={collapsed ? label : undefined}
-        className={`flex items-center gap-3 mx-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-          active ? "bg-steel/10 text-steel" : "text-ink-soft hover:bg-canvas hover:text-ink"
-        } ${collapsed ? "justify-center" : ""}`}
-        onClick={() => setMobileOpen(false)}
-      >
-        <span className="shrink-0">
-          {slug === "cores" ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          )}
-        </span>
-        {!collapsed && label}
-      </Link>
-    );
-  };
+  const tiposComLinhas = tipos.filter((t) => (linhasPorTipo[t.slug]?.length ?? 0) > 0);
+  // Cores RAL e tipos sem linhas ficam separados
+  const tiposSemLinhas = tipos.filter((t) => (linhasPorTipo[t.slug]?.length ?? 0) === 0);
 
   const Header = ({ onClose }: { onClose?: () => void }) => (
     <div className="flex items-center justify-between border-b border-line px-3 py-3">
@@ -81,6 +62,87 @@ function SidebarInner({
         )}
       </button>
     </div>
+  );
+
+  const NavContent = () => (
+    <>
+      {tiposComLinhas.map((tipo) => {
+        const linhasDoTipo = linhasPorTipo[tipo.slug] ?? [];
+        const tipoAtivo = onCatalogRoot && tipoParam === tipo.slug;
+        return (
+          <div key={tipo.slug} className="mb-1">
+            {/* Label do tipo — clicável para ver todos */}
+            <Link
+              href={`/catalogo?tipo=${tipo.slug}`}
+              title={collapsed ? tipo.nome : undefined}
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-2 mx-2 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
+                tipoAtivo && !linhaParam
+                  ? "text-steel"
+                  : "text-ink-faint hover:text-ink-soft"
+              } ${collapsed ? "justify-center" : ""}`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              {!collapsed && tipo.nome}
+            </Link>
+            {/* Linhas do tipo */}
+            {!collapsed && linhasDoTipo.map((linha) => {
+              const ativo = onCatalogRoot && tipoParam === tipo.slug && linhaParam === linha.id;
+              return (
+                <Link
+                  key={linha.id}
+                  href={`/catalogo?tipo=${tipo.slug}&linha=${linha.id}`}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-2 mx-2 rounded-lg pl-7 pr-3 py-2 text-sm transition-colors ${
+                    ativo
+                      ? "bg-steel/10 text-steel font-medium"
+                      : "text-ink-soft hover:bg-canvas hover:text-ink"
+                  }`}
+                >
+                  <span className="w-1 h-1 rounded-full shrink-0 bg-current opacity-40" />
+                  {linha.nome}
+                </Link>
+              );
+            })}
+          </div>
+        );
+      })}
+
+      {/* Tipos sem linhas (e Cores RAL) */}
+      {(tiposSemLinhas.length > 0 || true) && (
+        <>
+          {tiposSemLinhas.map((tipo) => {
+            const ativo = onCatalogRoot && tipoParam === tipo.slug;
+            return (
+              <Link
+                key={tipo.slug}
+                href={`/catalogo?tipo=${tipo.slug}`}
+                title={collapsed ? tipo.nome : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center gap-3 mx-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  ativo ? "bg-steel/10 text-steel" : "text-ink-soft hover:bg-canvas hover:text-ink"
+                } ${collapsed ? "justify-center" : ""}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                {!collapsed && tipo.nome}
+              </Link>
+            );
+          })}
+          {/* Cores RAL */}
+          <Link
+            href="/catalogo?tipo=cores"
+            title={collapsed ? "Cores RAL" : undefined}
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 mx-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+              onCatalogRoot && tipoParam === "cores" ? "bg-steel/10 text-steel" : "text-ink-soft hover:bg-canvas hover:text-ink"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            {!collapsed && "Cores RAL"}
+          </Link>
+        </>
+      )}
+    </>
   );
 
   return (
@@ -106,22 +168,28 @@ function SidebarInner({
           <Header onClose={() => setMobileOpen(false)} />
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
-          {items.map((item) => <NavLink key={item.slug} {...item} />)}
+          <NavContent />
         </nav>
+        <div className="border-t border-line px-2 py-2">
+          <NovaAbaInline />
+        </div>
       </div>
 
       {/* Sidebar desktop */}
-      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-line bg-surface transition-all duration-200 ${collapsed ? "w-16" : "w-56"}`}>
+      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-line bg-surface transition-all duration-200 overflow-hidden ${collapsed ? "w-16" : "w-60"}`}>
         <Header />
         <nav className="flex-1 overflow-y-auto py-2">
-          {items.map((item) => <NavLink key={item.slug} {...item} />)}
+          <NavContent />
         </nav>
+        <div className={`border-t border-line px-2 py-2 ${collapsed ? "flex justify-center" : ""}`}>
+          <NovaAbaInline collapsed={collapsed} />
+        </div>
       </aside>
     </>
   );
 }
 
-export function CatalogoSidebar({ tipos }: { tipos: Tipo[] }) {
+export function CatalogoSidebar({ tipos, linhas }: { tipos: Tipo[]; linhas: Linha[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
@@ -135,10 +203,11 @@ export function CatalogoSidebar({ tipos }: { tipos: Tipo[] }) {
 
   return (
     <Suspense fallback={
-      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-line bg-surface ${collapsed ? "w-16" : "w-56"}`} />
+      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-line bg-surface ${collapsed ? "w-16" : "w-60"}`} />
     }>
       <SidebarInner
         tipos={tipos}
+        linhas={linhas}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         mobileOpen={mobileOpen}

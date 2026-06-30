@@ -6,7 +6,7 @@ import { criarAba } from "@/app/catalogo/actions";
 import { usePode } from "@/components/user-provider";
 import { TIPO_UNIDADE_OPCOES } from "@/lib/tipo-unidade";
 
-export function NovaAbaInline() {
+export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
   const pode = usePode("catalogo.criar");
   if (!pode) return null;
   const [aberta, setAberta] = useState(false);
@@ -33,14 +33,14 @@ export function NovaAbaInline() {
     return (
       <button
         onClick={() => setAberta(true)}
-        className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:bg-canvas hover:text-ink-soft"
+        className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:bg-canvas hover:text-ink-soft ${collapsed ? "justify-center w-full" : ""}`}
         title="Nova aba"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Nova aba
+        {!collapsed && "Nova aba"}
       </button>
     );
   }

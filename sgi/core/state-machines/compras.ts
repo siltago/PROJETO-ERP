@@ -51,6 +51,7 @@ export type StatusPedido =
   | "RASCUNHO"
   | "AGUARDANDO_APROVACAO"
   | "APROVADO"
+  | "REJEITADO"
   | "EMITIDO"
   | "AGUARDANDO_RECEBIMENTO"
   | "RECEBIDO_PARCIAL"
@@ -60,12 +61,13 @@ export type StatusPedido =
 
 const TRANSICOES_PEDIDO: Record<StatusPedido, StatusPedido[]> = {
   RASCUNHO:               ["AGUARDANDO_APROVACAO"],
-  AGUARDANDO_APROVACAO:   ["APROVADO", "CANCELADO"],
+  AGUARDANDO_APROVACAO:   ["APROVADO", "REJEITADO", "CANCELADO"],
+  REJEITADO:              ["RASCUNHO", "CANCELADO"], // comprador edita ou cancela
   APROVADO:               ["EMITIDO", "AGUARDANDO_RECEBIMENTO", "CANCELADO"],
   EMITIDO:                ["AGUARDANDO_RECEBIMENTO", "CANCELADO"],
   AGUARDANDO_RECEBIMENTO: ["RECEBIDO_PARCIAL", "RECEBIDO", "CANCELADO"],
   RECEBIDO_PARCIAL:       ["RECEBIDO"],  // [sistema] via registrarRecebimento
-  RECEBIDO:               [],            // terminal
+  RECEBIDO:               ["FINALIZADO"], // [usuario] após registrar valor final
   FINALIZADO:             [],            // terminal
   CANCELADO:              [],            // terminal
 };
@@ -92,7 +94,7 @@ export function isStatusPedidoTerminal(status: string): boolean {
 
 // Retorna true se o pedido ainda pode ser editado (não está em estado final)
 export function pedidoEditavel(status: string): boolean {
-  return ["RASCUNHO", "AGUARDANDO_APROVACAO"].includes(status);
+  return ["RASCUNHO", "AGUARDANDO_APROVACAO", "REJEITADO"].includes(status);
 }
 
 // Retorna true se a solicitação pode ser excluída pelo usuário
