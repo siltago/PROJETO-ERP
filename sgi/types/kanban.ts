@@ -8,6 +8,7 @@ export type NotificacaoTipo =
   | 'tarefa_comentario'
   | 'pedido_aprovado'
   | 'pedido_aguardando_aprovacao'
+  | 'debito_carteira_falhou'
   | 'solicitacao_aprovada'
   | 'solicitacao_rejeitada';
 
