@@ -3,8 +3,8 @@
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { editarPedido } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
-import { calcPrecoUnit } from "@/lib/tipo-unidade";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { calcPrecoUnit } from "@/modules/squadframe/lib/tipo-unidade";
 
 type Produto = { id: string; codigo_mestre: string; nome: string; unidade: string; tamanho_mm?: number | null; peso_metro?: number | null; preco_metro?: number | null };
 type Fornecedor = { id: string; nome: string; ativo?: boolean };

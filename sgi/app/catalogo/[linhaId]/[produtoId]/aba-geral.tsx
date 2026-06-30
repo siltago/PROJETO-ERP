@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { editarProduto } from "@/app/catalogo/actions";
 import { BotaoExcluir } from "./botao-excluir";
-import { specLabels, TIPO_UNIDADE_OPCOES } from "@/lib/tipo-unidade";
+import { specLabels, TIPO_UNIDADE_OPCOES } from "@/modules/squadframe/lib/tipo-unidade";
 
 type Produto = {
   id: string; codigo_mestre: string; nome: string; unidade: string;

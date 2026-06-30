@@ -1,8 +1,8 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { verificarPermissao } from "@/core/permissions/check-permission";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { verificarPermissao } from "@/shared/auth/check-permission";
 import { revalidatePath } from "next/cache";
 
 async function audit(acao: string, tabela: string, registro_id: string, dados?: object) {

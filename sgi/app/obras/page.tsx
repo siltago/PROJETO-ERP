@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { StatusBadge } from "@/components/status-badge";
-import { Paginacao } from "@/components/paginacao";
-import { getUsuarioAtual } from "@/lib/auth";
-import { BtnAcaoProtegida } from "@/components/btn-acao-protegida";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { StatusBadge } from "@/modules/squadframe/components/status-badge";
+import { Paginacao } from "@/modules/squadframe/components/paginacao";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { BtnAcaoProtegida } from "@/modules/squadframe/components/btn-acao-protegida";
 
 export const dynamic = "force-dynamic";
 

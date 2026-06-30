@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { PERMISSIONS } from "@/core/permissions/permissions";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { PERMISSIONS } from "@/modules/squadframe/lib/permissions";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";

@@ -1,6 +1,6 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { UsuariosCliente } from "./usuarios-cliente";
-import { UsuariosSidebar } from "@/components/usuarios-sidebar";
+import { UsuariosSidebar } from "@/modules/squadframe/components/usuarios-sidebar";
 
 export const dynamic = "force-dynamic";
 

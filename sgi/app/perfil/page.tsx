@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getUsuarioAtual } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { PerfilCliente } from "./perfil-cliente";
 
 export const dynamic = "force-dynamic";

@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { excluirSolicitacoes } from "@/app/compras/actions";
-import { STATUS_SOL_COR, STATUS_SOL_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/types/compras";
+import { STATUS_SOL_COR, STATUS_SOL_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/modules/squadframe/types/compras";
 
 type Solicitacao = {
   id: string; numero: string; status: string; prioridade: string; origem: string;

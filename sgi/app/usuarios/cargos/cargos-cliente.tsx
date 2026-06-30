@@ -24,8 +24,8 @@ import {
   reordenarCargos,
   excluirCargo,
 } from "./actions";
-import { usePode } from "@/components/user-provider";
-import { BackButton } from "@/components/back-button";
+import { usePode } from "@/modules/squadframe/components/user-provider";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 
 // ─── Tipos ───────────────────────────────────────────────────
 

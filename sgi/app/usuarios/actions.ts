@@ -1,8 +1,8 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { createClient } from "@/lib/supabase-server";
-import { verificarPermissao } from "@/core/permissions/check-permission";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { createClient } from "@/shared/database/supabase-server";
+import { verificarPermissao } from "@/shared/auth/check-permission";
 import { revalidatePath } from "next/cache";
 
 export async function atribuirCargo(usuarioId: string, cargoId: string | null) {

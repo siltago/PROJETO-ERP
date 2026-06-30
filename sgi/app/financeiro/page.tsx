@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { PERMISSIONS } from "@/core/permissions/permissions";
-import { STATUS_PED_LABEL } from "@/types/compras";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { PERMISSIONS } from "@/modules/squadframe/lib/permissions";
+import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 import { CarteirasContent } from "@/app/compras/financeiro/carteiras-content";
 import { FinanceiroTabNav } from "./tab-nav";
 import Link from "next/link";

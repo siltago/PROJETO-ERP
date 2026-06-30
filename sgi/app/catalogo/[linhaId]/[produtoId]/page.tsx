@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
-import { BackButton } from "@/components/back-button";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 import { AbaGeral } from "./aba-geral";
 import { AbaCores } from "./aba-cores";
 import { AbaAliases } from "./aba-aliases";

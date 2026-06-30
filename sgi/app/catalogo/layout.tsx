@@ -1,5 +1,5 @@
-import { createAdminClient } from "@/lib/supabase-admin";
-import { CatalogoSidebar } from "@/components/catalogo-sidebar";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { CatalogoSidebar } from "@/modules/squadframe/components/catalogo-sidebar";
 
 export default async function CatalogoLayout({ children }: { children: React.ReactNode }) {
   const supabase = createAdminClient();

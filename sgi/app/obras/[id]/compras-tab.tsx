@@ -1,7 +1,7 @@
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
 import Link from "next/link";
-import { STATUS_PED_COR, STATUS_PED_LABEL, STATUS_SOL_COR, STATUS_SOL_LABEL } from "@/types/compras";
+import { STATUS_PED_COR, STATUS_PED_LABEL, STATUS_SOL_COR, STATUS_SOL_LABEL } from "@/modules/squadframe/types/compras";
 
 function diasDesde(data: string | null | undefined): number {
   if (!data) return 0;

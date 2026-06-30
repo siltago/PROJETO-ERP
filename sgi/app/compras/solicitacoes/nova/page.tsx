@@ -1,6 +1,6 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { NovaSolicitacaoCliente } from "./nova-solicitacao-cliente";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 
 export const dynamic = "force-dynamic";
 

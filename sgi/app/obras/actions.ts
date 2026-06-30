@@ -1,10 +1,10 @@
 "use server";
 
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getUsuarioAtual } from "@/lib/auth";
-import { verificarPermissao } from "@/core/permissions/check-permission";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { verificarPermissao } from "@/shared/auth/check-permission";
 
 export async function criarObra(formData: FormData) {
   await verificarPermissao("obras.criar");

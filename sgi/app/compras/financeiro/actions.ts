@@ -1,9 +1,9 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { verificarPermissao } from "@/core/permissions/check-permission";
-import { PERMISSIONS } from "@/core/permissions/permissions";
-import { getUsuarioId } from "@/app/compras/actions/helpers";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { verificarPermissao } from "@/shared/auth/check-permission";
+import { PERMISSIONS } from "@/modules/squadframe/lib/permissions";
+import { getUsuarioId } from "@/modules/squadframe/actions/compras/helpers";
 import { revalidatePath } from "next/cache";
 
 export async function depositarCarteira(formData: FormData) {

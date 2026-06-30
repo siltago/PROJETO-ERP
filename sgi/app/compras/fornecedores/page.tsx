@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { criarFornecedor } from "@/app/compras/actions";
 import { FornecedoresLista } from "./fornecedores-lista";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
 import { criarLinha } from "../actions";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 
 export const dynamic = "force-dynamic";
 

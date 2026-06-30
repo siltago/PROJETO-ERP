@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { STATUS_SOL_COR, STATUS_SOL_LABEL, STATUS_PED_COR, STATUS_PED_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/types/compras";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { STATUS_SOL_COR, STATUS_SOL_LABEL, STATUS_PED_COR, STATUS_PED_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/modules/squadframe/types/compras";
 
 export const dynamic = "force-dynamic";
 

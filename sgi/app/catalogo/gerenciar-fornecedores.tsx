@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { criarFornecedor } from "@/app/compras/actions";
 import { FornecedoresLista } from "@/app/compras/fornecedores/fornecedores-lista";
 

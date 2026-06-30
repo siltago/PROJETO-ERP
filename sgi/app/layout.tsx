@@ -2,20 +2,20 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { getUsuarioAtual } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { HeaderUser } from "@/components/header-user";
-import { UserProvider } from "@/components/user-provider";
-import { MobileNav } from "@/components/mobile-nav";
-import { BuscaGlobal } from "@/components/busca-global";
-import { ToastProvider } from "@/components/toast";
-import { NotificacoesBadge } from "@/components/notificacoes/notificacoes-badge";
-import { PwaProvider } from "@/components/pwa-provider";
-import { OfflineBanner, UpdateBanner } from "@/components/pwa-banners";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { HeaderUser } from "@/modules/squadframe/components/header-user";
+import { UserProvider } from "@/modules/squadframe/components/user-provider";
+import { MobileNav } from "@/modules/squadframe/components/mobile-nav";
+import { BuscaGlobal } from "@/modules/squadframe/components/busca-global";
+import { ToastProvider } from "@/modules/squadframe/components/toast";
+import { NotificacoesBadge } from "@/modules/squadframe/components/notificacoes/notificacoes-badge";
+import { PwaProvider } from "@/modules/squadframe/components/pwa-provider";
+import { OfflineBanner, UpdateBanner } from "@/modules/squadframe/components/pwa-banners";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
-  () => import("@/components/theme-toggle").then((m) => m.ThemeToggle),
+  () => import("@/modules/squadframe/components/theme-toggle").then((m) => m.ThemeToggle),
   { ssr: false }
 );
 

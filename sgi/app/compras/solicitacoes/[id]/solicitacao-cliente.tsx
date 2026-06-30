@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { alterarStatusSolicitacao } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 
 type Transicao = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 

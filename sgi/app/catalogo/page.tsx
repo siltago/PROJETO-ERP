@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
 import { AbaCoresCatalogo } from "./aba-cores-catalogo";
 import { GerenciarAba } from "./gerenciar-aba";
 import { FilterBar } from "./filter-bar";

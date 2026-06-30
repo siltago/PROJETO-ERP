@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { apagarLinha } from "@/app/catalogo/actions";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 
 export function ApagarLinhaBtn({ linhaId, nomeLinha }: { linhaId: string; nomeLinha: string }) {
   const pode = usePode("catalogo.excluir");

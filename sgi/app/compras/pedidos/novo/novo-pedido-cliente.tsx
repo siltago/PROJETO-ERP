@@ -2,8 +2,8 @@
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import { criarPedido } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
-import { calcMedida, calcPesoTotal, calcPrecoUnit } from "@/lib/tipo-unidade";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { calcMedida, calcPesoTotal, calcPrecoUnit } from "@/modules/squadframe/lib/tipo-unidade";
 
 type Obra = { id: string; nome: string; codigo: string; numero?: number | null };
 type Fornecedor = { id: string; nome: string; tipos?: string[] | null };

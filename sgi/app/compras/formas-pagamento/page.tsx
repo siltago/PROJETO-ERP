@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { criarFormaPagamento } from "@/app/compras/actions";
 import { FormasPagamentoLista } from "./formas-lista";
 import { NovaFormaForm } from "./nova-forma-form";

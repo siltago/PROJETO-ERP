@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { getUsuarioAtual } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { KanbanBoard } from "@/components/kanban/kanban-board";
-import { TarefasFilterBar } from "@/components/kanban/tarefas-filter-bar";
-import { SyncButton } from "@/components/kanban/sync-button";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
-import type { Tarefa, Coluna, Etiqueta } from "@/types/kanban";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { KanbanBoard } from "@/modules/squadframe/components/kanban/kanban-board";
+import { TarefasFilterBar } from "@/modules/squadframe/components/kanban/tarefas-filter-bar";
+import { SyncButton } from "@/modules/squadframe/components/kanban/sync-button";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
+import type { Tarefa, Coluna, Etiqueta } from "@/modules/squadframe/types/kanban";
 
 export const dynamic = "force-dynamic";
 

@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import { EmpresaForm } from "./empresa-form";
 
 export const dynamic = "force-dynamic";

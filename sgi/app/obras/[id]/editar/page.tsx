@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { BackButton } from "@/components/back-button";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 import { EditarObraCliente } from "./editar-obra-cliente";
 
 export const dynamic = "force-dynamic";

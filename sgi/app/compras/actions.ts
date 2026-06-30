@@ -6,7 +6,7 @@ export {
   criarSolicitacao,
   alterarStatusSolicitacao,
   excluirSolicitacoes,
-} from "./actions/solicitacoes";
+} from "@/modules/squadframe/actions/compras/solicitacoes";
 
 export {
   criarPedido,
@@ -16,16 +16,16 @@ export {
   excluirPedidos,
   registrarValorFinal,
   confirmarDebitoPedido,
-} from "./actions/pedidos";
+} from "@/modules/squadframe/actions/compras/pedidos";
 
-export { registrarRecebimento } from "./actions/recebimentos";
+export { registrarRecebimento } from "@/modules/squadframe/actions/compras/recebimentos";
 
 export {
   obterUrlUploadDocumento,
   registrarDocumento,
   excluirDocumento,
   gerarUrlDownload,
-} from "./actions/documentos";
+} from "@/modules/squadframe/actions/compras/documentos";
 
 export {
   criarFormaPagamento,
@@ -34,4 +34,4 @@ export {
   editarFornecedor,
   excluirFornecedores,
   excluirFormasPagamento,
-} from "./actions/fornecedores";
+} from "@/modules/squadframe/actions/compras/fornecedores";

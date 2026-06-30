@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adicionarAlias, editarAlias, excluirAlias } from "@/app/catalogo/actions";
-import { specLabels } from "@/lib/tipo-unidade";
+import { specLabels } from "@/modules/squadframe/lib/tipo-unidade";
 
 type Alias = {
   id: string; alias: string;

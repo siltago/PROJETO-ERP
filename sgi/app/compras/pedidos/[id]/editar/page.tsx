@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { BackButton } from "@/components/back-button";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 import { EditarPedidoCliente } from "./editar-pedido-cliente";
 
 export const dynamic = "force-dynamic";

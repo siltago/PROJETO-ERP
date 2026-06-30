@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { atribuirCargo, alterarStatusUsuario, configurarPrimeiroAdmin } from "./actions";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 
 type Cargo = { id: string; nome: string; cor: string; is_admin: boolean; setor_id: string | null };
 type Setor = { id: string; nome: string; cor: string };

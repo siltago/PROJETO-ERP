@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { criarAba } from "@/app/catalogo/actions";
-import { usePode } from "@/components/user-provider";
-import { TIPO_UNIDADE_OPCOES } from "@/lib/tipo-unidade";
+import { usePode } from "@/modules/squadframe/components/user-provider";
+import { TIPO_UNIDADE_OPCOES } from "@/modules/squadframe/lib/tipo-unidade";
 
 export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
   const pode = usePode("catalogo.criar");

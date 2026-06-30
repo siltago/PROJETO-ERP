@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { alterarFormaPagamento, excluirFormasPagamento } from "@/app/compras/actions";
 
 type FormasPagamento = { id: string; nome: string; descricao: string | null; ativo: boolean; is_faturamento_direto: boolean };

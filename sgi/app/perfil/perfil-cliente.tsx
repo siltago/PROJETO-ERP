@@ -2,10 +2,10 @@
 
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase-client";
-import { BackButton } from "@/components/back-button";
+import { createClient } from "@/shared/database/supabase-client";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 import { salvarFotoUrl, salvarPerfil, salvarAssinatura } from "./actions";
-import type { UsuarioAtual } from "@/lib/auth";
+import type { UsuarioAtual } from "@/shared/auth/auth";
 
 function resizeAvatar(file: File, size: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
