@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import { getUsuarioAtual } from "@/shared/auth/auth";
 import { createAdminClient } from "@/shared/database/supabase-admin";
-import { HeaderUser } from "@/modules/squadframe/components/header-user";
 import { UserProvider } from "@/modules/squadframe/components/user-provider";
 import { MobileNav } from "@/modules/squadframe/components/mobile-nav";
 import { BuscaGlobal } from "@/modules/squadframe/components/busca-global";
@@ -12,6 +9,9 @@ import { ToastProvider } from "@/modules/squadframe/components/toast";
 import { NotificacoesBadge } from "@/modules/squadframe/components/notificacoes/notificacoes-badge";
 import { PwaProvider } from "@/modules/squadframe/components/pwa-provider";
 import { OfflineBanner, UpdateBanner } from "@/modules/squadframe/components/pwa-banners";
+import { HeaderUser } from "@/modules/squadframe/components/header-user";
+import { AppHeader } from "@/ui/layout/AppHeader";
+import { ThemeScript } from "@/ui/theme/ThemeProvider";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
@@ -20,7 +20,7 @@ const ThemeToggle = dynamic(
 );
 
 export const viewport: Viewport = {
-  themeColor: "#0F4C81",
+  themeColor: "#222831",
   width: "device-width",
   initialScale: 1,
   minimumScale: 1,
@@ -44,11 +44,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const NAV_ITEMS = [
+  { href: "/obras",      label: "Obras" },
+  { href: "/catalogo",   label: "Catálogo" },
+  { href: "/compras",    label: "Compras" },
+  { href: "/financeiro", label: "Financeiro" },
+  { href: "/tarefas",    label: "Tarefas" },
+  { href: "/usuarios",   label: "Usuários" },
+];
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const usuario = await getUsuarioAtual();
 
   let naoLidasCount = 0;
@@ -66,68 +71,36 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body>
         <PwaProvider usuarioId={usuario?.id} vapidPublicKey={vapidPublicKey}>
-        <UpdateBanner />
-        <OfflineBanner />
-        {usuario && (
-          <header
-            className="fixed inset-x-0 top-0 z-50 flex items-end gap-2 px-3 sm:gap-3 sm:px-5"
-            style={{
-              backgroundColor: "#0F4C81",
-              paddingTop: "env(safe-area-inset-top)",
-              height: "calc(56px + env(safe-area-inset-top))",
-            }}
-          >
-            {/* Hamburguer — só mobile */}
-            <MobileNav />
+          <UpdateBanner />
+          <OfflineBanner />
 
-            {/* Logo */}
-            <Link href="/" className="flex shrink-0 items-center gap-2">
-              <Image src="/icon.png" alt="SquadFrame" width={36} height={36} className="shrink-0" />
-              <span className="text-base font-bold leading-none text-white">
-                SquadFrame
-              </span>
-            </Link>
+          {usuario && (
+            <AppHeader
+              navItems={NAV_ITEMS}
+              mobileNavSlot={<MobileNav />}
+              rightSlot={
+                <>
+                  <BuscaGlobal />
+                  <NotificacoesBadge usuarioId={usuario.id} naoLidasIniciais={naoLidasCount} />
+                  <ThemeToggle />
+                  <HeaderUser usuario={usuario} />
+                </>
+              }
+            />
+          )}
 
-            {/* Navegação desktop */}
-            <nav className="hidden sm:flex flex-1 items-center gap-0.5 px-2">
-              {[
-                { href: "/obras",      label: "Obras" },
-                { href: "/catalogo",  label: "Catálogo" },
-                { href: "/compras",   label: "Compras" },
-                { href: "/financeiro", label: "Financeiro" },
-                { href: "/tarefas",   label: "Tarefas" },
-                { href: "/usuarios",  label: "Usuários" },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Direita */}
-            <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-              <BuscaGlobal />
-              <NotificacoesBadge usuarioId={usuario!.id} naoLidasIniciais={naoLidasCount} />
-              <ThemeToggle />
-              <HeaderUser usuario={usuario} />
-            </div>
-          </header>
-        )}
-
-        <UserProvider usuario={usuario}>
-          <ToastProvider>
-            <main
-              className={usuario ? "" : ""}
-              style={usuario ? { paddingTop: "calc(56px + env(safe-area-inset-top))" } : undefined}
-            >{children}</main>
-          </ToastProvider>
-        </UserProvider>
+          <UserProvider usuario={usuario}>
+            <ToastProvider>
+              <main style={usuario ? { paddingTop: "calc(56px + env(safe-area-inset-top))" } : undefined}>
+                {children}
+              </main>
+            </ToastProvider>
+          </UserProvider>
         </PwaProvider>
       </body>
     </html>
