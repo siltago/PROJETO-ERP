@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { criarCorRal, editarCor, deletarCor } from "@/app/catalogo/actions";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 
 type CorRal = { id: string; codigo_ral: string; nome: string | null; hex: string | null; tipos: string[] };
 type TipoLinha = { id: string; nome: string; slug: string };

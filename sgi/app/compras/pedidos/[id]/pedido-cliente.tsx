@@ -4,8 +4,8 @@ import { useState, useTransition, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { alterarStatusPedido, registrarValorFinal, confirmarDebitoPedido } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
-import { usePode } from "@/components/user-provider";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 
 type Transicao = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 

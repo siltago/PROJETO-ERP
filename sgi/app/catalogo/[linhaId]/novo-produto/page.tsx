@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
 import { criarProduto } from "../../actions";
-import { BackButton } from "@/components/back-button";
-import { defaultUnidade, TIPO_UNIDADE_OPCOES, specLabels } from "@/lib/tipo-unidade";
+import { BackButton } from "@/modules/squadframe/components/back-button";
+import { defaultUnidade, TIPO_UNIDADE_OPCOES, specLabels } from "@/modules/squadframe/lib/tipo-unidade";
 
 export const dynamic = "force-dynamic";
 

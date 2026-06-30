@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { STATUS_PED_LABEL } from "@/types/compras";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 import { PedidosLista } from "./pedidos-lista";
-import { Paginacao } from "@/components/paginacao";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { Paginacao } from "@/modules/squadframe/components/paginacao";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 
 export const dynamic = "force-dynamic";
 

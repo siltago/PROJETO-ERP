@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { criarCategoria, editarCategoria, apagarCategoria } from "@/app/catalogo/actions";
 
 type Categoria = { id: string; nome: string; tipo: string };

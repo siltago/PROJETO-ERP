@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
-import { getUsuarioAtual } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { TarefaStandaloneWrapper } from "@/components/kanban/tarefa-standalone-wrapper";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { TarefaStandaloneWrapper } from "@/modules/squadframe/components/kanban/tarefa-standalone-wrapper";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";

@@ -1,10 +1,10 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
 import { revalidatePath } from "next/cache";
-import { criarTarefaAutomatica } from "@/lib/tarefas";
-import { garantirColunasCompras } from "@/lib/kanban-compras";
+import { criarTarefaAutomatica } from "@/modules/squadframe/lib/tarefas";
+import { garantirColunasCompras } from "@/modules/squadframe/lib/kanban-compras";
 
 async function usuarioAtualId(): Promise<string | null> {
   const u = await getUsuarioAtual();

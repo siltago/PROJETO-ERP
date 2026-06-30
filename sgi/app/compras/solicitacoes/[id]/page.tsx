@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { BackButton } from "@/components/back-button";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { BackButton } from "@/modules/squadframe/components/back-button";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 import { SolicitacaoCliente } from "./solicitacao-cliente";
-import { pluralUnit } from "@/lib/unidade";
-import { STATUS_SOL_COR, STATUS_SOL_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL, ORIGEM_LABEL } from "@/types/compras";
+import { pluralUnit } from "@/modules/squadframe/lib/unidade";
+import { STATUS_SOL_COR, STATUS_SOL_LABEL, PRIORIDADE_COR, PRIORIDADE_LABEL, ORIGEM_LABEL } from "@/modules/squadframe/types/compras";
 
 export const dynamic = "force-dynamic";
 

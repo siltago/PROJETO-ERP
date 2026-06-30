@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getTiposLinha, getCoresRal } from "@/lib/cached-queries";
-import { BackButton } from "@/components/back-button";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getTiposLinha, getCoresRal } from "@/modules/squadframe/lib/cached-queries";
+import { BackButton } from "@/modules/squadframe/components/back-button";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 import { PedidoCliente } from "./pedido-cliente";
 import { PedidoTabs } from "./pedido-tabs";
-import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/types/compras";
+import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 
 export const dynamic = "force-dynamic";
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { excluirFornecedores, editarFornecedor } from "@/app/compras/actions";
 
 type TipoLinha = { nome: string; slug: string };

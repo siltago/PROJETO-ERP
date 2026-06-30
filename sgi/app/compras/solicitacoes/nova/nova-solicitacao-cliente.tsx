@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import { criarSolicitacao } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 
 const UNIDADES = [
   "un", "m", "m²", "m³", "kg", "g", "L", "ml",

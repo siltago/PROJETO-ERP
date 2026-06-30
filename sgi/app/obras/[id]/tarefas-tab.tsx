@@ -1,6 +1,6 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 import Link from "next/link";
-import { PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/types/kanban";
+import { PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/modules/squadframe/types/kanban";
 
 const STATUS_LABEL: Record<string, string> = {
   SEM_DONO:     "Sem dono",

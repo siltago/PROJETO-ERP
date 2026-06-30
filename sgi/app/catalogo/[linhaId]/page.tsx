@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
 import { NovaCategoriaInline } from "./nova-categoria-inline";
 import { ApagarLinhaBtn } from "./apagar-linha-btn";
 import { ImportarXml } from "./importar-xml";
 import { BtnAlterarUnidade } from "./btn-alterar-unidade";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 
 export const dynamic = "force-dynamic";
 

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { STATUS_SOL_LABEL, PRIORIDADE_LABEL } from "@/types/compras";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { STATUS_SOL_LABEL, PRIORIDADE_LABEL } from "@/modules/squadframe/types/compras";
 import { SolicitacoesLista } from "./solicitacoes-lista";
-import { Paginacao } from "@/components/paginacao";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { Paginacao } from "@/modules/squadframe/components/paginacao";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 
 export const dynamic = "force-dynamic";
 

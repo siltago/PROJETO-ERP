@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { getUsuarioAtual } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { MinhaCentral } from "@/components/kanban/minha-central";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { MinhaCentral } from "@/modules/squadframe/components/kanban/minha-central";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 
 export const dynamic = "force-dynamic";
 

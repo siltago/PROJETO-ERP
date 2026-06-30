@@ -1,8 +1,8 @@
 "use server";
 
-import { createAdminClient as createClient } from "@/lib/supabase-admin";
-import { verificarPermissao } from "@/core/permissions/check-permission";
-import { PERMISSIONS } from "@/core/permissions/permissions";
+import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
+import { verificarPermissao } from "@/shared/auth/check-permission";
+import { PERMISSIONS } from "@/modules/squadframe/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { usePode } from "@/components/user-provider";
+import { usePode } from "@/modules/squadframe/components/user-provider";
 import { excluirPedidos } from "@/app/compras/actions";
-import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/types/compras";
+import { STATUS_PED_COR, STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 
 type Pedido = {
   id: string; numero: string; status: string; prazo_entrega: string | null;

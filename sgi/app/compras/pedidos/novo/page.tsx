@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { getTiposLinha, getFornecedores, getFormasPagamento, getCoresRal } from "@/lib/cached-queries";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { getTiposLinha, getFornecedores, getFormasPagamento, getCoresRal } from "@/modules/squadframe/lib/cached-queries";
 import { NovoPedidoCliente } from "./novo-pedido-cliente";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/modules/squadframe/components/back-button";
 
 export const dynamic = "force-dynamic";
 

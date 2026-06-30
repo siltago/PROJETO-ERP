@@ -1,7 +1,7 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { createClient } from "@/shared/database/supabase-server";
 import { revalidatePath } from "next/cache";
 
 export async function salvarFotoUrl(url: string) {

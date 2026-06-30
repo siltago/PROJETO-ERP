@@ -3,8 +3,8 @@
 import { useState, useRef, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { pluralUnit } from "@/lib/unidade";
-import { calcMedida, calcPesoTotal } from "@/lib/tipo-unidade";
+import { pluralUnit } from "@/modules/squadframe/lib/unidade";
+import { calcMedida, calcPesoTotal } from "@/modules/squadframe/lib/tipo-unidade";
 import {
   adicionarAnotacao,
   obterUrlUploadDocumento,
@@ -12,8 +12,8 @@ import {
   excluirDocumento,
   gerarUrlDownload,
 } from "@/app/compras/actions";
-import { STATUS_PED_LABEL } from "@/types/compras";
-import { createClient } from "@/lib/supabase-client";
+import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
+import { createClient } from "@/shared/database/supabase-client";
 
 const TABS = ["Resumo", "Itens", "Recebimentos", "Documentos", "Anotações", "Histórico"] as const;
 type Tab = (typeof TABS)[number];

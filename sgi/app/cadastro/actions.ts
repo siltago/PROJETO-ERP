@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { verificarPermissao } from "@/core/permissions/check-permission";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { verificarPermissao } from "@/shared/auth/check-permission";
 
 export async function cadastrarUsuario(formData: FormData) {
   await verificarPermissao("usuarios.criar");

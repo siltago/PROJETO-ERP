@@ -54,7 +54,7 @@ export type Activity = {
 const DIAS = (d: string | null | undefined): number =>
   d ? Math.floor((Date.now() - new Date(d).getTime()) / 86400000) : 0;
 
-// ── Status labels e cores (definidos aqui para evitar acoplamento com @/types/compras) ──
+// ── Status labels e cores (definidos aqui para evitar acoplamento com @/modules/squadframe/types/compras) ──
 
 const PED_LABEL: Record<string, string> = {
   RASCUNHO:               "Rascunho",

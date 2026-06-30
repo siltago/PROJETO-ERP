@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-admin";
+import { createAdminClient } from "@/shared/database/supabase-admin";
 
 const ACAO_ICONE: Record<string, string> = {
   OBRA_CRIADA:     "✦",

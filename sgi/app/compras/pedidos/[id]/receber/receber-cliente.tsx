@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { registrarRecebimento } from "@/app/compras/actions";
-import { AssinarModal } from "@/components/assinar-modal";
+import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 
 type Item = {
   id: string; descricao_snapshot: string; unidade: string;

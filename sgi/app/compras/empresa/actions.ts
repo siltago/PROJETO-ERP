@@ -1,7 +1,7 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
 import { revalidatePath } from "next/cache";
 
 export type SalvarResult = { ok: true; logo_url: string | null } | { ok: false; erro: string };

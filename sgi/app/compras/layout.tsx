@@ -1,4 +1,4 @@
-import { ComprasSidebar } from "@/components/compras-sidebar";
+import { ComprasSidebar } from "@/modules/squadframe/components/compras-sidebar";
 
 export default function ComprasLayout({ children }: { children: React.ReactNode }) {
   return (

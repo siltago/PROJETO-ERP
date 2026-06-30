@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { getUsuarioAtual } from "@/lib/auth";
-import { BackButton } from "@/components/back-button";
-import { BtnAcaoProtegida } from "@/components/btn-acao-protegida";
-import { RealtimeRefresher } from "@/components/realtime-refresher";
+import { createAdminClient } from "@/shared/database/supabase-admin";
+import { getUsuarioAtual } from "@/shared/auth/auth";
+import { BackButton } from "@/modules/squadframe/components/back-button";
+import { BtnAcaoProtegida } from "@/modules/squadframe/components/btn-acao-protegida";
+import { RealtimeRefresher } from "@/modules/squadframe/components/realtime-refresher";
 import { StatusObraSelector } from "./status-selector";
 import { AbaProducao } from "./aba-producao";
 import { DashboardTab } from "./dashboard-tab";

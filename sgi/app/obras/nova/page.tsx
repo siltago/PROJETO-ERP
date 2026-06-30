@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { criarObra } from "../actions";
-import { BackButton } from "@/components/back-button";
-import { getUsuarioAtual } from "@/lib/auth";
+import { BackButton } from "@/modules/squadframe/components/back-button";
+import { getUsuarioAtual } from "@/shared/auth/auth";
 import { redirect } from "next/navigation";
-import { SubmitButton } from "@/components/submit-button";
+import { SubmitButton } from "@/modules/squadframe/components/submit-button";
 
 export const dynamic = "force-dynamic";
 
