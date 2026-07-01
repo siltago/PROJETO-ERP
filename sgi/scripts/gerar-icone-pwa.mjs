@@ -23,8 +23,8 @@ async function solidBg(size) {
 }
 
 async function makeIcon(size, outFile) {
-  // Logo ocupa 80% do ícone, centralizada com padding
-  const logoSize = Math.round(size * 0.80);
+  // Logo ocupa 70% do ícone, centralizada com padding
+  const logoSize = Math.round(size * 0.70);
   const offset   = Math.round((size - logoSize) / 2);
 
   // Apara o espaço em branco da imagem original, depois redimensiona para 80%
