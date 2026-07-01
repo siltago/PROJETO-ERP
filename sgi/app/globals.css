@@ -210,7 +210,7 @@
   .btn-ghost:hover { background-color: rgb(var(--color-bg)); color: rgb(var(--color-text)); }
 
   .field {
-    @apply w-full px-3.5 py-2.5 text-sm transition-shadow duration-[120ms]
+    @apply w-full px-3.5 py-1.5 text-sm transition-shadow duration-[120ms]
            placeholder:text-ink-faint focus:outline-none disabled:opacity-50;
     font-family: "Cairo", system-ui, sans-serif;
     background-color: rgb(var(--color-surface));
