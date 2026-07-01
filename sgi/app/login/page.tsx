@@ -37,7 +37,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">
-          <Image src="/icon.png" alt="SquadFrame" width={52} height={52} />
+          <Image src="/favicon.png" alt="SquadFrame" width={52} height={52} />
           <div className="text-center">
             <p className="font-display text-xl font-bold text-ink">SquadFrame</p>
             <p className="text-sm text-ink-faint">Gestão Industrial Para Esquadrias</p>
