@@ -13,6 +13,7 @@ import { Pagination } from "@/ui/components/Pagination";
 import { EmptyState } from "@/ui/components/EmptyState";
 import type { CatalogItem } from "./catalog-item";
 import type { Filters } from "./filter-bar";
+import { buildSearchPattern } from "@/ui/lib/search";
 
 export const dynamic = "force-dynamic";
 
@@ -225,14 +226,15 @@ export default async function CatalogoPage({
       }
 
       if (filtroQ) {
+        const qPattern = buildSearchPattern(filtroQ);
         const { data: aliasMatches } = await supabase
           .from("produto_aliases")
           .select("produto_id")
-          .ilike("alias", `%${filtroQ}%`);
+          .ilike("alias", qPattern);
         const aliasIds = (aliasMatches ?? []).map((a: any) => a.produto_id);
         const orClause = aliasIds.length > 0
-          ? `codigo_mestre.ilike.%${filtroQ}%,nome.ilike.%${filtroQ}%,id.in.(${aliasIds.join(",")})`
-          : `codigo_mestre.ilike.%${filtroQ}%,nome.ilike.%${filtroQ}%`;
+          ? `codigo_mestre.ilike.${qPattern},nome.ilike.${qPattern},id.in.(${aliasIds.join(",")})`
+          : `codigo_mestre.ilike.${qPattern},nome.ilike.${qPattern}`;
         query = query.or(orClause);
       }
 

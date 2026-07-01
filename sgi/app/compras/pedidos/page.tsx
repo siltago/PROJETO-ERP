@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/ui/components/Button";
 import { createAdminClient } from "@/shared/database/supabase-admin";
+import { buildSearchPattern } from "@/ui/lib/search";
 import { getUsuarioAtual } from "@/shared/auth/auth";
 import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 import { PedidosLista } from "./pedidos-lista";
@@ -27,10 +28,11 @@ export default async function PedidosPage({
   // Quando há busca por item: resolve pedido_ids a partir de pedido_itens
   let pedidoIdsFromItem: string[] | null = null;
   if (filtroQ) {
+    const qPattern = buildSearchPattern(filtroQ);
     const { data: itemMatches } = await admin
       .from("pedido_itens")
       .select("pedido_id")
-      .or(`codigo_fornecedor.ilike.%${filtroQ}%,descricao_snapshot.ilike.%${filtroQ}%`);
+      .or(`codigo_fornecedor.ilike.${qPattern},descricao_snapshot.ilike.${qPattern}`);
     pedidoIdsFromItem = Array.from(new Set((itemMatches ?? []).map((i: any) => i.pedido_id)));
   }
 

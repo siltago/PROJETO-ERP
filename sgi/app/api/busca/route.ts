@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/shared/database/supabase-admin";
+import { buildSearchPattern } from "@/ui/lib/search";
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   if (q.length < 2) return NextResponse.json({ resultados: [] });
 
   const admin = createAdminClient();
-  const like = `%${q}%`;
+  const like = buildSearchPattern(q);
 
   const [obras, produtos, fornecedores, pedidos, tarefas, pedidosPorItem, solicitacoesPorItem] = await Promise.all([
     admin.from("obras")

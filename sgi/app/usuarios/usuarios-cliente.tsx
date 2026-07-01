@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect, Fragment } from "react";
 import { useRouter } from "next/navigation";
+import { normalizeSearch } from "@/ui/lib/search";
 import { atribuirCargo, alterarStatusUsuario, configurarPrimeiroAdmin } from "./actions";
 import { usePode } from "@/modules/squadframe/components/user-provider";
 import { Avatar } from "@/ui/components/Avatar";
@@ -169,9 +170,10 @@ export function UsuariosCliente({
   useEffect(() => { setUsuarios(usuariosInit); }, [usuariosInit]);
 
   const filtrados = usuarios.filter((u) => {
+    const buscaN = normalizeSearch(busca);
     const matchBusca =
-      u.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      u.email.toLowerCase().includes(busca.toLowerCase());
+      normalizeSearch(u.nome).includes(buscaN) ||
+      normalizeSearch(u.email).includes(buscaN);
     const matchAtivo =
       filtroAtivo === "todos" ||
       (filtroAtivo === "ativos" && u.ativo) ||

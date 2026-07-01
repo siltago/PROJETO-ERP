@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/shared/database/supabase-admin";
+import { buildSearchPattern } from "@/ui/lib/search";
 
 export async function GET(req: NextRequest) {
   const q            = req.nextUrl.searchParams.get("q")?.trim() ?? "";
@@ -18,18 +19,20 @@ export async function GET(req: NextRequest) {
     if (!linhaIds.length) return NextResponse.json([]);
   }
 
+  const pattern = buildSearchPattern(q);
+
   // Busca em paralelo: código/nome, aliases e (legado) produto_fornecedores
   const [byMestre, byAlias, byFornCod] = await Promise.all([
     (() => {
       let q1 = admin.from("produtos")
         .select("id")
-        .or(`codigo_mestre.ilike.%${q}%,nome.ilike.%${q}%`)
+        .or(`codigo_mestre.ilike.${pattern},nome.ilike.${pattern}`)
         .eq("status", true);
       if (linhaIds.length) q1 = q1.in("linha_id", linhaIds);
       return q1.limit(20);
     })(),
-    admin.from("produto_aliases").select("produto_id").ilike("alias", `%${q}%`).limit(20),
-    admin.from("produto_fornecedores").select("produto_id").ilike("codigo_fornecedor", `%${q}%`).limit(20),
+    admin.from("produto_aliases").select("produto_id").ilike("alias", pattern).limit(20),
+    admin.from("produto_fornecedores").select("produto_id").ilike("codigo_fornecedor", pattern).limit(20),
   ]);
 
   const ids = Array.from(new Set([
