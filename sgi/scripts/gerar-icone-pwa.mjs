@@ -58,8 +58,10 @@ async function main() {
     .toFile(path.join(OUT_DIR, "favicon.png"));
   console.log(`✓ public/favicon.png (fundo transparente)`);
 
-  // Ícones PWA — nomes versionados para forçar invalidação de cache
+  // Ícones PWA
+  await makeIcon(512, path.join(OUT_DIR, "icon.png"));
   await makeIcon(512, path.join(OUT_DIR, "icon-v2.png"));
+  await makeIcon(192, path.join(OUT_DIR, "icon-192.png"));
   await makeIcon(192, path.join(OUT_DIR, "icon-192-v2.png"));
 
   console.log("\nícones gerados em public/");
