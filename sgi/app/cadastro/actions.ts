@@ -2,10 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/shared/database/supabase-admin";
-import { verificarPermissao } from "@/shared/auth/check-permission";
 
 export async function cadastrarUsuario(formData: FormData) {
-  await verificarPermissao("usuarios.criar");
   const nome    = String(formData.get("nome")    || "").trim();
   const empresa = String(formData.get("empresa") || "").trim();
   const email   = String(formData.get("email")   || "").trim();
