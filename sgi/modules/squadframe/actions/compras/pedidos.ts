@@ -130,39 +130,6 @@ export async function alterarStatusPedido(
 
   validarTransicaoPedido(ped.status, status);
 
-  // Débito da carteira ao emitir o pedido (AGUARDANDO_RECEBIMENTO ou EMITIDO).
-  // Feito ANTES do UPDATE de status para que uma falha de débito não deixe o
-  // pedido com status avançado mas sem debito_registrado.
-  const deveDebitar =
-    ped.usa_carteira &&
-    !ped.debito_registrado &&
-    (status === "AGUARDANDO_RECEBIMENTO" || status === "EMITIDO");
-
-  if (deveDebitar) {
-    await verificarPermissao(PERMISSIONS.FINANCEIRO_PEDIDO_CONFIRMAR_DEBITO);
-    const { error: errDebito } = await admin.rpc("confirmar_debito_carteira", {
-      p_pedido_id:  id,
-      p_usuario_id: usuario_id,
-    });
-    if (errDebito) {
-      if (ped.comprador_id) {
-        await admin.from("notificacoes").insert({
-          usuario_id: ped.comprador_id,
-          tipo: "debito_carteira_falhou",
-          payload: {
-            order_id: id,
-            numero: ped.numero,
-            motivo: errDebito.message,
-          },
-        });
-      }
-      throw new Error(
-        `Não foi possível debitar a carteira: ${errDebito.message}. ` +
-        `Verifique se há saldo suficiente ou faça um depósito antes de emitir.`
-      );
-    }
-  }
-
   const { error } = await admin.from("pedidos_compra").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 
@@ -281,7 +248,7 @@ export async function registrarValorFinal(pedidoId: string, valorFinal: number) 
 
   const { data: ped } = await admin
     .from("pedidos_compra")
-    .select("status")
+    .select("status, usa_carteira, debito_registrado")
     .eq("id", pedidoId)
     .single();
 
@@ -297,6 +264,15 @@ export async function registrarValorFinal(pedidoId: string, valorFinal: number) 
   if (error) throw new Error(error.message);
 
   const usuario_id = await getUsuarioId();
+
+  if (ped.usa_carteira && !ped.debito_registrado) {
+    const { error: errDebito } = await admin.rpc("confirmar_debito_carteira", {
+      p_pedido_id:  pedidoId,
+      p_usuario_id: usuario_id,
+    });
+    if (errDebito) throw new Error(`Não foi possível debitar a carteira: ${errDebito.message}`);
+  }
+
   await admin.from("compra_historico").insert({
     entidade: "pedido", entidade_id: pedidoId,
     acao: "VALOR_FINAL_REGISTRADO",
