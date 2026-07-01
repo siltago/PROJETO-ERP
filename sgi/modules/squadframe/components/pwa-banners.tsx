@@ -55,7 +55,7 @@ export function UpdateBanner() {
 
   return (
     <div
-      className="fixed inset-x-0 z-[190] flex items-center justify-between gap-3 bg-steel px-4 py-2.5 text-sm text-white shadow-md"
+      className="fixed inset-x-0 z-[190] flex items-center justify-between gap-3 bg-primary px-4 py-2.5 text-sm text-white shadow-md"
       style={{ top: "calc(56px + env(safe-area-inset-top))" }}
     >
       <span>

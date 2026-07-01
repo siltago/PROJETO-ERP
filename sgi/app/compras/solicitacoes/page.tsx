@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/ui/components/Button";
 import { createAdminClient } from "@/shared/database/supabase-admin";
 import { STATUS_SOL_LABEL, PRIORIDADE_LABEL } from "@/modules/squadframe/types/compras";
 import { SolicitacoesLista } from "./solicitacoes-lista";
@@ -45,27 +46,27 @@ export default async function SolicitacoesPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Solicitações de Compra</h1>
-          <p className="mt-1 text-sm text-ink-soft">{count ?? 0} registro(s)</p>
+          <p className="mt-1 text-sm text-text-2">{count ?? 0} registro(s)</p>
         </div>
-        <Link href="/compras/solicitacoes/nova" className="btn-primary">Nova solicitação</Link>
+        <Button as="a" href="/compras/solicitacoes/nova">Nova solicitação</Button>
       </div>
 
       {/* Filtros */}
       <div className="mt-6 flex flex-wrap gap-2">
         <Link href="/compras/solicitacoes"
-          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!searchParams.status ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!searchParams.status ? "border-primary bg-primary text-white" : "border-border text-text-2 hover:bg-bg"}`}>
           Todos
         </Link>
         {statuses.map((s) => (
           <Link key={s} href={`/compras/solicitacoes?status=${s}`}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-primary bg-primary text-white" : "border-border text-text-2 hover:bg-bg"}`}>
             {STATUS_SOL_LABEL[s as keyof typeof STATUS_SOL_LABEL]}
           </Link>
         ))}
-        <span className="mx-2 border-l border-line" />
+        <span className="mx-2 border-l border-border" />
         {prioridades.map((p) => (
           <Link key={p} href={`/compras/solicitacoes?prioridade=${p}${searchParams.status ? `&status=${searchParams.status}` : ""}`}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.prioridade === p ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.prioridade === p ? "border-primary bg-primary text-white" : "border-border text-text-2 hover:bg-bg"}`}>
             {PRIORIDADE_LABEL[p as keyof typeof PRIORIDADE_LABEL]}
           </Link>
         ))}

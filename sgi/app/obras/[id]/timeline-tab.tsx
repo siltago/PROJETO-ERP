@@ -30,13 +30,13 @@ export async function TimelineTab({ obraId }: { obraId: string }) {
 
   return (
     <div className="mt-6">
-      <p className="mb-4 text-sm text-ink-soft">
+      <p className="mb-4 text-sm text-text-2">
         Histórico completo de alterações e eventos da obra.
       </p>
 
       {registros.length === 0 ? (
         <div className="card p-10 text-center">
-          <p className="text-sm text-ink-faint">Nenhum registro no histórico.</p>
+          <p className="text-sm text-text-3">Nenhum registro no histórico.</p>
         </div>
       ) : (
         <div className="relative ml-3">
@@ -50,18 +50,18 @@ export async function TimelineTab({ obraId }: { obraId: string }) {
               return (
                 <li key={h.id ?? i} className="relative flex gap-5 pb-6">
                   {/* Bolinha na linha do tempo */}
-                  <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-xs text-ink-faint">
+                  <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-xs text-text-3">
                     {icone}
                   </div>
 
                   {/* Conteúdo */}
                   <div className="flex-1 pt-0.5">
                     <div className="flex flex-wrap items-baseline gap-x-2">
-                      <span className="text-sm font-medium text-ink">{formatarAcao(h.acao)}</span>
+                      <span className="text-sm font-medium text-text">{formatarAcao(h.acao)}</span>
                       {h.usuario && (
-                        <span className="text-xs text-ink-faint">por {h.usuario.nome}</span>
+                        <span className="text-xs text-text-3">por {h.usuario.nome}</span>
                       )}
-                      <span className="ml-auto text-xs text-ink-faint">
+                      <span className="ml-auto text-xs text-text-3">
                         {data.toLocaleString("pt-BR", {
                           day: "2-digit", month: "2-digit", year: "numeric",
                           hour: "2-digit", minute: "2-digit",
@@ -69,10 +69,10 @@ export async function TimelineTab({ obraId }: { obraId: string }) {
                       </span>
                     </div>
                     {h.motivo && (
-                      <p className="mt-0.5 text-xs text-ink-soft">{h.motivo}</p>
+                      <p className="mt-0.5 text-xs text-text-2">{h.motivo}</p>
                     )}
                     {h.valor_novo && Object.keys(h.valor_novo).length > 0 && (
-                      <p className="mt-0.5 font-mono text-xs text-ink-faint">
+                      <p className="mt-0.5 font-mono text-xs text-text-3">
                         {JSON.stringify(h.valor_novo)}
                       </p>
                     )}

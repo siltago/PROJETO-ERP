@@ -121,12 +121,12 @@ export default async function TarefasPage({ searchParams }: PageProps) {
   const colunasVisiveis = colunas.filter((c) => colunasComTarefas.has(c.id));
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <div className="flex flex-wrap items-center gap-3 px-5 py-3 border-b border-line bg-surface">
+    <div className="min-h-screen bg-bg">
+      <div className="flex flex-wrap items-center gap-3 px-5 py-3 border-b border-border bg-surface">
         <div>
-          <h1 className="font-display text-xl font-bold text-ink">Tarefas do Setor</h1>
+          <h1 className="font-display text-xl font-bold text-text">Tarefas do Setor</h1>
           {setorIdParam && (
-            <p className="text-xs text-ink-faint mt-0.5">
+            <p className="text-xs text-text-3 mt-0.5">
               {colunasVisiveis.length} colunas · {tarefas.length} tarefas
             </p>
           )}
@@ -150,7 +150,7 @@ export default async function TarefasPage({ searchParams }: PageProps) {
 
       <div className="px-4 py-4 overflow-x-auto">
         {colunas.length === 0 ? (
-          <div className="flex items-center justify-center py-20 text-ink-faint text-sm">
+          <div className="flex items-center justify-center py-20 text-text-3 text-sm">
             {setorIdParam
               ? "Nenhuma coluna encontrada para este setor."
               : "Selecione um setor para ver as tarefas."}

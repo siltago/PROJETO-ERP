@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/ui/components/Button";
 
 type Obra = {
   cliente?: { nome: string | null } | null;
@@ -13,8 +14,8 @@ type Obra = {
 function Campo({ rotulo, valor }: { rotulo: string; valor?: string | null }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-ink-faint">{rotulo}</dt>
-      <dd className="mt-0.5 font-medium text-ink">{valor || "—"}</dd>
+      <dt className="text-xs uppercase tracking-wide text-text-3">{rotulo}</dt>
+      <dd className="mt-0.5 font-medium text-text">{valor || "—"}</dd>
     </div>
   );
 }
@@ -24,13 +25,13 @@ export function ConfigTab({ obraId, obra, podeEditar }: { obraId: string; obra: 
     <div className="mt-6">
       <div className="card max-w-2xl p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-wide text-ink-soft">
+          <h2 className="font-display text-sm font-semibold uppercase tracking-wide text-text-2">
             Dados da obra
           </h2>
           {podeEditar && (
-            <Link href={`/obras/${obraId}/editar`} className="btn-ghost text-sm">
+            <Button as="a" href={`/obras/${obraId}/editar`} variant="ghost" className="text-sm">
               Editar
-            </Link>
+            </Button>
           )}
         </div>
 

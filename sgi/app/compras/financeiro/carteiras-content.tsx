@@ -15,7 +15,7 @@ export async function CarteirasContent() {
   const podeDepositar = usuario?.permissoes?.includes("*") || usuario?.permissoes?.includes(PERMISSIONS.FINANCEIRO_CARTEIRA_DEPOSITAR);
 
   if (!podeVer) {
-    return <p className="mt-8 text-sm text-red-600">Sem permissão para visualizar carteiras.</p>;
+    return <p className="mt-8 text-sm text-danger">Sem permissão para visualizar carteiras.</p>;
   }
 
   const [
@@ -41,19 +41,19 @@ export async function CarteirasContent() {
     <div className="mt-6">
       {/* Resumo */}
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-ink-soft">
+        <p className="text-sm text-text-2">
           {(carteiras ?? []).length} carteira(s) ativa(s)
         </p>
         <div className="card px-4 py-2 text-right">
-          <p className="text-[10px] uppercase tracking-wide text-ink-faint">Total em carteiras</p>
-          <p className="text-lg font-bold text-steel">{fmt(totalSaldo)}</p>
+          <p className="text-[10px] uppercase tracking-wide text-text-3">Total em carteiras</p>
+          <p className="text-lg font-bold text-primary">{fmt(totalSaldo)}</p>
         </div>
       </div>
 
       {/* Formulário de depósito */}
       {podeDepositar && (
         <div className="mt-6 card p-5">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-text-3">
             Novo depósito
           </h2>
           <DepositarForm obras={obras ?? []} fornecedores={fornecedores ?? []} />
@@ -64,7 +64,7 @@ export async function CarteirasContent() {
       <div className="mt-6">
         {(carteiras ?? []).length === 0 ? (
           <div className="card p-12 text-center">
-            <p className="text-sm text-ink-faint">
+            <p className="text-sm text-text-3">
               Nenhuma carteira ainda.{" "}
               {podeDepositar ? "Faça um depósito acima para criar a primeira." : ""}
             </p>
@@ -82,19 +82,19 @@ export async function CarteirasContent() {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-ink">{forn?.nome ?? "—"}</p>
-                      <p className="mt-0.5 truncate text-xs text-ink-faint">
+                      <p className="truncate text-sm font-semibold text-text">{forn?.nome ?? "—"}</p>
+                      <p className="mt-0.5 truncate text-xs text-text-3">
                         {obra?.codigo ? <span className="font-mono mr-1">[{obra.codigo}]</span> : null}
                         {obra?.nome ?? "Sem obra"}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className={`text-base font-bold ${c.saldo_atual > 0 ? "text-green-700" : "text-red-500"}`}>
+                      <p className={`text-base font-bold ${c.saldo_atual > 0 ? "text-success" : "text-danger"}`}>
                         {fmt(c.saldo_atual)}
                       </p>
                     </div>
                   </div>
-                  <p className="mt-3 text-[10px] text-ink-faint">
+                  <p className="mt-3 text-[10px] text-text-3">
                     Ver extrato → · {new Date(c.atualizado_em).toLocaleDateString("pt-BR")}
                   </p>
                 </Link>

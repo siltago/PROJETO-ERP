@@ -4,6 +4,7 @@ import { createAdminClient as createClient } from "@/shared/database/supabase-ad
 import { criarProduto } from "../../actions";
 import { BackButton } from "@/modules/squadframe/components/back-button";
 import { defaultUnidade, TIPO_UNIDADE_OPCOES, specLabels } from "@/modules/squadframe/lib/tipo-unidade";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,7 @@ export default async function NovoProdutoPage({
       <BackButton href={`/catalogo/${params.linhaId}`} />
 
       <h1 className="mt-4 text-2xl font-bold tracking-tight">Novo produto</h1>
-      <p className="mt-1 text-sm text-ink-soft">Linha: {linha.nome}</p>
+      <p className="mt-1 text-sm text-text-2">Linha: {linha.nome}</p>
 
       <form action={criarProdutoNaLinha} className="card mt-6 max-w-2xl p-6">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -63,7 +64,7 @@ export default async function NovoProdutoPage({
               className="field font-mono"
               placeholder="Ex: AL-1234"
             />
-            <p className="mt-1 text-xs text-ink-faint">
+            <p className="mt-1 text-xs text-text-3">
               Deve ser único em todo o catálogo
             </p>
           </div>
@@ -76,7 +77,7 @@ export default async function NovoProdutoPage({
               ))}
             </select>
             {tipoUnidade && (
-              <p className="mt-1 text-xs text-ink-faint">
+              <p className="mt-1 text-xs text-text-3">
                 Padrão desta aba: {unidadePadrao}
               </p>
             )}
@@ -95,7 +96,7 @@ export default async function NovoProdutoPage({
           <div>
             <label className="label">
               Categoria{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <select name="categoria_id" className="field">
               <option value="">Sem categoria</option>
@@ -111,7 +112,7 @@ export default async function NovoProdutoPage({
             <>
               <div className="sm:col-span-2">
                 <hr className="border-border" />
-                <p className="mt-3 text-xs font-medium uppercase tracking-widest text-ink-faint">
+                <p className="mt-3 text-xs font-medium uppercase tracking-widest text-text-3">
                   Especificações
                 </p>
               </div>
@@ -159,7 +160,7 @@ export default async function NovoProdutoPage({
           <div className="sm:col-span-2">
             <label className="label">
               Descrição{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <textarea name="descricao" rows={3} className="field" />
           </div>
@@ -167,22 +168,19 @@ export default async function NovoProdutoPage({
           <div className="sm:col-span-2">
             <label className="label">
               Observações{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <textarea name="observacoes" rows={2} className="field" />
           </div>
         </div>
 
         <div className="mt-6 flex gap-3">
-          <button type="submit" className="btn-primary">
+          <Button type="submit">
             Criar produto
-          </button>
-          <Link
-            href={`/catalogo/${params.linhaId}`}
-            className="btn-ghost"
-          >
+          </Button>
+          <Button as="a" href={`/catalogo/${params.linhaId}`} variant="ghost">
             Cancelar
-          </Link>
+          </Button>
         </div>
       </form>
     </div>

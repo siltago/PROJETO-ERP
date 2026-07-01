@@ -4,6 +4,9 @@ import { useState, useTransition, useRef, useEffect } from "react";
 import { criarPedido } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 import { calcMedida, calcPesoTotal, calcPrecoUnit } from "@/modules/squadframe/lib/tipo-unidade";
+import { Button } from "@/ui/components/Button";
+import { Badge } from "@/ui/components/Badge";
+import { Alert } from "@/ui/components/Alert";
 
 type Obra = { id: string; nome: string; codigo: string; numero?: number | null };
 type Fornecedor = { id: string; nome: string; tipos?: string[] | null };
@@ -100,42 +103,42 @@ function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd, onAddForc
         placeholder={tipoSlug ? `Buscar produto (código mestre, alias ou código do fornecedor)…` : "Buscar produto…"}
         className="field h-9 w-full text-sm" />
       {aberto && resultados.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface shadow-lg">
+        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-surface shadow-lg">
           {resultados.map((p) => {
             const temCodigoForn = p.codigo_do_fornecedor && p.codigo_do_fornecedor !== p.codigo_mestre;
             const jaExiste = existingIds.has(p.id);
             const qtd = qtdExtra[p.id] ?? 1;
             if (jaExiste) {
               return (
-                <div key={p.id} className="px-3 py-2 border-b border-line last:border-0 bg-amber-50/60">
+                <div key={p.id} className="px-3 py-2 border-b border-border last:border-0 bg-warning-soft/60">
                   <div className="flex w-full items-center gap-3 mb-1.5">
-                    <span className="font-mono text-xs text-ink-faint w-24 shrink-0">{p.codigo_mestre}</span>
-                    <span className="flex-1 text-sm text-ink">{p.nome}</span>
-                    <span className="text-xs text-amber-600 font-medium shrink-0">Já no pedido</span>
+                    <span className="font-mono text-xs text-text-3 w-24 shrink-0">{p.codigo_mestre}</span>
+                    <span className="flex-1 text-sm text-text">{p.nome}</span>
+                    <span className="text-xs text-warning font-medium shrink-0">Já no pedido</span>
                   </div>
                   <div className="flex items-center gap-2 pl-[6.5rem]">
-                    <span className="text-xs text-ink-faint">Adicionar mais:</span>
+                    <span className="text-xs text-text-3">Adicionar mais:</span>
                     <input
                       type="number" min="1" step="any" value={qtd}
                       onChange={(e) => setQtdExtra((prev) => ({ ...prev, [p.id]: parseFloat(e.target.value) || 1 }))}
                       onClick={(e) => e.stopPropagation()}
                       className="field h-7 w-20 text-xs font-mono"
                     />
-                    <span className="text-xs text-ink-faint">{p.unidade}</span>
-                    <button
-                      type="button"
+                    <span className="text-xs text-text-3">{p.unidade}</span>
+                    <Button
+                      type="button" size="sm"
                       onClick={() => { onIncrement(p.id, qtd); setQtdExtra((prev) => ({ ...prev, [p.id]: 1 })); setQ(""); setAberto(false); }}
-                      className="btn-primary h-7 px-3 text-xs"
+                      className="h-7 px-3 text-xs"
                     >
                       Confirmar
-                    </button>
-                    <button
-                      type="button"
+                    </Button>
+                    <Button
+                      type="button" variant="secondary" size="sm"
                       onClick={() => { onAddForcar(p); setQ(""); setAberto(false); }}
-                      className="btn-secondary h-7 px-3 text-xs"
+                      className="h-7 px-3 text-xs"
                     >
                       + Cor diferente
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -143,14 +146,14 @@ function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd, onAddForc
             return (
               <button key={p.id} type="button"
                 onClick={() => { onAdd(p); setQ(""); setAberto(false); }}
-                className="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-canvas border-b border-line last:border-0">
+                className="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-bg border-b border-border last:border-0">
                 <div className="flex w-full items-center gap-3">
-                  <span className="font-mono text-xs text-ink-faint w-24 shrink-0">{p.codigo_mestre}</span>
-                  <span className="flex-1 text-ink">{p.nome}</span>
-                  <span className="text-xs text-ink-faint shrink-0">{p.unidade}</span>
+                  <span className="font-mono text-xs text-text-3 w-24 shrink-0">{p.codigo_mestre}</span>
+                  <span className="flex-1 text-text">{p.nome}</span>
+                  <span className="text-xs text-text-3 shrink-0">{p.unidade}</span>
                 </div>
                 {temCodigoForn && nomeFornecedor && (
-                  <p className="pl-[6.5rem] text-xs text-amber-600">
+                  <p className="pl-[6.5rem] text-xs text-warning">
                     {nomeFornecedor} usa <span className="font-mono font-semibold">{p.codigo_do_fornecedor}</span>
                   </p>
                 )}
@@ -160,7 +163,7 @@ function BuscaProduto({ tipoSlug, fornecedorId, nomeFornecedor, onAdd, onAddForc
         </div>
       )}
       {aberto && q.length >= 2 && resultados.length === 0 && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface px-3 py-3 shadow-lg text-sm text-ink-faint">
+        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-surface px-3 py-3 shadow-lg text-sm text-text-3">
           Nenhum produto encontrado{tipoSlug ? " nessa categoria" : ""}.
         </div>
       )}
@@ -176,23 +179,23 @@ function CodigoFornecedorModal({ produto, nomeFornecedor, onUsar, onSemCodigo, o
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl">
-        <h2 className="font-semibold text-ink">Código do fornecedor</h2>
-        <p className="mt-3 text-sm text-ink-soft">
+        <h2 className="font-semibold text-text">Código do fornecedor</h2>
+        <p className="mt-3 text-sm text-text-2">
           O produto <strong>{produto.nome}</strong> tem código mestre{" "}
-          <code className="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs">{produto.codigo_mestre}</code>,
+          <code className="rounded bg-bg px-1.5 py-0.5 font-mono text-xs">{produto.codigo_mestre}</code>,
           mas <strong>{nomeFornecedor}</strong> usa o código{" "}
-          <code className="rounded bg-steel/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-steel">{produto.codigo_do_fornecedor}</code>{" "}
+          <code className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-primary">{produto.codigo_do_fornecedor}</code>{" "}
           para este produto.
         </p>
-        <p className="mt-2 text-sm text-ink-soft">Qual código deseja usar neste pedido?</p>
+        <p className="mt-2 text-sm text-text-2">Qual código deseja usar neste pedido?</p>
         <div className="mt-5 flex flex-wrap gap-2 justify-end">
-          <button onClick={onCancelar} className="btn-ghost text-sm">Cancelar</button>
-          <button onClick={onSemCodigo} className="btn-ghost text-sm border border-line">
+          <Button type="button" variant="ghost" onClick={onCancelar}>Cancelar</Button>
+          <Button type="button" variant="ghost" onClick={onSemCodigo} className="border border-border">
             Sem código
-          </button>
-          <button onClick={onUsar} className="btn-primary text-sm">
+          </Button>
+          <Button type="button" onClick={onUsar}>
             Usar {produto.codigo_do_fornecedor}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -393,9 +396,9 @@ export function NovoPedidoCliente({
         {/* Tipo de pedido */}
         {tiposLinha.length > 0 && (
           <div className="card p-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink-faint">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-text-3">
               Tipo de pedido{tipoSelecionado && (
-                <span className="ml-2 font-normal normal-case text-steel">Pedido de {tipoSelecionado.nome}</span>
+                <span className="ml-2 font-normal normal-case text-primary">Pedido de {tipoSelecionado.nome}</span>
               )}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -403,15 +406,15 @@ export function NovoPedidoCliente({
                 <button key={t.slug} type="button" onClick={() => selecionarTipo(t)}
                   className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
                     tipoSelecionado?.slug === t.slug
-                      ? "border-steel bg-steel text-white"
-                      : "border-line text-ink-soft hover:bg-canvas"
+                      ? "border-primary bg-primary text-white"
+                      : "border-border text-text-2 hover:bg-bg"
                   }`}>
                   {t.nome}
                 </button>
               ))}
               {tipoSelecionado && (
                 <button type="button" onClick={() => selecionarTipo(null)}
-                  className="text-xs text-ink-faint hover:text-ink underline ml-1">
+                  className="text-xs text-text-3 hover:text-text underline ml-1">
                   Limpar tipo
                 </button>
               )}
@@ -423,25 +426,25 @@ export function NovoPedidoCliente({
         <div className="card p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-              <label className="label">Fornecedor <span className="text-red-500">*</span></label>
+              <label className="label">Fornecedor <span className="text-danger">*</span></label>
               <select name="fornecedor_id" required value={fornecedorId}
                 onChange={(e) => setFornecedorId(e.target.value)} className="field">
                 <option value="">Selecione…</option>
                 {fornecedoresVisiveis.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
               </select>
               {tipoSelecionado && !semTiposCadastrados && fornecedoresVisiveis.length === 0 && (
-                <p className="mt-1 text-xs text-amber-600">
+                <p className="mt-1 text-xs text-warning">
                   Nenhum fornecedor de {tipoSelecionado.nome} cadastrado. Configure em Compras → Fornecedores.
                 </p>
               )}
               {tipoSelecionado && !semTiposCadastrados && fornecedoresVisiveis.length > 0 && (
-                <p className="mt-1 text-xs text-ink-faint">
+                <p className="mt-1 text-xs text-text-3">
                   {fornecedoresVisiveis.length} fornecedor(es) de {tipoSelecionado.nome}
                 </p>
               )}
             </div>
             <div>
-              <label className="label">Obra <span className="text-red-500">*</span></label>
+              <label className="label">Obra <span className="text-danger">*</span></label>
               <select name="obra_id" required defaultValue={fromObraId ?? ""} className="field">
                 <option value="">Selecione uma obra…</option>
                 {obras.map((o) => (
@@ -452,7 +455,7 @@ export function NovoPedidoCliente({
               </select>
             </div>
             <div>
-              <label className="label">Forma de pagamento <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Forma de pagamento <span className="text-text-3 font-normal">(opcional)</span></label>
               <select
                 name="forma_pagamento_id"
                 className="field"
@@ -466,14 +469,14 @@ export function NovoPedidoCliente({
                 const forma = formasPagamento.find((f) => f.id === formaPagId);
                 if (forma?.is_faturamento_direto) {
                   return (
-                    <p className="mt-1 text-xs text-steel font-medium">
+                    <p className="mt-1 text-xs text-primary font-medium">
                       O valor será debitado da carteira da obra ao emitir o pedido.
                     </p>
                   );
                 }
                 if (formasPagamento.length === 0) {
                   return (
-                    <p className="mt-1 text-xs text-ink-faint">
+                    <p className="mt-1 text-xs text-text-3">
                       Cadastre em <a href="/compras/formas-pagamento" className="underline">Formas de Pagamento</a>
                     </p>
                   );
@@ -483,22 +486,22 @@ export function NovoPedidoCliente({
             </div>
             {coresRal.length > 0 && (
               <div className="sm:col-span-2">
-                <label className="label">Cor <span className="text-ink-faint font-normal">(opcional)</span></label>
+                <label className="label">Cor <span className="text-text-3 font-normal">(opcional)</span></label>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="inline-flex rounded-md border border-line overflow-hidden text-xs">
+                  <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
                     <button type="button"
                       onClick={() => setModoCorPedido("unica")}
-                      className={`px-3 py-1.5 transition-colors ${modoCorPedido === "unica" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                      className={`px-3 py-1.5 transition-colors ${modoCorPedido === "unica" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                       Cor única
                     </button>
                     <button type="button"
                       onClick={() => setModoCorPedido("por-item")}
-                      className={`px-3 py-1.5 border-l border-line transition-colors ${modoCorPedido === "por-item" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                      className={`px-3 py-1.5 border-l border-border transition-colors ${modoCorPedido === "por-item" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                       Por item
                     </button>
                   </div>
                   {modoCorPedido === "por-item" && (
-                    <span className="text-xs text-ink-faint">Selecione a cor em cada item da tabela abaixo</span>
+                    <span className="text-xs text-text-3">Selecione a cor em cada item da tabela abaixo</span>
                   )}
                 </div>
                 {modoCorPedido === "unica" && (
@@ -512,7 +515,7 @@ export function NovoPedidoCliente({
                       ))}
                     </select>
                     {tipoSelecionado && coresFiltradas.length === 0 && (
-                      <p className="mt-1 text-xs text-amber-600">
+                      <p className="mt-1 text-xs text-warning">
                         Nenhuma cor de {tipoSelecionado.nome}. Configure em Catálogo → Cores RAL.
                       </p>
                     )}
@@ -530,44 +533,39 @@ export function NovoPedidoCliente({
         {/* Itens */}
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-ink">
+            <h2 className="text-sm font-semibold text-text">
               {tipoSelecionado ? `Itens — ${tipoSelecionado.nome}` : "Itens do pedido"}
             </h2>
             {outrasSolicitacoes.length > 0 && (
-              <button type="button" onClick={() => setShowSols((v) => !v)} className="btn-ghost text-xs gap-1.5">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setShowSols((v) => !v)} className="gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/>
                 </svg>
                 Importar de outra solicitação
-              </button>
+              </Button>
             )}
           </div>
 
           {fromSolicitacao && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 text-sm dark:border-green-800/40 dark:bg-green-900/20">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-green-600">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <span className="text-green-800 dark:text-green-300">
-                Itens importados automaticamente de{" "}
-                <span className="font-mono font-semibold">{fromSolicitacao.numero}</span>
-              </span>
-            </div>
+            <Alert variant="success" className="mb-3">
+              Itens importados automaticamente de{" "}
+              <span className="font-mono font-semibold">{fromSolicitacao.numero}</span>
+            </Alert>
           )}
 
           {showSols && (
             <div className="mb-3 card overflow-x-auto">
-              <div className="border-b border-line px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink-faint">
+              <div className="border-b border-border px-4 py-2 text-xs font-semibold uppercase tracking-widest text-text-3">
                 Outras solicitações aprovadas
               </div>
               {outrasSolicitacoes.map((sol) => (
-                <div key={sol.id} className="flex items-center justify-between border-b border-line last:border-0 px-4 py-3">
+                <div key={sol.id} className="flex items-center justify-between border-b border-border last:border-0 px-4 py-3">
                   <div>
-                    <span className="font-mono text-xs font-semibold text-steel">{sol.numero}</span>
-                    <span className="ml-2 text-sm text-ink-soft">{(sol.obra as any)?.nome ?? "Sem obra"}</span>
-                    <span className="ml-2 text-xs text-ink-faint">{sol.itens.length} iten(s)</span>
+                    <span className="font-mono text-xs font-semibold text-primary">{sol.numero}</span>
+                    <span className="ml-2 text-sm text-text-2">{(sol.obra as any)?.nome ?? "Sem obra"}</span>
+                    <span className="ml-2 text-xs text-text-3">{sol.itens.length} iten(s)</span>
                   </div>
-                  <button type="button" onClick={() => importarSolicitacao(sol)} className="btn-ghost text-xs">Importar</button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => importarSolicitacao(sol)}>Importar</Button>
                 </div>
               ))}
             </div>
@@ -576,7 +574,7 @@ export function NovoPedidoCliente({
           {/* Busca de produto — filtra pelo tipo selecionado */}
           <div className="mb-3">
             {!tipoSelecionado && tiposLinha.length > 0 && (
-              <p className="mb-2 text-xs text-amber-600">
+              <p className="mb-2 text-xs text-warning">
                 Selecione o tipo de pedido acima para filtrar os produtos por categoria.
               </p>
             )}
@@ -590,7 +588,7 @@ export function NovoPedidoCliente({
               existingIds={new Set(itens.filter((i) => !i.solicitacao_item_id && i.produto).map((i) => i.produto!.id))}
             />
             {fornecedorId && tipoSelecionado && (
-              <p className="mt-1 text-xs text-ink-faint">
+              <p className="mt-1 text-xs text-text-3">
                 Buscando por código mestre, aliases e código do fornecedor selecionado
               </p>
             )}
@@ -600,7 +598,7 @@ export function NovoPedidoCliente({
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                     <th className="px-4 py-2 font-medium">Produto</th>
                     <th className="px-4 py-2 font-medium">Qtd / Dimensões</th>
                     {temSpecs && <th className="px-4 py-2 font-medium w-28 text-right">Linear / Área</th>}
@@ -623,16 +621,16 @@ export function NovoPedidoCliente({
                       ? (area / it.qtd_pecas) * (it.preco_metro ?? 0)
                       : it.preco_unitario;
                     return (
-                    <tr key={idx} className="border-b border-line last:border-0">
+                    <tr key={idx} className="border-b border-border last:border-0">
                       <td className="px-4 py-2">
-                        <p className="font-medium text-ink">{it.descricao_snapshot}</p>
+                        <p className="font-medium text-text">{it.descricao_snapshot}</p>
                         {it.produto ? (
-                          <p className="font-mono text-xs text-ink-faint">{it.produto.codigo_mestre}</p>
+                          <p className="font-mono text-xs text-text-3">{it.produto.codigo_mestre}</p>
                         ) : (
-                          <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">EXTERNO</span>
+                          <Badge variant="warning" size="sm">EXTERNO</Badge>
                         )}
                         {it.tamanho_mm && (
-                          <p className="text-xs text-ink-faint">{Number(it.tamanho_mm).toLocaleString("pt-BR")} mm {itIsChapa ? "(esp.)" : "(barra)"}</p>
+                          <p className="text-xs text-text-3">{Number(it.tamanho_mm).toLocaleString("pt-BR")} mm {itIsChapa ? "(esp.)" : "(barra)"}</p>
                         )}
                       </td>
                       {/* Qtd / Dimensões */}
@@ -640,7 +638,7 @@ export function NovoPedidoCliente({
                         {itIsChapa ? (
                           <div className="flex flex-col gap-1 min-w-[200px]">
                             <div className="flex items-center gap-1">
-                              <span className="text-[10px] font-medium text-ink-faint uppercase w-4">L</span>
+                              <span className="text-[10px] font-medium text-text-3 uppercase w-4">L</span>
                               <input type="number" min="0" step="1" placeholder="mm"
                                 value={it.largura_m != null ? Math.round(it.largura_m * 1000) : ""}
                                 onChange={(e) => {
@@ -654,8 +652,8 @@ export function NovoPedidoCliente({
                                   }));
                                 }}
                                 className="field h-7 w-20 text-xs" />
-                              <span className="text-xs text-ink-faint">×</span>
-                              <span className="text-[10px] font-medium text-ink-faint uppercase w-4">A</span>
+                              <span className="text-xs text-text-3">×</span>
+                              <span className="text-[10px] font-medium text-text-3 uppercase w-4">A</span>
                               <input type="number" min="0" step="1" placeholder="mm"
                                 value={it.altura_m != null ? Math.round(it.altura_m * 1000) : ""}
                                 onChange={(e) => {
@@ -669,7 +667,7 @@ export function NovoPedidoCliente({
                                   }));
                                 }}
                                 className="field h-7 w-20 text-xs" />
-                              <span className="text-xs text-ink-faint">mm</span>
+                              <span className="text-xs text-text-3">mm</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                               <input type="number" min="1" step="1" placeholder="Qtd pç"
@@ -684,10 +682,10 @@ export function NovoPedidoCliente({
                                   }));
                                 }}
                                 className="field h-7 w-16 text-xs" />
-                              <span className="text-xs text-ink-faint">peças</span>
+                              <span className="text-xs text-text-3">peças</span>
                             </div>
                             {it.largura_m && it.altura_m && it.qtd_pecas && (
-                              <p className="text-[10px] text-ink-faint">
+                              <p className="text-[10px] text-text-3">
                                 {((it.largura_m * it.altura_m * it.qtd_pecas)).toLocaleString("pt-BR", { maximumFractionDigits: 3 })} m²
                               </p>
                             )}
@@ -697,29 +695,29 @@ export function NovoPedidoCliente({
                             <input type="number" min="0" step="any" value={it.quantidade_pedida}
                               onChange={(e) => updateItem(idx, "quantidade_pedida", parseFloat(e.target.value) || 1)}
                               className="field h-8 w-20 text-sm" />
-                            <span className="text-xs text-ink-faint">{it.unidade}</span>
+                            <span className="text-xs text-text-3">{it.unidade}</span>
                           </div>
                         )}
                       </td>
                       {temSpecs && (
-                        <td className="px-4 py-2 text-right text-xs text-ink-soft">
+                        <td className="px-4 py-2 text-right text-xs text-text-2">
                           {medida != null ? `${medida.valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} ${medida.sufixo}` : "—"}
                         </td>
                       )}
                       {temSpecs && (
-                        <td className="px-4 py-2 text-right text-xs text-ink-soft">
+                        <td className="px-4 py-2 text-right text-xs text-text-2">
                           {peso != null ? `${peso.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} kg` : "—"}
                         </td>
                       )}
                       <td className="px-4 py-2">
                         {itIsChapa ? (
                           <div>
-                            <p className="text-sm font-medium text-ink">
+                            <p className="text-sm font-medium text-text">
                               {precoUnitDisplay > 0
                                 ? precoUnitDisplay.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
                                 : "—"}
                             </p>
-                            <p className="text-[10px] text-ink-faint">por peça</p>
+                            <p className="text-[10px] text-text-3">por peça</p>
                           </div>
                         ) : (
                           <input type="number" min="0" step="0.01" value={it.preco_unitario}
@@ -746,13 +744,13 @@ export function NovoPedidoCliente({
                           </select>
                         </td>
                       )}
-                      <td className="px-4 py-2 text-right text-sm font-medium text-ink">
+                      <td className="px-4 py-2 text-right text-sm font-medium text-text">
                         {itIsChapa
                           ? ((area ?? 0) * (it.preco_metro ?? 0)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
                           : (it.quantidade_pedida * it.preco_unitario).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                       </td>
                       <td className="px-4 py-2">
-                        <button type="button" onClick={() => removeItem(idx)} className="text-ink-faint hover:text-red-500">
+                        <button type="button" onClick={() => removeItem(idx)} className="text-text-3 hover:text-danger">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                           </svg>
@@ -763,10 +761,10 @@ export function NovoPedidoCliente({
                   })}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t border-line bg-canvas">
-                    <td colSpan={2} className="px-4 py-2 text-right text-sm font-semibold text-ink">Totais</td>
+                  <tr className="border-t border-border bg-bg">
+                    <td colSpan={2} className="px-4 py-2 text-right text-sm font-semibold text-text">Totais</td>
                     {temSpecs && (
-                      <td className="px-4 py-2 text-right text-xs font-semibold text-ink">
+                      <td className="px-4 py-2 text-right text-xs font-semibold text-text">
                         {totalMetros > 0 && <span>{totalMetros.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} m</span>}
                         {totalMetros > 0 && totalArea > 0 && <br />}
                         {totalArea > 0 && <span>{totalArea.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} m²</span>}
@@ -774,12 +772,12 @@ export function NovoPedidoCliente({
                       </td>
                     )}
                     {temSpecs && (
-                      <td className="px-4 py-2 text-right text-xs font-semibold text-ink">
+                      <td className="px-4 py-2 text-right text-xs font-semibold text-text">
                         {totalPeso > 0 ? `${totalPeso.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} kg` : "—"}
                       </td>
                     )}
                     <td colSpan={corPorItem ? 3 : 2} />
-                    <td className="px-4 py-2 text-right text-sm font-bold text-ink">
+                    <td className="px-4 py-2 text-right text-sm font-bold text-text">
                       {totalValor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                     </td>
                     <td />
@@ -788,7 +786,7 @@ export function NovoPedidoCliente({
               </table>
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-ink-faint">
+            <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-text-3">
               {tipoSelecionado
                 ? `Busque produtos de ${tipoSelecionado.nome} ou importe de uma solicitação aprovada.`
                 : "Busque produtos ou importe de uma solicitação aprovada."}
@@ -796,13 +794,13 @@ export function NovoPedidoCliente({
           )}
         </div>
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <Alert variant="danger">{erro}</Alert>}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={pending} className="btn-primary">
+          <Button type="submit" disabled={pending}>
             {pending ? "Salvando…" : tipoSelecionado ? `Criar Pedido de ${tipoSelecionado.nome}` : "Criar pedido"}
-          </button>
-          <a href="/compras/pedidos" className="btn-ghost">Cancelar</a>
+          </Button>
+          <Button as="a" href="/compras/pedidos" variant="ghost">Cancelar</Button>
         </div>
       </form>
     </>

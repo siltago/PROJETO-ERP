@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/ui/components/Button";
 import { createAdminClient } from "@/shared/database/supabase-admin";
 import { getUsuarioAtual } from "@/shared/auth/auth";
 import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
@@ -63,10 +64,10 @@ export default async function PedidosPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Pedidos de Compra</h1>
-          <p className="mt-1 text-sm text-ink-soft">{count ?? 0} registro(s)</p>
+          <p className="mt-1 text-sm text-text-2">{count ?? 0} registro(s)</p>
         </div>
         {podeCriar && (
-          <Link href="/compras/pedidos/novo" className="btn-primary">Novo pedido</Link>
+          <Button as="a" href="/compras/pedidos/novo">Novo pedido</Button>
         )}
       </div>
 
@@ -81,11 +82,11 @@ export default async function PedidosPage({
             placeholder="Buscar por código ou item…"
             className="field h-9 w-full pl-8 text-sm"
           />
-          <svg className="absolute left-2.5 top-2.5 text-ink-faint" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="absolute left-2.5 top-2.5 text-text-3" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           {filtroQ && (
-            <a href="/compras/pedidos" className="absolute right-2.5 top-2.5 text-ink-faint hover:text-ink">
+            <a href="/compras/pedidos" className="absolute right-2.5 top-2.5 text-text-3 hover:text-text">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -96,7 +97,7 @@ export default async function PedidosPage({
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Link href={filtroQ ? `/compras/pedidos?q=${encodeURIComponent(filtroQ)}` : "/compras/pedidos"}
-          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!searchParams.status ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!searchParams.status ? "border-primary bg-primary text-white" : "border-border text-text-2 hover:bg-bg"}`}>
           Todos
         </Link>
         {statuses.map((s) => {
@@ -104,7 +105,7 @@ export default async function PedidosPage({
           if (filtroQ) params.set("q", filtroQ);
           return (
             <Link key={s} href={`/compras/pedidos?${params}`}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-steel bg-steel text-white" : "border-line text-ink-soft hover:bg-canvas"}`}>
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${searchParams.status === s ? "border-primary bg-primary text-white" : "border-border text-text-2 hover:bg-bg"}`}>
               {STATUS_PED_LABEL[s as keyof typeof STATUS_PED_LABEL]}
             </Link>
           );

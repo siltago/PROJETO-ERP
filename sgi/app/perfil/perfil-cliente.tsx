@@ -6,6 +6,12 @@ import { createClient } from "@/shared/database/supabase-client";
 import { BackButton } from "@/modules/squadframe/components/back-button";
 import { salvarFotoUrl, salvarPerfil, salvarAssinatura } from "./actions";
 import type { UsuarioAtual } from "@/shared/auth/auth";
+import { Avatar } from "@/ui/components/Avatar";
+import { Button } from "@/ui/components/Button";
+import { Alert } from "@/ui/components/Alert";
+import { Badge } from "@/ui/components/Badge";
+import { Input } from "@/ui/components/Input";
+import { Spinner } from "@/ui/components/Spinner";
 
 function resizeAvatar(file: File, size: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -17,7 +23,6 @@ function resizeAvatar(file: File, size: number): Promise<Blob> {
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext("2d")!;
-      // Recorte centralizado em quadrado
       const side = Math.min(img.width, img.height);
       const sx = (img.width - side) / 2;
       const sy = (img.height - side) / 2;
@@ -56,50 +61,48 @@ function CardAssinatura({ textoAtual, nome, cargo }: { textoAtual: string | null
 
   return (
     <div className="card p-6">
-      <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-soft">
+      <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-text-2">
         Assinatura eletrônica
       </h2>
-      <p className="mb-5 text-xs text-ink-faint">
+      <p className="mb-5 text-xs text-text-3">
         Funciona como carimbo ao criar ou aprovar documentos. Escreva como quiser que apareça, ex:{" "}
         <em>{[nome, cargo].filter(Boolean).join(" ").toUpperCase() || "NOME CARGO"}</em>.
       </p>
 
-      <div>
-        <label className="label">Texto da assinatura</label>
-        <input
-          value={texto}
-          onChange={(e) => { setTexto(e.target.value); setOk(false); }}
-          className="field font-mono uppercase tracking-widest"
-          placeholder={[nome, cargo].filter(Boolean).join(" ").toUpperCase() || "SEU NOME E CARGO"}
-          maxLength={80}
-        />
-      </div>
+      <Input
+        label="Texto da assinatura"
+        value={texto}
+        onChange={(e) => { setTexto(e.target.value); setOk(false); }}
+        className="font-mono uppercase tracking-widest"
+        placeholder={[nome, cargo].filter(Boolean).join(" ").toUpperCase() || "SEU NOME E CARGO"}
+        maxLength={80}
+      />
 
       {texto.trim() && (
         <div className="mt-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-ink-faint">Prévia do carimbo</p>
-          <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-steel/50 bg-steel/5 p-4">
+          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-text-3">Prévia do carimbo</p>
+          <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-primary/30 bg-primary-soft p-4">
             <div className="text-center">
-              <p className="font-mono text-base font-bold uppercase tracking-widest text-steel">
+              <p className="font-mono text-base font-bold uppercase tracking-widest text-primary">
                 {texto.trim()}
               </p>
-              <p className="mt-1 font-mono text-xs text-steel/60">DD/MM/AAAA HH:MM:SS</p>
+              <p className="mt-1 font-mono text-xs text-primary/60">DD/MM/AAAA HH:MM:SS</p>
             </div>
           </div>
         </div>
       )}
 
-      {erro && <p className="mt-3 text-sm text-red-600">{erro}</p>}
-      {ok && <p className="mt-3 text-sm text-green-600">Assinatura salva com sucesso.</p>}
+      {erro && <Alert variant="danger" className="mt-3">{erro}</Alert>}
+      {ok && <Alert variant="success" className="mt-3">Assinatura salva com sucesso.</Alert>}
 
-      <button
+      <Button
         type="button"
         onClick={handleSalvar}
         disabled={salvando || !texto.trim()}
-        className="btn-primary mt-4 disabled:opacity-50"
+        className="mt-4"
       >
         {salvando ? "Salvando…" : "Salvar assinatura"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -120,13 +123,6 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const initials = usuario.nome
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   const cargoCor = usuario.cargo?.cor ?? "#475569";
 
   async function handleUploadFoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -135,7 +131,6 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
     setUploading(true);
     setErroGeral(null);
     try {
-      // Redimensiona e recorta em quadrado antes de enviar
       const blob = await resizeAvatar(file, 400);
 
       const supabase = createClient();
@@ -146,7 +141,6 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
       if (upErr) throw upErr;
 
       const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
-      // Força revalidação do cache do browser adicionando versão única
       const url = `${publicUrl}?v=${Date.now()}`;
       setFotoUrl(url);
 
@@ -186,7 +180,6 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
         const { error } = await supabase.auth.updateUser({ password: novaSenha });
         if (error) throw new Error(error.message);
         setOkSenha(true);
-
         setNovaSenha("");
         setConfirmar("");
       } catch (err: any) {
@@ -199,51 +192,43 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
     <div className="px-8 py-8">
       <div className="mb-6">
         <BackButton href="/" />
-        <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">
-          Conta
-        </p>
+        <p className="text-xs font-medium uppercase tracking-widest text-text-3">Conta</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">Meu perfil</h1>
       </div>
 
       <div className="grid max-w-2xl gap-6">
         {/* Card: foto + dados */}
         <div className="card p-6">
-          <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-ink-soft">
+          <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-text-2">
             Informações pessoais
           </h2>
 
           {/* Avatar */}
           <div className="mb-6 flex items-center gap-4">
             <div className="relative">
-              {fotoUrl ? (
-                <img
-                  src={fotoUrl}
-                  alt={usuario.nome}
-                  className="h-20 w-20 rounded-full object-cover ring-2 ring-line"
-                />
-              ) : (
-                <div
-                  className="flex h-20 w-20 items-center justify-center rounded-full text-2xl font-bold text-white"
-                  style={{ backgroundColor: cargoCor }}
-                >
-                  {initials}
-                </div>
-              )}
+              <Avatar
+                src={fotoUrl || null}
+                name={usuario.nome}
+                color={cargoCor}
+                size="xl"
+                className="ring-2 ring-border"
+              />
               {uploading && (
                 <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <Spinner size="sm" className="text-white" />
                 </div>
               )}
             </div>
             <div>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
-                className="btn-ghost py-1.5 text-xs"
               >
                 {uploading ? "Enviando…" : "Alterar foto"}
-              </button>
-              <p className="mt-1 text-xs text-ink-faint">JPG, PNG ou WebP · máx 2 MB</p>
+              </Button>
+              <p className="mt-1 text-xs text-text-3">JPG, PNG ou WebP · máx 2 MB</p>
             </div>
             <input
               ref={fileRef}
@@ -256,62 +241,50 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
 
           {/* Campos */}
           <div className="space-y-4">
-            <div>
-              <label className="label">Nome completo</label>
-              <input
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="field"
-              />
-            </div>
-            <div>
-              <label className="label">Empresa</label>
-              <input
-                value={empresa}
-                onChange={(e) => setEmpresa(e.target.value)}
-                className="field"
-                placeholder="Nome da empresa"
-              />
-            </div>
-            <div>
-              <label className="label">E-mail</label>
-              <input
-                value={usuario.email}
-                disabled
-                className="field opacity-60"
-              />
-              <p className="mt-1 text-xs text-ink-faint">
-                Para alterar o e-mail, entre em contato com o administrador.
-              </p>
-            </div>
+            <Input
+              label="Nome completo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+            <Input
+              label="Empresa"
+              value={empresa}
+              onChange={(e) => setEmpresa(e.target.value)}
+              placeholder="Nome da empresa"
+            />
+            <Input
+              label="E-mail"
+              value={usuario.email}
+              disabled
+              className="opacity-60"
+              hint="Para alterar o e-mail, entre em contato com o administrador."
+            />
 
             {/* Cargo e setor — somente leitura */}
             {usuario.cargo && (
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="label">Cargo</label>
-                  <div className="flex items-center gap-2 rounded-card border border-line bg-canvas px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2">
                     <span
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: usuario.cargo.cor }}
                     />
-                    <span className="text-sm text-ink">{usuario.cargo.nome}</span>
+                    <span className="text-sm text-text">{usuario.cargo.nome}</span>
                     {usuario.cargo.is_admin && (
-                      <span className="ml-auto rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">
-                        Admin
-                      </span>
+                      <Badge variant="warning" size="sm" className="ml-auto">Admin</Badge>
                     )}
                   </div>
                 </div>
                 {usuario.setor && (
                   <div className="flex-1">
                     <label className="label">Setor</label>
-                    <div className="flex items-center gap-2 rounded-card border border-line bg-canvas px-3 py-2">
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2">
                       <span
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: usuario.setor.cor }}
                       />
-                      <span className="text-sm text-ink">{usuario.setor.nome}</span>
+                      <span className="text-sm text-text">{usuario.setor.nome}</span>
                     </div>
                   </div>
                 )}
@@ -319,24 +292,12 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
             )}
           </div>
 
-          {erroGeral && (
-            <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-              {erroGeral}
-            </p>
-          )}
-          {okGeral && (
-            <p className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
-              Perfil atualizado com sucesso.
-            </p>
-          )}
+          {erroGeral && <Alert variant="danger" className="mt-3">{erroGeral}</Alert>}
+          {okGeral && <Alert variant="success" className="mt-3">Perfil atualizado com sucesso.</Alert>}
 
-          <button
-            onClick={handleSalvarPerfil}
-            disabled={pendingGeral}
-            className="btn-primary mt-5"
-          >
+          <Button onClick={handleSalvarPerfil} disabled={pendingGeral} className="mt-5">
             {pendingGeral ? "Salvando…" : "Salvar alterações"}
-          </button>
+          </Button>
         </div>
 
         {/* Card: assinatura */}
@@ -344,50 +305,32 @@ export function PerfilCliente({ usuario, assinaturaUrl }: { usuario: UsuarioAtua
 
         {/* Card: senha */}
         <div className="card p-6">
-          <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-ink-soft">
+          <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-text-2">
             Alterar senha
           </h2>
           <div className="space-y-4">
-            <div>
-              <label className="label">Nova senha</label>
-              <input
-                type="password"
-                value={novaSenha}
-                onChange={(e) => setNovaSenha(e.target.value)}
-                className="field"
-                placeholder="••••••••"
-              />
-            </div>
-            <div>
-              <label className="label">Confirmar nova senha</label>
-              <input
-                type="password"
-                value={confirmar}
-                onChange={(e) => setConfirmar(e.target.value)}
-                className="field"
-                placeholder="••••••••"
-              />
-            </div>
+            <Input
+              label="Nova senha"
+              type="password"
+              value={novaSenha}
+              onChange={(e) => setNovaSenha(e.target.value)}
+              placeholder="••••••••"
+            />
+            <Input
+              label="Confirmar nova senha"
+              type="password"
+              value={confirmar}
+              onChange={(e) => setConfirmar(e.target.value)}
+              placeholder="••••••••"
+            />
           </div>
 
-          {erroSenha && (
-            <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-              {erroSenha}
-            </p>
-          )}
-          {okSenha && (
-            <p className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
-              Senha alterada com sucesso.
-            </p>
-          )}
+          {erroSenha && <Alert variant="danger" className="mt-3">{erroSenha}</Alert>}
+          {okSenha && <Alert variant="success" className="mt-3">Senha alterada com sucesso.</Alert>}
 
-          <button
-            onClick={handleAlterarSenha}
-            disabled={pendingSenha}
-            className="btn-primary mt-5"
-          >
+          <Button onClick={handleAlterarSenha} disabled={pendingSenha} className="mt-5">
             {pendingSenha ? "Alterando…" : "Alterar senha"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

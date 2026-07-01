@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/shared/database/supabase-admin";
 import { PrintButton } from "./print-button";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -133,11 +134,11 @@ export default async function VisualizarPedidoPage({ params }: { params: { id: s
   return (
     <div className="min-h-full bg-gray-100">
       {/* Toolbar — oculta ao imprimir */}
-      <div className="print:hidden sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface px-6 py-3 shadow-sm">
-        <Link href={`/compras/pedidos/${params.id}`} className="btn-ghost text-sm px-3 py-1.5">
+      <div className="print:hidden sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-surface px-6 py-3 shadow-sm">
+        <Button as="a" variant="ghost" href={`/compras/pedidos/${params.id}`} className="text-sm px-3 py-1.5">
           ← Voltar ao pedido
-        </Link>
-        <span className="text-sm font-semibold text-ink">Visualização — PC {pcNum}</span>
+        </Button>
+        <span className="text-sm font-semibold text-text">Visualização — PC {pcNum}</span>
         <div className="ml-auto">
           <PrintButton />
         </div>

@@ -19,7 +19,7 @@ export function FinanceiroTabNav({
   const abaAtual = searchParams.get("aba") ?? "dashboard";
 
   return (
-    <div className="flex gap-1 border-b border-line mt-6">
+    <div className="flex gap-1 border-b border-border mt-6">
       {ABAS.map(({ slug, label }) => {
         const show = slug === "dashboard" ? podeDashboard : podeCarteiras;
         if (!show) return null;
@@ -30,8 +30,8 @@ export function FinanceiroTabNav({
             href={`/financeiro?aba=${slug}`}
             className={
               active
-                ? "border-b-2 border-steel px-4 py-2.5 text-sm font-semibold text-ink shrink-0"
-                : "px-4 py-2.5 text-sm font-medium text-ink-faint hover:text-ink-soft shrink-0"
+                ? "border-b-2 border-primary px-4 py-2.5 text-sm font-semibold text-text shrink-0"
+                : "px-4 py-2.5 text-sm font-medium text-text-3 hover:text-text-2 shrink-0"
             }
           >
             {label}

@@ -1,12 +1,14 @@
 "use client";
 
+import { Button } from "@/ui/components/Button";
+
 export function PrintButton() {
   return (
-    <button
+    <Button
       onClick={() => window.print()}
-      className="btn-primary text-sm px-4 py-1.5"
+      className="text-sm px-4 py-1.5"
     >
       Imprimir / Salvar PDF
-    </button>
+    </Button>
   );
 }

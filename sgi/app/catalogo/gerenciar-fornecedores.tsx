@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { usePode } from "@/modules/squadframe/components/user-provider";
 import { criarFornecedor } from "@/app/compras/actions";
 import { FornecedoresLista } from "@/app/compras/fornecedores/fornecedores-lista";
+import { Button } from "@/ui/components/Button";
 
 type Fornecedor = {
   id: string; nome: string; razao_social: string | null; cnpj: string | null;
@@ -48,15 +49,15 @@ export function GerenciarFornecedores({
       {podeCriar && (
         <div className="card p-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-ink-faint">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-text-3">
               Novo fornecedor
             </h2>
-            <button
+            <Button
               onClick={() => { setAberto(!aberto); setErro(null); }}
-              className="btn-secondary text-xs"
+              variant="secondary" className="text-xs"
             >
               {aberto ? "Cancelar" : "+ Adicionar"}
-            </button>
+            </Button>
           </div>
 
           {aberto && (
@@ -104,12 +105,12 @@ export function GerenciarFornecedores({
                 </div>
               )}
 
-              {erro && <p className="text-xs text-red-500">{erro}</p>}
+              {erro && <p className="text-xs text-danger">{erro}</p>}
 
               <div className="flex gap-2 pt-1">
-                <button type="submit" disabled={pending} className="btn-primary">
+                <Button type="submit" disabled={pending}>
                   {pending ? "Salvando…" : "Salvar fornecedor"}
-                </button>
+                </Button>
               </div>
             </form>
           )}
@@ -118,11 +119,11 @@ export function GerenciarFornecedores({
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs text-ink-faint">
+          <p className="text-xs text-text-3">
             Exibindo fornecedores vinculados a esta aba.
           </p>
           <a href="/compras/fornecedores" target="_blank"
-            className="text-xs text-steel hover:underline">
+            className="text-xs text-primary hover:underline">
             Ver todos →
           </a>
         </div>

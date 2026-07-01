@@ -26,7 +26,7 @@ export default async function ReceberPage({ params }: { params: { id: string } }
     <div className="px-8 py-8 max-w-3xl">
       <BackButton href={`/compras/pedidos/${params.id}`} />
       <h1 className="mt-2 text-2xl font-bold tracking-tight">Registrar Recebimento</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-text-2">
         Pedido {ped.numero} · {(ped.fornecedor as any)?.nome}
       </p>
       <div className="mt-6">

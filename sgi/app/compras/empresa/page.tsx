@@ -17,9 +17,9 @@ export default async function EmpresaPage() {
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <div className="mb-8">
-        <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">Compras</p>
+        <p className="text-xs font-medium uppercase tracking-widest text-text-3">Compras</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">Dados da Empresa</h1>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-sm text-text-2">
           Essas informações serão usadas nos pedidos de compra e outros documentos gerados pelo sistema.
         </p>
       </div>

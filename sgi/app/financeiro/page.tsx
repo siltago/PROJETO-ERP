@@ -6,6 +6,7 @@ import { STATUS_PED_LABEL } from "@/modules/squadframe/types/compras";
 import { CarteirasContent } from "@/app/compras/financeiro/carteiras-content";
 import { FinanceiroTabNav } from "./tab-nav";
 import Link from "next/link";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function FinanceiroPage({
   if (!podeDashboard && !podeCarteiras) {
     return (
       <div className="px-8 py-8">
-        <p className="text-sm text-red-600">Sem permissão para acessar o módulo financeiro.</p>
+        <p className="text-sm text-danger">Sem permissão para acessar o módulo financeiro.</p>
       </div>
     );
   }
@@ -57,7 +58,7 @@ export default async function FinanceiroPage({
   if (!podeDashboard) {
     return (
       <div className="px-8 py-8">
-        <p className="text-sm text-red-600">Sem permissão para o dashboard financeiro.</p>
+        <p className="text-sm text-danger">Sem permissão para o dashboard financeiro.</p>
       </div>
     );
   }
@@ -152,7 +153,7 @@ export default async function FinanceiroPage({
   return (
     <div className="px-8 py-8 max-w-6xl">
       <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-text-2">
         Gasto consolidado em compras. Valores sem confirmação são estimados pela soma dos itens.
       </p>
 
@@ -196,58 +197,58 @@ export default async function FinanceiroPage({
           <label className="label">Até</label>
           <input type="date" name="ate" defaultValue={filtroAte} className="field h-9 text-sm" />
         </div>
-        <button type="submit" className="btn-primary h-9 px-4 text-sm shrink-0">Filtrar</button>
+        <Button type="submit" className="h-9 px-4 text-sm shrink-0">Filtrar</Button>
         {(filtroFornecedor || filtroObra || filtroStatus || filtroDe || filtroAte) && (
-          <Link href="/financeiro" className="btn-ghost h-9 px-3 text-sm shrink-0">Limpar</Link>
+          <Button as="a" href="/financeiro" variant="ghost" className="h-9 px-3 text-sm shrink-0">Limpar</Button>
         )}
       </form>
 
       {/* Cards de resumo */}
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Total geral</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{fmt(totalGeral)}</p>
-          <p className="text-xs text-ink-faint mt-0.5">{pedidosComValor.length} pedidos</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Total geral</p>
+          <p className="mt-1 text-2xl font-bold text-text">{fmt(totalGeral)}</p>
+          <p className="text-xs text-text-3 mt-0.5">{pedidosComValor.length} pedidos</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Confirmado</p>
-          <p className="mt-1 text-2xl font-bold text-green-700">{fmt(totalConfirmado)}</p>
-          <p className="text-xs text-ink-faint mt-0.5">{pedidosComValor.filter((p: any) => !p.valor_estimado).length} pedidos</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Confirmado</p>
+          <p className="mt-1 text-2xl font-bold text-success">{fmt(totalConfirmado)}</p>
+          <p className="text-xs text-text-3 mt-0.5">{pedidosComValor.filter((p: any) => !p.valor_estimado).length} pedidos</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Estimado</p>
-          <p className="mt-1 text-2xl font-bold text-amber-600">{fmt(totalGeral - totalConfirmado)}</p>
-          <p className="text-xs text-ink-faint mt-0.5">{pedidosComValor.filter((p: any) => p.valor_estimado).length} pedidos</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Estimado</p>
+          <p className="mt-1 text-2xl font-bold text-warning">{fmt(totalGeral - totalConfirmado)}</p>
+          <p className="text-xs text-text-3 mt-0.5">{pedidosComValor.filter((p: any) => p.valor_estimado).length} pedidos</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Fornecedores</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{rankFornecedores.length}</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Fornecedores</p>
+          <p className="mt-1 text-2xl font-bold text-text">{rankFornecedores.length}</p>
         </div>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="card">
-          <div className="border-b border-line px-5 py-3">
-            <h2 className="text-sm font-semibold text-ink">Por fornecedor</h2>
+          <div className="border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-text">Por fornecedor</h2>
           </div>
-          <div className="divide-y divide-line">
+          <div className="divide-y divide-border">
             {rankFornecedores.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-ink-faint text-center">Nenhum dado no período.</p>
+              <p className="px-5 py-6 text-sm text-text-3 text-center">Nenhum dado no período.</p>
             ) : rankFornecedores.map((f, i) => {
               const pct = totalGeral > 0 ? (f.total / totalGeral) * 100 : 0;
               return (
                 <div key={i} className="px-5 py-3">
                   <div className="flex items-center justify-between gap-4 mb-1">
-                    <span className="text-sm font-medium text-ink truncate">{f.nome}</span>
-                    <span className="text-sm font-semibold text-ink shrink-0">{fmt(f.total)}</span>
+                    <span className="text-sm font-medium text-text truncate">{f.nome}</span>
+                    <span className="text-sm font-semibold text-text shrink-0">{fmt(f.total)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full bg-surface-3 overflow-hidden">
-                      <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-xs text-ink-faint w-12 text-right">{pct.toFixed(1)}%</span>
+                    <span className="text-xs text-text-3 w-12 text-right">{pct.toFixed(1)}%</span>
                   </div>
-                  <p className="text-xs text-ink-faint mt-0.5">{f.count} pedido{f.count !== 1 ? "s" : ""}</p>
+                  <p className="text-xs text-text-3 mt-0.5">{f.count} pedido{f.count !== 1 ? "s" : ""}</p>
                 </div>
               );
             })}
@@ -255,30 +256,30 @@ export default async function FinanceiroPage({
         </div>
 
         <div className="card">
-          <div className="border-b border-line px-5 py-3">
-            <h2 className="text-sm font-semibold text-ink">Por obra</h2>
+          <div className="border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-text">Por obra</h2>
           </div>
-          <div className="divide-y divide-line max-h-96 overflow-y-auto">
+          <div className="divide-y divide-border max-h-96 overflow-y-auto">
             {rankObras.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-ink-faint text-center">Nenhum dado no período.</p>
+              <p className="px-5 py-6 text-sm text-text-3 text-center">Nenhum dado no período.</p>
             ) : rankObras.map((o, i) => {
               const pct = totalGeral > 0 ? (o.total / totalGeral) * 100 : 0;
               return (
                 <div key={i} className="px-5 py-3">
                   <div className="flex items-center justify-between gap-4 mb-1">
-                    <span className="text-sm font-medium text-ink truncate">
-                      {o.codigo && <span className="font-mono text-xs text-ink-faint mr-1.5">[{o.codigo}]</span>}
+                    <span className="text-sm font-medium text-text truncate">
+                      {o.codigo && <span className="font-mono text-xs text-text-3 mr-1.5">[{o.codigo}]</span>}
                       {o.nome}
                     </span>
-                    <span className="text-sm font-semibold text-ink shrink-0">{fmt(o.total)}</span>
+                    <span className="text-sm font-semibold text-text shrink-0">{fmt(o.total)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full bg-surface-3 overflow-hidden">
-                      <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-xs text-ink-faint w-12 text-right">{pct.toFixed(1)}%</span>
+                    <span className="text-xs text-text-3 w-12 text-right">{pct.toFixed(1)}%</span>
                   </div>
-                  <p className="text-xs text-ink-faint mt-0.5">{o.count} pedido{o.count !== 1 ? "s" : ""}</p>
+                  <p className="text-xs text-text-3 mt-0.5">{o.count} pedido{o.count !== 1 ? "s" : ""}</p>
                 </div>
               );
             })}
@@ -288,13 +289,13 @@ export default async function FinanceiroPage({
 
       {meses.length > 0 && (
         <div className="mt-6 card">
-          <div className="border-b border-line px-5 py-3">
-            <h2 className="text-sm font-semibold text-ink">Evolução mensal</h2>
+          <div className="border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-text">Evolução mensal</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                   <th className="px-5 py-2 font-medium">Mês</th>
                   <th className="px-5 py-2 font-medium text-right">Valor</th>
                   <th className="px-5 py-2 font-medium">Distribuição</th>
@@ -304,15 +305,15 @@ export default async function FinanceiroPage({
                 {meses.map(([mes, val]) => {
                   const pct = totalGeral > 0 ? (val / totalGeral) * 100 : 0;
                   return (
-                    <tr key={mes} className="border-b border-line last:border-0">
-                      <td className="px-5 py-2.5 font-medium text-ink">{fmtMes(mes)}</td>
-                      <td className="px-5 py-2.5 text-right font-semibold text-ink">{fmt(val)}</td>
+                    <tr key={mes} className="border-b border-border last:border-0">
+                      <td className="px-5 py-2.5 font-medium text-text">{fmtMes(mes)}</td>
+                      <td className="px-5 py-2.5 text-right font-semibold text-text">{fmt(val)}</td>
                       <td className="px-5 py-2.5">
                         <div className="flex items-center gap-2">
                           <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden">
-                            <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
+                            <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="text-xs text-ink-faint">{pct.toFixed(1)}%</span>
+                          <span className="text-xs text-text-3">{pct.toFixed(1)}%</span>
                         </div>
                       </td>
                     </tr>
@@ -325,13 +326,13 @@ export default async function FinanceiroPage({
       )}
 
       <div className="mt-6 card overflow-x-auto">
-        <div className="border-b border-line px-5 py-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-ink">Pedidos</h2>
-          <span className="text-xs text-ink-faint">{pedidosComValor.length} resultado{pedidosComValor.length !== 1 ? "s" : ""}</span>
+        <div className="border-b border-border px-5 py-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-text">Pedidos</h2>
+          <span className="text-xs text-text-3">{pedidosComValor.length} resultado{pedidosComValor.length !== 1 ? "s" : ""}</span>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
               <th className="px-5 py-2 font-medium">Pedido</th>
               <th className="px-5 py-2 font-medium">Fornecedor</th>
               <th className="px-5 py-2 font-medium">Obra</th>
@@ -342,32 +343,32 @@ export default async function FinanceiroPage({
           <tbody>
             {pedidosComValor.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-sm text-ink-faint">
+                <td colSpan={5} className="px-5 py-8 text-center text-sm text-text-3">
                   Nenhum pedido encontrado.
                 </td>
               </tr>
             ) : pedidosComValor.map((p: any) => (
-              <tr key={p.id} className="border-b border-line last:border-0 hover:bg-canvas/50">
+              <tr key={p.id} className="border-b border-border last:border-0 hover:bg-bg/50">
                 <td className="px-5 py-2.5">
-                  <Link href={`/compras/pedidos/${p.id}`} className="font-mono text-xs font-medium text-steel hover:underline">
+                  <Link href={`/compras/pedidos/${p.id}`} className="font-mono text-xs font-medium text-primary hover:underline">
                     {p.numero}
                   </Link>
-                  <p className="text-xs text-ink-faint">{new Date(p.criado_em).toLocaleDateString("pt-BR")}</p>
+                  <p className="text-xs text-text-3">{new Date(p.criado_em).toLocaleDateString("pt-BR")}</p>
                 </td>
-                <td className="px-5 py-2.5 text-ink-soft">{(p.fornecedor as any)?.nome ?? "—"}</td>
-                <td className="px-5 py-2.5 text-ink-soft">
+                <td className="px-5 py-2.5 text-text-2">{(p.fornecedor as any)?.nome ?? "—"}</td>
+                <td className="px-5 py-2.5 text-text-2">
                   {(p.obra as any)?.codigo
-                    ? <span className="font-mono text-xs text-ink-faint mr-1">[{(p.obra as any).codigo}]</span>
+                    ? <span className="font-mono text-xs text-text-3 mr-1">[{(p.obra as any).codigo}]</span>
                     : null}
                   {(p.obra as any)?.nome ?? "—"}
                 </td>
                 <td className="px-5 py-2.5">
-                  <span className="text-xs text-ink-soft">
+                  <span className="text-xs text-text-2">
                     {STATUS_PED_LABEL[p.status as keyof typeof STATUS_PED_LABEL] ?? p.status}
                   </span>
                 </td>
                 <td className="px-5 py-2.5 text-right">
-                  <span className={`font-semibold ${p.valor_estimado ? "text-amber-600" : "text-ink"}`}>
+                  <span className={`font-semibold ${p.valor_estimado ? "text-warning" : "text-text"}`}>
                     {fmt(p.valor_efetivo)}
                   </span>
                   {p.valor_estimado && (

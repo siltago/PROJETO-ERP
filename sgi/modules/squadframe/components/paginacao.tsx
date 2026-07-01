@@ -24,15 +24,15 @@ export function Paginacao({ paginaAtual, total, porPagina, buildUrl }: Props) {
   }
 
   return (
-    <div className="flex items-center justify-between border-t border-line px-5 py-3 text-sm">
-      <span className="text-ink-faint text-xs">
+    <div className="flex items-center justify-between border-t border-border px-5 py-3 text-sm">
+      <span className="text-text-3 text-xs">
         {inicio}–{fim} de {total}
       </span>
       <div className="flex items-center gap-1">
         <PagLink href={buildUrl(paginaAtual - 1)} disabled={paginaAtual <= 1} label="‹" />
         {paginas.map((p, i) =>
           p === "..." ? (
-            <span key={`e${i}`} className="px-2 text-ink-faint">…</span>
+            <span key={`e${i}`} className="px-2 text-text-3">…</span>
           ) : (
             <PagLink key={p} href={buildUrl(p as number)} active={p === paginaAtual} label={String(p)} />
           ),
@@ -45,13 +45,13 @@ export function Paginacao({ paginaAtual, total, porPagina, buildUrl }: Props) {
 
 function PagLink({ href, label, active, disabled }: { href: string; label: string; active?: boolean; disabled?: boolean }) {
   if (disabled) {
-    return <span className="flex h-9 w-9 items-center justify-center rounded text-xs text-ink-faint/40">{label}</span>;
+    return <span className="flex h-9 w-9 items-center justify-center rounded text-xs text-text-3/40">{label}</span>;
   }
   return (
     <Link
       href={href}
       className={`flex h-9 w-9 items-center justify-center rounded text-xs font-medium transition-colors ${
-        active ? "bg-steel text-white" : "text-ink-soft hover:bg-canvas"
+        active ? "bg-primary text-white" : "text-text-2 hover:bg-bg"
       }`}
     >
       {label}

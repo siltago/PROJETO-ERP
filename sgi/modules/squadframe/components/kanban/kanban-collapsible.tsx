@@ -16,14 +16,14 @@ export function KanbanCollapsible({ colunas, tarefas, usuarioId, usuarioNome }: 
   const total = tarefas.filter((t) => !t.deleted_at).length;
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-bg">
       <button
         onClick={() => setExpanded((p) => !p)}
-        className="flex w-full items-center justify-between px-5 py-4 border-b border-line bg-surface hover:bg-canvas transition-colors"
+        className="flex w-full items-center justify-between px-5 py-4 border-b border-border bg-surface hover:bg-bg transition-colors"
       >
         <div className="text-left">
-          <h1 className="font-display text-xl font-bold text-ink">Meu Kanban</h1>
-          <p className="text-xs text-ink-faint mt-0.5">
+          <h1 className="font-display text-xl font-bold text-text">Meu Kanban</h1>
+          <p className="text-xs text-text-3 mt-0.5">
             Olá, {usuarioNome} · {total} {total === 1 ? "tarefa" : "tarefas"}
           </p>
         </div>
@@ -36,7 +36,7 @@ export function KanbanCollapsible({ colunas, tarefas, usuarioId, usuarioNome }: 
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          className={`shrink-0 text-ink-faint transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          className={`shrink-0 text-text-3 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
         >
           <polyline points="6 9 12 15 18 9" />
         </svg>

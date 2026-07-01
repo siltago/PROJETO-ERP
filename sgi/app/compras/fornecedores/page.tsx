@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/shared/database/supabase-admin";
 import { criarFornecedor } from "@/app/compras/actions";
 import { FornecedoresLista } from "./fornecedores-lista";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +20,10 @@ export default async function FornecedoresPage() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-ink-faint">Novo fornecedor</h2>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-text-3">Novo fornecedor</h2>
           <form action={criarFornecedor} className="card p-5 space-y-4">
             <div>
-              <label className="label">Nome Fantasia <span className="text-red-500">*</span></label>
+              <label className="label">Nome Fantasia <span className="text-danger">*</span></label>
               <input name="nome" required className="field" placeholder="Nome fantasia ou comercial" />
             </div>
             <div>
@@ -84,12 +85,12 @@ export default async function FornecedoresPage() {
                     </label>
                   ))}
                 </div>
-                <p className="mt-1 text-xs text-ink-faint">
+                <p className="mt-1 text-xs text-text-3">
                   Tipos de produtos que este fornecedor vende
                 </p>
               </div>
             )}
-            <button type="submit" className="btn-primary w-full">Cadastrar fornecedor</button>
+            <Button type="submit" className="w-full">Cadastrar fornecedor</Button>
           </form>
         </div>
 

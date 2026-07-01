@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, ReactNode, HTMLAttributes } from "react";
 import { cn } from "@/ui/lib/cn";
+import { Button } from "./Button";
 
 interface ModalProps {
   open: boolean;
@@ -99,7 +100,7 @@ export function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="shrink-0 border-t border-divider px-6 py-4 flex items-center justify-end gap-3">
+          <div className="shrink-0 border-t border-border px-6 py-4 flex items-center justify-end gap-3">
             {footer}
           </div>
         )}
@@ -140,19 +141,16 @@ export function ConfirmDialog({
       size="sm"
       footer={
         <>
-          <button onClick={onClose} className="btn-ghost text-sm">
+          <Button variant="ghost" onClick={onClose}>
             {cancelLabel}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onConfirm}
             disabled={loading}
-            className={cn(
-              "btn-primary text-sm",
-              variant === "danger" && "bg-danger hover:bg-danger-hover"
-            )}
+            variant={variant === "danger" ? "danger" : undefined}
           >
             {loading ? "Aguarde…" : confirmLabel}
-          </button>
+          </Button>
         </>
       }
     >

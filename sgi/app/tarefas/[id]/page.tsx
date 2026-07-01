@@ -36,17 +36,17 @@ export default async function TarefaPage({ params }: PageProps) {
   const setorNome = (tarefa.setor as any)?.nome ?? null;
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <div className="flex items-center gap-2 px-5 py-3 border-b border-line bg-surface text-sm">
-        <a href="/tarefas" className="text-steel hover:underline">Tarefas</a>
+    <div className="min-h-screen bg-bg">
+      <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-surface text-sm">
+        <a href="/tarefas" className="text-primary hover:underline">Tarefas</a>
         {setorNome && (
           <>
-            <span className="text-ink-faint">/</span>
-            <span className="text-ink-faint">{setorNome}</span>
+            <span className="text-text-3">/</span>
+            <span className="text-text-3">{setorNome}</span>
           </>
         )}
-        <span className="text-ink-faint">/</span>
-        <span className="text-ink font-medium truncate max-w-xs">{tarefa.titulo}</span>
+        <span className="text-text-3">/</span>
+        <span className="text-text font-medium truncate max-w-xs">{tarefa.titulo}</span>
       </div>
       <TarefaStandaloneWrapper tarefaId={params.id} />
     </div>

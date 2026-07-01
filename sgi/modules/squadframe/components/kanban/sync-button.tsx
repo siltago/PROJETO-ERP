@@ -20,7 +20,7 @@ export function SyncButton() {
       <button
         onClick={handleSync}
         disabled={pending}
-        className="flex items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft hover:text-ink hover:border-steel/40 transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-2 hover:text-text hover:border-primary/40 transition-colors disabled:opacity-50"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
           className={pending ? "animate-spin" : ""}>
@@ -30,7 +30,7 @@ export function SyncButton() {
         {pending ? "Sincronizando…" : "Sincronizar pedidos"}
       </button>
       {resultado && (
-        <span className="text-xs text-ink-soft">
+        <span className="text-xs text-text-2">
           {resultado.criadas > 0 && `${resultado.criadas} criada${resultado.criadas !== 1 ? "s" : ""}`}
           {resultado.criadas > 0 && resultado.corrigidas > 0 && " · "}
           {resultado.corrigidas > 0 && `${resultado.corrigidas} corrigida${resultado.corrigidas !== 1 ? "s" : ""}`}

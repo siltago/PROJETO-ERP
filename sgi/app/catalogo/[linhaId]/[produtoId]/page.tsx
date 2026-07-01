@@ -127,12 +127,12 @@ export default async function ProdutoPage({
       {/* Cabeçalho */}
       <div className="mt-4">
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="font-mono text-xs font-medium text-ink-faint">
+          <span className="font-mono text-xs font-medium text-text-3">
             {produto.codigo_mestre}
           </span>
           <span
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-              produto.status ? "bg-green-50 text-green-700" : "bg-slate-100 text-slate-500"
+              produto.status ? "bg-success-soft text-success" : "bg-slate-100 text-slate-500"
             }`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${produto.status ? "bg-green-500" : "bg-slate-400"}`} />
@@ -140,7 +140,7 @@ export default async function ProdutoPage({
           </span>
         </div>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">{produto.nome}</h1>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-sm text-text-2">
           {linha?.nome}
           {categoria?.nome ? ` · ${categoria.nome}` : ""}
           {` · ${produto.unidade}`}
@@ -148,15 +148,15 @@ export default async function ProdutoPage({
       </div>
 
       {/* Navegação de abas */}
-      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-line">
+      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-border">
         {abas.map(({ label, slug }) => (
           <Link
             key={slug}
             href={`/catalogo/${params.linhaId}/${params.produtoId}?aba=${slug}`}
             className={
               abaAtiva === slug
-                ? "shrink-0 border-b-2 border-steel px-4 py-2.5 text-sm font-medium text-ink"
-                : "shrink-0 px-4 py-2.5 text-sm font-medium text-ink-faint hover:text-ink-soft"
+                ? "shrink-0 border-b-2 border-primary px-4 py-2.5 text-sm font-medium text-text"
+                : "shrink-0 px-4 py-2.5 text-sm font-medium text-text-3 hover:text-text-2"
             }
           >
             {label}

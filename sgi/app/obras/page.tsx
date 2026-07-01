@@ -33,12 +33,12 @@ export default async function ObrasPage({ searchParams }: { searchParams: { page
       {/* Cabeçalho */}
       <div className="mb-8 flex items-end justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-ink-faint">
+          <p className="text-xs font-medium uppercase tracking-widest text-text-3">
             Operação
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Obras</h1>
         </div>
-        <BtnAcaoProtegida href="/obras/nova" label="Nova obra" temPermissao={podeCriar} acao="criar obras" className="btn-primary" />
+        <BtnAcaoProtegida href="/obras/nova" label="Nova obra" temPermissao={podeCriar} acao="criar obras" />
       </div>
 
       {/* Lista */}
@@ -47,17 +47,17 @@ export default async function ObrasPage({ searchParams }: { searchParams: { page
           <p className="font-display text-lg font-semibold">
             Nenhuma obra ainda
           </p>
-          <p className="mt-1 max-w-sm text-sm text-ink-soft">
+          <p className="mt-1 max-w-sm text-sm text-text-2">
             Toda informação do sistema vive dentro de uma obra. Crie a primeira
             para começar.
           </p>
-          <BtnAcaoProtegida href="/obras/nova" label="Criar primeira obra" temPermissao={podeCriar} acao="criar obras" className="btn-primary mt-5" />
+          <BtnAcaoProtegida href="/obras/nova" label="Criar primeira obra" temPermissao={podeCriar} acao="criar obras" className="mt-5" />
         </div>
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                 <th className="px-5 py-3 font-medium">Código</th>
                 <th className="px-5 py-3 font-medium">Obra</th>
                 <th className="px-5 py-3 font-medium">Cliente</th>
@@ -70,26 +70,26 @@ export default async function ObrasPage({ searchParams }: { searchParams: { page
               {obras.map((o: any) => (
                 <tr
                   key={o.id}
-                  className="border-b border-line last:border-0 transition-colors hover:bg-canvas"
+                  className="border-b border-border last:border-0 transition-colors hover:bg-bg"
                 >
                   <td className="px-5 py-3">
                     <Link href={`/obras/${o.id}`} className="flex flex-col hover:underline">
                       {o.numero && (
-                        <span className="font-mono text-xs font-bold text-steel">
+                        <span className="font-mono text-xs font-bold text-primary">
                           {String(o.numero).padStart(4, "0")}
                         </span>
                       )}
-                      <span className="font-mono text-xs text-ink-faint">{o.codigo}</span>
+                      <span className="font-mono text-xs text-text-3">{o.codigo}</span>
                     </Link>
                   </td>
                   <td className="px-5 py-3 font-medium">{o.nome}</td>
-                  <td className="px-5 py-3 text-ink-soft">
+                  <td className="px-5 py-3 text-text-2">
                     {o.cliente?.nome ?? "—"}
                   </td>
-                  <td className="px-5 py-3 text-ink-soft">
+                  <td className="px-5 py-3 text-text-2">
                     {o.cidade ? `${o.cidade}/${o.estado ?? ""}` : "—"}
                   </td>
-                  <td className="px-5 py-3 text-ink-soft">
+                  <td className="px-5 py-3 text-text-2">
                     {o.data_prevista
                       ? new Date(o.data_prevista).toLocaleDateString("pt-BR")
                       : "—"}

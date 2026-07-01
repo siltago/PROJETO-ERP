@@ -4,6 +4,7 @@ import { BackButton } from "@/modules/squadframe/components/back-button";
 import { getUsuarioAtual } from "@/shared/auth/auth";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "@/modules/squadframe/components/submit-button";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function NovaObraPage() {
       <BackButton href="/obras" />
 
       <h1 className="mt-4 text-2xl font-bold tracking-tight">Nova obra</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-text-2">
         O código interno é gerado automaticamente ao salvar.
       </p>
 
@@ -31,7 +32,7 @@ export default async function NovaObraPage() {
           <div className="sm:col-span-2">
             <label className="label">
               Código de vínculo{" "}
-              <span className="font-normal text-ink-soft">(opcional — deixe em branco para gerar automaticamente)</span>
+              <span className="font-normal text-text-2">(opcional — deixe em branco para gerar automaticamente)</span>
             </label>
             <input
               name="codigo"
@@ -39,7 +40,7 @@ export default async function NovaObraPage() {
               placeholder="Ex: OB-2026-0042 ou P2024/156"
               maxLength={20}
             />
-            <p className="mt-1 text-xs text-ink-faint">
+            <p className="mt-1 text-xs text-text-3">
               Se o código já existir no sistema, você será redirecionado para a obra cadastrada.
             </p>
           </div>
@@ -65,22 +66,22 @@ export default async function NovaObraPage() {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="label">Endereço <span className="text-ink-soft font-normal">(opcional)</span></label>
+            <label className="label">Endereço <span className="text-text-2 font-normal">(opcional)</span></label>
             <input name="endereco" className="field" placeholder="Rua, número" />
           </div>
 
           <div>
-            <label className="label">Cidade <span className="text-ink-soft font-normal">(opcional)</span></label>
+            <label className="label">Cidade <span className="text-text-2 font-normal">(opcional)</span></label>
             <input name="cidade" className="field" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">UF <span className="text-ink-soft font-normal">(opcional)</span></label>
+              <label className="label">UF <span className="text-text-2 font-normal">(opcional)</span></label>
               <input name="estado" maxLength={2} className="field uppercase" placeholder="SP" />
             </div>
             <div>
-              <label className="label">CEP <span className="text-ink-soft font-normal">(opcional)</span></label>
+              <label className="label">CEP <span className="text-text-2 font-normal">(opcional)</span></label>
               <input name="cep" className="field" placeholder="00000-000" />
             </div>
           </div>
@@ -93,7 +94,7 @@ export default async function NovaObraPage() {
 
         <div className="mt-6 flex gap-3">
           <SubmitButton label="Salvar obra" pendingLabel="Salvando…" />
-          <Link href="/obras" className="btn-ghost">Cancelar</Link>
+          <Button as="a" href="/obras" variant="ghost">Cancelar</Button>
         </div>
       </form>
     </div>

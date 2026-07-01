@@ -48,27 +48,27 @@ export function GerenciarAba({ aba }: { aba: Aba }) {
     return (
       <form
         onSubmit={handleEditar}
-        className="flex flex-wrap items-end gap-2 rounded-lg border border-steel/30 bg-canvas p-3"
+        className="flex flex-wrap items-end gap-2 rounded-lg border border-primary/30 bg-bg p-3"
       >
         <div>
-          <label className="mb-1 block text-xs text-ink-soft">Nome</label>
+          <label className="mb-1 block text-xs text-text-2">Nome</label>
           <input
             name="nome"
             autoFocus
             required
             defaultValue={aba.nome}
             disabled={pending}
-            className="h-8 w-44 rounded border border-steel px-2.5 text-sm outline-none focus:ring-1 focus:ring-steel"
+            className="h-8 w-44 rounded border border-primary px-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ink-soft">Unidade padrão</label>
+          <label className="mb-1 block text-xs text-text-2">Unidade padrão</label>
           <select
             name="unidade"
             required
             defaultValue={aba.unidade ?? "UN"}
             disabled={pending}
-            className="h-8 rounded border border-steel px-2 text-sm outline-none focus:ring-1 focus:ring-steel"
+            className="h-8 rounded border border-primary px-2 text-sm outline-none focus:ring-1 focus:ring-primary"
           >
             {TIPO_UNIDADE_OPCOES.map(op => (
               <option key={op.value} value={op.value}>{op.label}</option>
@@ -78,7 +78,7 @@ export function GerenciarAba({ aba }: { aba: Aba }) {
         <button
           type="submit"
           disabled={pending}
-          className="h-8 rounded bg-steel px-3 text-xs font-medium text-white hover:bg-steel/90 disabled:opacity-50"
+          className="h-8 rounded bg-primary px-3 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
         >
           {pending ? "…" : "Salvar"}
         </button>
@@ -86,33 +86,33 @@ export function GerenciarAba({ aba }: { aba: Aba }) {
           type="button"
           onClick={() => { setModo("idle"); setErro(null); }}
           disabled={pending}
-          className="h-8 rounded px-2 text-xs text-ink-faint hover:text-ink"
+          className="h-8 rounded px-2 text-xs text-text-3 hover:text-text"
         >
           Cancelar
         </button>
-        {erro && <span className="w-full text-xs text-red-500">{erro}</span>}
+        {erro && <span className="w-full text-xs text-danger">{erro}</span>}
       </form>
     );
   }
 
   if (modo === "apagar") {
     return (
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-        <p className="text-sm font-medium text-red-700">
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-red-200 bg-danger-soft px-4 py-3">
+        <p className="text-sm font-medium text-danger">
           Apagar a aba <strong>{aba.nome}</strong>? Esta ação não pode ser desfeita.
         </p>
-        {erro && <p className="w-full text-xs text-red-600">{erro}</p>}
+        {erro && <p className="w-full text-xs text-danger">{erro}</p>}
         <button
           onClick={handleApagar}
           disabled={pending}
-          className="rounded-card border border-red-300 bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+          className="rounded-lg border border-red-300 bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
         >
           {pending ? "Apagando…" : "Confirmar exclusão"}
         </button>
         <button
           onClick={() => { setModo("idle"); setErro(null); }}
           disabled={pending}
-          className="text-sm text-ink-faint hover:text-ink underline"
+          className="text-sm text-text-3 hover:text-text underline"
         >
           Cancelar
         </button>
@@ -126,7 +126,7 @@ export function GerenciarAba({ aba }: { aba: Aba }) {
         <button
           onClick={() => setModo("editar")}
           title="Editar aba"
-          className="rounded p-1.5 text-ink-faint hover:bg-canvas hover:text-ink"
+          className="rounded p-1.5 text-text-3 hover:bg-bg hover:text-text"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -138,7 +138,7 @@ export function GerenciarAba({ aba }: { aba: Aba }) {
         <button
           onClick={() => setModo("apagar")}
           title="Apagar aba"
-          className="rounded p-1.5 text-ink-faint hover:bg-red-50 hover:text-red-600"
+          className="rounded p-1.5 text-text-3 hover:bg-danger-soft hover:text-danger"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="3 6 5 6 21 6"/>

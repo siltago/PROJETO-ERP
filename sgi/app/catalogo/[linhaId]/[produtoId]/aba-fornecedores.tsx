@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adicionarFornecedor } from "@/app/catalogo/actions";
+import { Button } from "@/ui/components/Button";
 
 type FornecedorVinculado = {
   id: string;
@@ -51,7 +52,7 @@ export function AbaFornecedores({
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                 <th className="px-4 py-2.5 font-medium">Fornecedor</th>
                 <th className="px-4 py-2.5 font-medium">Código</th>
                 <th className="px-4 py-2.5 font-medium">Preço ref.</th>
@@ -61,15 +62,15 @@ export function AbaFornecedores({
               {fornecedoresVinculados.map((fv) => (
                 <tr
                   key={fv.id}
-                  className="border-b border-line last:border-0 hover:bg-canvas"
+                  className="border-b border-border last:border-0 hover:bg-bg"
                 >
                   <td className="px-4 py-2.5 font-medium">
                     {fv.fornecedor?.nome ?? "—"}
                   </td>
-                  <td className="px-4 py-2.5 font-mono text-xs text-ink-soft">
+                  <td className="px-4 py-2.5 font-mono text-xs text-text-2">
                     {fv.codigo_fornecedor ?? "—"}
                   </td>
-                  <td className="px-4 py-2.5 text-ink-soft">
+                  <td className="px-4 py-2.5 text-text-2">
                     {fv.preco_referencia != null
                       ? fv.preco_referencia.toLocaleString("pt-BR", {
                           style: "currency",
@@ -86,7 +87,7 @@ export function AbaFornecedores({
 
       {fornecedoresVinculados.length === 0 && !mostrarForm && (
         <div className="card p-8 text-center">
-          <p className="text-sm text-ink-faint">
+          <p className="text-sm text-text-3">
             Nenhum fornecedor vinculado a este produto.
           </p>
         </div>
@@ -95,7 +96,7 @@ export function AbaFornecedores({
       {/* Formulário inline */}
       {mostrarForm ? (
         <form onSubmit={handleSubmit} className="card max-w-md space-y-4 p-5">
-          <p className="font-display text-sm font-semibold text-ink">
+          <p className="font-display text-sm font-semibold text-text">
             Adicionar fornecedor
           </p>
 
@@ -113,7 +114,7 @@ export function AbaFornecedores({
                 <option key={f.id} value={f.nome} />
               ))}
             </datalist>
-            <p className="mt-1 text-xs text-ink-faint">
+            <p className="mt-1 text-xs text-text-3">
               Se o fornecedor não existir, será criado automaticamente.
             </p>
           </div>
@@ -121,7 +122,7 @@ export function AbaFornecedores({
           <div>
             <label className="label">
               Código do fornecedor{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <input
               name="codigo_fornecedor"
@@ -133,7 +134,7 @@ export function AbaFornecedores({
           <div>
             <label className="label">
               Preço de referência{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <input
               name="preco_referencia"
@@ -145,30 +146,29 @@ export function AbaFornecedores({
             />
           </div>
 
-          {erro && <p className="text-xs text-red-500">{erro}</p>}
+          {erro && <p className="text-xs text-danger">{erro}</p>}
 
           <div className="flex gap-2">
-            <button
+            <Button
               type="submit"
               disabled={pending}
-              className="btn-primary"
             >
               {pending ? "Salvando…" : "Adicionar"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => { setMostrarForm(false); setErro(null); }}
               disabled={pending}
-              className="btn-ghost"
             >
               Cancelar
-            </button>
+            </Button>
           </div>
         </form>
       ) : (
         <button
           onClick={() => setMostrarForm(true)}
-          className="flex items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel"
+          className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import { criarSolicitacao } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { Button } from "@/ui/components/Button";
 
 const UNIDADES = [
   "un", "m", "m²", "m³", "kg", "g", "L", "ml",
@@ -59,33 +60,33 @@ function BuscaProduto({ onAdd, onAddForcar, onIncrement, existingIds }: {
         className="field h-9 w-full text-sm"
       />
       {aberto && resultados.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface shadow-lg">
+        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-surface shadow-lg">
           {resultados.map((p) => {
             const jaExiste = existingIds.has(p.id);
             const qtd = qtdExtra[p.id] ?? 1;
             if (jaExiste) {
               return (
-                <div key={p.id} className="px-3 py-2 border-b border-line last:border-0 bg-amber-50/60">
+                <div key={p.id} className="px-3 py-2 border-b border-border last:border-0 bg-warning-soft/60">
                   <div className="flex items-center gap-3 mb-1.5">
-                    <span className="w-24 shrink-0 font-mono text-xs text-ink-faint">{p.codigo_mestre}</span>
-                    <span className="flex-1 text-sm text-ink">{p.nome}</span>
-                    <span className="text-xs text-amber-600 font-medium">Já na lista</span>
+                    <span className="w-24 shrink-0 font-mono text-xs text-text-3">{p.codigo_mestre}</span>
+                    <span className="flex-1 text-sm text-text">{p.nome}</span>
+                    <span className="text-xs text-warning font-medium">Já na lista</span>
                   </div>
                   <div className="flex items-center gap-2 pl-[6.5rem]">
-                    <span className="text-xs text-ink-faint">Adicionar mais:</span>
+                    <span className="text-xs text-text-3">Adicionar mais:</span>
                     <input type="number" min="1" step="any" value={qtd}
                       onChange={(e) => setQtdExtra((prev) => ({ ...prev, [p.id]: parseFloat(e.target.value) || 1 }))}
                       onClick={(e) => e.stopPropagation()}
                       className="field h-7 w-20 text-xs font-mono" />
-                    <span className="text-xs text-ink-faint">{p.unidade}</span>
+                    <span className="text-xs text-text-3">{p.unidade}</span>
                     <button type="button"
                       onClick={() => { onIncrement(p.id, qtd); setQtdExtra((prev) => ({ ...prev, [p.id]: 1 })); setQ(""); setAberto(false); }}
-                      className="btn-primary h-7 px-3 text-xs">
+                      className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary/90 h-7">
                       Confirmar
                     </button>
                     <button type="button"
                       onClick={() => { onAddForcar(p); setQ(""); setAberto(false); }}
-                      className="btn-secondary h-7 px-3 text-xs">
+                      className="inline-flex items-center justify-center rounded-lg border border-border px-3 py-1 text-xs font-medium text-text-2 hover:bg-bg h-7">
                       + Cor diferente
                     </button>
                   </div>
@@ -95,17 +96,17 @@ function BuscaProduto({ onAdd, onAddForcar, onIncrement, existingIds }: {
             return (
               <button key={p.id} type="button"
                 onClick={() => { onAdd(p); setQ(""); setAberto(false); }}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-canvas border-b border-line last:border-0">
-                <span className="w-24 shrink-0 font-mono text-xs text-ink-faint">{p.codigo_mestre}</span>
-                <span className="flex-1 text-ink">{p.nome}</span>
-                <span className="text-xs text-ink-faint">{p.unidade}</span>
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-bg border-b border-border last:border-0">
+                <span className="w-24 shrink-0 font-mono text-xs text-text-3">{p.codigo_mestre}</span>
+                <span className="flex-1 text-text">{p.nome}</span>
+                <span className="text-xs text-text-3">{p.unidade}</span>
               </button>
             );
           })}
         </div>
       )}
       {aberto && q.length >= 2 && resultados.length === 0 && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface px-3 py-3 shadow-lg text-sm text-ink-faint">
+        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-surface px-3 py-3 shadow-lg text-sm text-text-3">
           Nenhum produto encontrado.
         </div>
       )}
@@ -126,8 +127,8 @@ function FormItemExterno({ onAdd }: { onAdd: (item: ItemExterno) => void }) {
   }
 
   return (
-    <div className="rounded-lg border border-dashed border-steel/40 bg-steel/5 p-3">
-      <p className="mb-2 text-xs font-medium uppercase tracking-widest text-steel/70">Item externo (não cadastrado)</p>
+    <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3">
+      <p className="mb-2 text-xs font-medium uppercase tracking-widest text-primary/70">Item externo (não cadastrado)</p>
       <div className="flex flex-wrap gap-2">
         <input value={descricao} onChange={(e) => setDescricao(e.target.value)}
           placeholder="Descrição do item *"
@@ -142,7 +143,7 @@ function FormItemExterno({ onAdd }: { onAdd: (item: ItemExterno) => void }) {
         <input value={obs} onChange={(e) => setObs(e.target.value)}
           placeholder="Obs. (opcional)" className="field h-8 flex-1 text-sm" />
         <button type="button" onClick={handleAdd} disabled={!descricao.trim()}
-          className="btn-primary h-8 px-3 text-sm disabled:opacity-40">
+          className="inline-flex items-center justify-center rounded-lg bg-primary px-3 text-sm font-medium text-white hover:bg-primary/90 h-8 disabled:opacity-40">
           Adicionar
         </button>
       </div>
@@ -208,7 +209,7 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
         <div className="card p-6 space-y-5">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-              <label className="label">Obra <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Obra <span className="text-text-3 font-normal">(opcional)</span></label>
               <select name="obra_id" className="field">
                 <option value="">Sem obra vinculada</option>
                 {obras.map((o) => (
@@ -234,11 +235,11 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
               </select>
             </div>
             <div>
-              <label className="label">Justificativa <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Justificativa <span className="text-text-3 font-normal">(opcional)</span></label>
               <input name="justificativa" className="field" placeholder="Motivo da solicitação" />
             </div>
             <div className="sm:col-span-2">
-              <label className="label">Observações <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Observações <span className="text-text-3 font-normal">(opcional)</span></label>
               <textarea name="observacoes" rows={2} className="field" />
             </div>
           </div>
@@ -247,16 +248,16 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
         {/* Itens */}
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-ink">Itens da solicitação</h2>
-            <div className="flex rounded-lg border border-line overflow-hidden text-sm">
+            <h2 className="text-sm font-semibold text-text">Itens da solicitação</h2>
+            <div className="flex rounded-lg border border-border overflow-hidden text-sm">
               <button type="button"
                 onClick={() => setModoAdd("catalogo")}
-                className={`px-3 py-1.5 ${modoAdd === "catalogo" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                className={`px-3 py-1.5 ${modoAdd === "catalogo" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                 Do catálogo
               </button>
               <button type="button"
                 onClick={() => setModoAdd("externo")}
-                className={`px-3 py-1.5 border-l border-line ${modoAdd === "externo" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                className={`px-3 py-1.5 border-l border-border ${modoAdd === "externo" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                 Item externo
               </button>
             </div>
@@ -281,7 +282,7 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
             <div className="mt-3 card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                     <th className="px-4 py-2 font-medium">Tipo</th>
                     <th className="px-4 py-2 font-medium">Descrição / Produto</th>
                     <th className="px-4 py-2 font-medium w-24">Qtd</th>
@@ -293,15 +294,15 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
                 </thead>
                 <tbody>
                   {itens.map((it, idx) => (
-                    <tr key={idx} className="border-b border-line last:border-0">
+                    <tr key={idx} className="border-b border-border last:border-0">
                       <td className="px-4 py-2">
                         {it.tipo === "catalogo" ? (
-                          <span className="font-mono text-xs text-ink-faint">{(it as ItemCatalogo).produto.codigo_mestre}</span>
+                          <span className="font-mono text-xs text-text-3">{(it as ItemCatalogo).produto.codigo_mestre}</span>
                         ) : (
-                          <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">EXTERNO</span>
+                          <span className="rounded-full bg-warning-soft px-1.5 py-0.5 text-[10px] font-bold text-warning">EXTERNO</span>
                         )}
                       </td>
-                      <td className="px-4 py-2 font-medium text-ink">
+                      <td className="px-4 py-2 font-medium text-text">
                         {it.tipo === "catalogo" ? (it as ItemCatalogo).produto.nome : (it as ItemExterno).descricao}
                       </td>
                       <td className="px-4 py-2">
@@ -342,7 +343,7 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
                       </td>
                       <td className="px-4 py-2">
                         <button type="button" onClick={() => removeItem(idx)}
-                          className="text-ink-faint hover:text-red-500">
+                          className="text-text-3 hover:text-danger">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                           </svg>
@@ -356,19 +357,19 @@ export function NovaSolicitacaoCliente({ obras, coresRal }: { obras: Obra[]; cor
           )}
 
           {itens.length === 0 && (
-            <div className="mt-3 rounded-lg border border-dashed border-line p-8 text-center text-sm text-ink-faint">
+            <div className="mt-3 rounded-lg border border-dashed border-border p-8 text-center text-sm text-text-3">
               {modoAdd === "catalogo" ? "Busque e adicione produtos acima." : "Preencha os campos acima e clique em Adicionar."}
             </div>
           )}
         </div>
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <p className="text-sm text-danger">{erro}</p>}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={pending} className="btn-primary">
+          <Button type="submit" disabled={pending}>
             {pending ? "Salvando…" : "Criar solicitação"}
-          </button>
-          <a href="/compras/solicitacoes" className="btn-ghost">Cancelar</a>
+          </Button>
+          <Button as="a" variant="ghost" href="/compras/solicitacoes">Cancelar</Button>
         </div>
       </form>
     </>

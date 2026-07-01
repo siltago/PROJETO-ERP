@@ -49,8 +49,8 @@ export function TarefasFilterBar({ setores, setorAtual }: Props) {
         onClick={() => setParam("sem_dono", semDono ? null : "1")}
         className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${
           semDono
-            ? "bg-steel text-white border-steel"
-            : "bg-surface text-ink-soft border-line hover:bg-canvas"
+            ? "bg-primary text-white border-primary"
+            : "bg-surface text-text-2 border-border hover:bg-bg"
         }`}
       >
         Sem dono
@@ -60,8 +60,8 @@ export function TarefasFilterBar({ setores, setorAtual }: Props) {
         onClick={() => setParam("minhas", minhas ? null : "1")}
         className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${
           minhas
-            ? "bg-steel text-white border-steel"
-            : "bg-surface text-ink-soft border-line hover:bg-canvas"
+            ? "bg-primary text-white border-primary"
+            : "bg-surface text-text-2 border-border hover:bg-bg"
         }`}
       >
         Minhas

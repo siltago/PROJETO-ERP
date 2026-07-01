@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { alterarStatusPedido, registrarValorFinal, confirmarDebitoPedido } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 import { usePode } from "@/modules/squadframe/components/user-provider";
+import { Button } from "@/ui/components/Button";
 
 type Transicao = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 
@@ -139,23 +140,23 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
 
       {/* Banner de débito pendente */}
       {temDebitoPendente && (
-        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/40 dark:bg-amber-900/20">
+        <div className="mb-3 rounded-lg border border-amber-200 bg-warning-soft p-4 dark:border-amber-800/40 dark:bg-amber-900/20">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
                 Débito pendente na carteira
               </p>
-              <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">
+              <p className="mt-0.5 text-xs text-warning dark:text-amber-400">
                 Este pedido usa faturamento direto mas o débito ainda não foi registrado.
                 {" "}Verifique se há saldo na carteira desta obra/fornecedor e confirme o débito.
               </p>
-              {erroDebito && <p className="mt-1 text-xs text-red-600">{erroDebito}</p>}
-              {okDebito && <p className="mt-1 text-xs text-green-700">Débito registrado com sucesso.</p>}
+              {erroDebito && <p className="mt-1 text-xs text-danger">{erroDebito}</p>}
+              {okDebito && <p className="mt-1 text-xs text-success">Débito registrado com sucesso.</p>}
             </div>
             <button
               disabled={pendingDebito}
               onClick={handleConfirmarDebito}
-              className="shrink-0 rounded-card border border-amber-300 bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+              className="shrink-0 rounded-lg border border-amber-300 bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
             >
               {pendingDebito ? "Debitando…" : "Confirmar débito"}
             </button>
@@ -166,14 +167,14 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
       <div className="flex flex-col items-end gap-2">
         <div className="flex flex-wrap gap-2 justify-end">
           {podeEditarAgora && (
-            <Link href={`/compras/pedidos/${pedido.id}/editar`} className="btn-ghost">
+            <Button as="a" variant="ghost" href={`/compras/pedidos/${pedido.id}/editar`}>
               Editar
-            </Link>
+            </Button>
           )}
           {podeRegistrarValorFinal && (
             <button
               onClick={() => setShowValorFinal((v) => !v)}
-              className={`btn-ghost flex items-center gap-1.5 ${pedido.valor_final != null ? "text-green-700 border-green-200 bg-green-50 hover:bg-green-100" : ""}`}
+              className={`inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-2 hover:bg-bg flex items-center gap-1.5 ${pedido.valor_final != null ? "text-success border-green-200 bg-green-50 hover:bg-green-100" : ""}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               {pedido.valor_final != null
@@ -182,16 +183,16 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
             </button>
           )}
           {podeRegistrarRecebimento && (
-            <Link href={`/compras/pedidos/${pedido.id}/receber`} className="btn-primary">
+            <Button as="a" href={`/compras/pedidos/${pedido.id}/receber`}>
               Registrar recebimento
-            </Link>
+            </Button>
           )}
           {transicoes.map((t) => (
             <button key={t.status} disabled={pending} onClick={() => handleAcao(t.status)}
               className={
-                t.variant === "primary" ? "btn-primary" :
-                t.variant === "danger"  ? "inline-flex items-center justify-center rounded-card border border-red-200 bg-surface px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50" :
-                "btn-ghost"
+                t.variant === "primary" ? "inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50" :
+                t.variant === "danger"  ? "inline-flex items-center justify-center rounded-lg border border-red-200 bg-surface px-4 py-2 text-sm font-medium text-danger hover:bg-danger-soft dark:border-red-800/50 dark:text-danger dark:hover:bg-red-900/20 disabled:opacity-50" :
+                "inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-2 hover:bg-bg disabled:opacity-50"
               }>
               {t.label}
             </button>
@@ -199,13 +200,13 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
         </div>
 
         {showValorFinal && (
-          <div className="w-80 rounded-xl border border-line bg-surface p-4 shadow-lg">
-            <p className="text-sm font-semibold text-ink mb-1">Valor final do pedido</p>
-            <p className="text-xs text-ink-soft mb-3">
+          <div className="w-80 rounded-xl border border-border bg-surface p-4 shadow-lg">
+            <p className="text-sm font-semibold text-text mb-1">Valor final do pedido</p>
+            <p className="text-xs text-text-2 mb-3">
               Informe o valor real confirmado com o fornecedor. Esse valor será usado no controle financeiro.
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-ink-soft shrink-0">R$</span>
+              <span className="text-sm text-text-2 shrink-0">R$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -216,33 +217,33 @@ export function PedidoCliente({ pedido }: { pedido: any }) {
                 onKeyDown={(e) => e.key === "Enter" && salvarValorFinal()}
                 autoFocus
               />
-              <button onClick={salvarValorFinal} disabled={pendingVF} className="btn-primary h-9 px-3 text-sm shrink-0">
+              <Button onClick={salvarValorFinal} disabled={pendingVF} className="h-9 px-3 text-sm shrink-0">
                 {pendingVF ? "…" : "Salvar"}
-              </button>
-              <button onClick={() => { setShowValorFinal(false); setErroVF(null); }} className="btn-ghost h-9 px-3 text-sm shrink-0">
+              </Button>
+              <Button variant="ghost" onClick={() => { setShowValorFinal(false); setErroVF(null); }} className="h-9 px-3 text-sm shrink-0">
                 ✕
-              </button>
+              </Button>
             </div>
-            {erroVF && <p className="mt-2 text-xs text-red-500">{erroVF}</p>}
+            {erroVF && <p className="mt-2 text-xs text-danger">{erroVF}</p>}
           </div>
         )}
 
         {showObs && (
-          <div className="w-72 rounded-lg border border-line bg-surface p-3 shadow-sm">
-            <label className="label">Motivo <span className="text-ink-faint font-normal">(opcional)</span></label>
+          <div className="w-72 rounded-lg border border-border bg-surface p-3 shadow-sm">
+            <label className="label">Motivo <span className="text-text-3 font-normal">(opcional)</span></label>
             <textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} className="field text-sm" />
             <div className="mt-2 flex gap-2">
-              <button onClick={() => { setShowObs(false); pedirAssinatura(acaoPendente!, obs); }}
-                className="btn-primary flex-1 text-xs">
+              <Button onClick={() => { setShowObs(false); pedirAssinatura(acaoPendente!, obs); }}
+                className="flex-1 text-xs">
                 Continuar
-              </button>
-              <button onClick={() => { setShowObs(false); setAcaoPendente(null); }} className="btn-ghost text-xs">
+              </Button>
+              <Button variant="ghost" onClick={() => { setShowObs(false); setAcaoPendente(null); }} className="text-xs">
                 Cancelar
-              </button>
+              </Button>
             </div>
           </div>
         )}
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <p className="text-sm text-danger">{erro}</p>}
       </div>
     </>
   );

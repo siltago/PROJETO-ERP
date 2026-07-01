@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { alterarStatusSolicitacao } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { Button } from "@/ui/components/Button";
 
 type Transicao = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 
@@ -75,9 +76,9 @@ export function SolicitacaoCliente({ solicitacao }: { solicitacao: any }) {
             <button key={t.status} disabled={pending}
               onClick={() => handleAcao(t.status)}
               className={
-                t.variant === "primary" ? "btn-primary" :
-                t.variant === "danger"  ? "inline-flex items-center justify-center rounded-card border border-red-200 bg-surface px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50" :
-                "btn-ghost"
+                t.variant === "primary" ? "inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50" :
+                t.variant === "danger"  ? "inline-flex items-center justify-center rounded-lg border border-red-200 bg-surface px-4 py-2 text-sm font-medium text-danger hover:bg-danger-soft dark:border-red-800/50 dark:text-danger dark:hover:bg-red-900/20 disabled:opacity-50" :
+                "inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-2 hover:bg-bg disabled:opacity-50"
               }>
               {t.label}
             </button>
@@ -85,22 +86,22 @@ export function SolicitacaoCliente({ solicitacao }: { solicitacao: any }) {
         </div>
 
         {showObs && (
-          <div className="w-72 rounded-lg border border-line bg-surface p-3 shadow-sm">
-            <label className="label">Observação <span className="text-ink-faint font-normal">(opcional)</span></label>
+          <div className="w-72 rounded-lg border border-border bg-surface p-3 shadow-sm">
+            <label className="label">Observação <span className="text-text-3 font-normal">(opcional)</span></label>
             <textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} className="field text-sm" />
             <div className="mt-2 flex gap-2">
-              <button onClick={() => { setShowObs(false); pedirAssinatura(acaoPendente!, obs); }}
-                className="btn-primary flex-1 text-xs">
+              <Button onClick={() => { setShowObs(false); pedirAssinatura(acaoPendente!, obs); }}
+                className="flex-1 text-xs">
                 Continuar
-              </button>
-              <button onClick={() => { setShowObs(false); setAcaoPendente(null); }} className="btn-ghost text-xs">
+              </Button>
+              <Button variant="ghost" onClick={() => { setShowObs(false); setAcaoPendente(null); }} className="text-xs">
                 Cancelar
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <p className="text-sm text-danger">{erro}</p>}
       </div>
     </>
   );

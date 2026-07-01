@@ -83,9 +83,9 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
             className="fixed inset-0 z-40"
             onClick={() => setAberto(false)}
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-card border border-line bg-surface shadow-lg">
+          <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-lg border border-border bg-surface shadow-lg">
             {/* Info */}
-            <div className="border-b border-line px-4 py-3">
+            <div className="border-b border-border px-4 py-3">
               <div className="mb-2.5 flex items-center gap-3">
                 {usuario.foto_url && !imgError ? (
                   <img
@@ -103,12 +103,12 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                   </div>
                 )}
                 <div className="min-w-0 overflow-hidden">
-                  <p className="truncate text-sm font-medium text-ink">{usuario.nome}</p>
-                  <p className="truncate text-xs text-ink-faint">{usuario.email}</p>
+                  <p className="truncate text-sm font-medium text-text">{usuario.nome}</p>
+                  <p className="truncate text-xs text-text-3">{usuario.email}</p>
                 </div>
               </div>
               {usuario.empresa && (
-                <p className="mt-0.5 text-xs text-ink-faint">{usuario.empresa}</p>
+                <p className="mt-0.5 text-xs text-text-3">{usuario.empresa}</p>
               )}
               {usuario.cargo && (
                 <div className="mt-2 flex items-center gap-1.5">
@@ -116,9 +116,9 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                     className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: usuario.cargo.cor }}
                   />
-                  <span className="text-xs text-ink-soft">{usuario.cargo.nome}</span>
+                  <span className="text-xs text-text-2">{usuario.cargo.nome}</span>
                   {usuario.setor && (
-                    <span className="text-xs text-ink-faint">· {usuario.setor.nome}</span>
+                    <span className="text-xs text-text-3">· {usuario.setor.nome}</span>
                   )}
                 </div>
               )}
@@ -132,15 +132,15 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                   className="h-2 w-2 rounded-full"
                   style={{ backgroundColor: isOnline ? "#10b981" : "#ef4444" }}
                 />
-                <span className="text-xs text-ink-faint">{isOnline ? "Online" : "Offline"}</span>
+                <span className="text-xs text-text-3">{isOnline ? "Online" : "Offline"}</span>
               </div>
 
-              <div className="my-1 border-t border-line" />
+              <div className="my-1 border-t border-border" />
 
               <Link
                 href="/perfil"
                 onClick={() => setAberto(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-text-2 hover:bg-bg hover:text-text"
               >
                 <UserIcon size={14} />
                 Meu perfil
@@ -150,7 +150,7 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
               {canInstall && (
                 <button
                   onClick={async () => { setAberto(false); await installApp(); }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-2 hover:bg-bg hover:text-text"
                 >
                   <PhoneIcon size={14} />
                   Instalar aplicativo
@@ -160,7 +160,7 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
               {showIOSInstructions && (
                 <button
                   onClick={() => { setAberto(false); setShowIOSModal(true); }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-2 hover:bg-bg hover:text-text"
                 >
                   <PhoneIcon size={14} />
                   Instalar no iPhone
@@ -170,18 +170,18 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
               {(isInstalled || isPushSupported) && pushPermission !== "granted" && pushPermission !== "denied" && (
                 <button
                   onClick={async () => { setAberto(false); await requestPushPermission(); }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-2 hover:bg-bg hover:text-text"
                 >
                   <BellIcon size={14} />
                   Ativar notificações
                 </button>
               )}
 
-              <div className="my-1 border-t border-line" />
+              <div className="my-1 border-t border-border" />
 
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-red-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-2 hover:bg-bg hover:text-danger"
               >
                 <LogoutIcon size={14} />
                 Sair
@@ -195,27 +195,27 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
       {showIOSModal && (
         <div className="fixed inset-0 z-[300] flex items-end justify-center bg-black/50 p-4" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }} onClick={() => setShowIOSModal(false)}>
           <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-base font-bold text-ink mb-1">Instalar no iPhone</h3>
-            <p className="text-sm text-ink-soft mb-4">Para adicionar o SquadFrame à sua tela de início:</p>
-            <ol className="space-y-3 text-sm text-ink">
+            <h3 className="text-base font-bold text-text mb-1">Instalar no iPhone</h3>
+            <p className="text-sm text-text-2 mb-4">Para adicionar o SquadFrame à sua tela de início:</p>
+            <ol className="space-y-3 text-sm text-text">
               <li className="flex items-start gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">1</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">1</span>
                 Toque em <strong className="mx-1">Compartilhar</strong>
                 <UploadIcon size={16} className="shrink-0" />
                 na barra do Safari
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">2</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">2</span>
                 Role para baixo e toque em <strong className="ml-1">Adicionar à Tela de Início</strong>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">3</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">3</span>
                 Confirme tocando em <strong className="ml-1">Adicionar</strong>
               </li>
             </ol>
             <button
               onClick={() => setShowIOSModal(false)}
-              className="mt-5 w-full rounded-lg bg-steel py-2.5 text-sm font-semibold text-white"
+              className="mt-5 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
             >
               Entendido
             </button>

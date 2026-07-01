@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { criarCategoria } from "@/app/catalogo/actions";
+import { Button } from "@/ui/components/Button";
 
 const TIPOS = [
   "PERFIS",
@@ -40,7 +41,7 @@ export function NovaCategoriaInline({ linhaId }: { linhaId: string }) {
     return (
       <button
         onClick={() => setAberto(true)}
-        className="flex items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel"
+        className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -86,21 +87,21 @@ export function NovaCategoriaInline({ linhaId }: { linhaId: string }) {
           disabled={pending}
         />
       </div>
-      <button type="submit" disabled={pending} className="btn-primary">
+      <Button type="submit" disabled={pending}>
         {pending ? "Salvando…" : "Criar"}
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => {
           setAberto(false);
           setErro(null);
         }}
         disabled={pending}
-        className="btn-ghost"
       >
         Cancelar
-      </button>
-      {erro && <p className="w-full text-xs text-red-500">{erro}</p>}
+      </Button>
+      {erro && <p className="w-full text-xs text-danger">{erro}</p>}
     </form>
   );
 }

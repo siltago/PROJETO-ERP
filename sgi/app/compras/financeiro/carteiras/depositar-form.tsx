@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { depositarCarteira } from "../actions";
+import { Button } from "@/ui/components/Button";
 
 type Obra = { id: string; nome: string; codigo: string | null };
 type Fornecedor = { id: string; nome: string };
@@ -86,11 +87,11 @@ export function DepositarForm({
       </div>
 
       <div className="sm:col-span-2 lg:col-span-4 flex items-center gap-4">
-        <button type="submit" disabled={pending} className="btn-primary disabled:opacity-50">
+        <Button type="submit" disabled={pending} className="disabled:opacity-50">
           {pending ? "Registrando…" : "Registrar depósito"}
-        </button>
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
-        {ok && <p className="text-sm text-green-700">{ok}</p>}
+        </Button>
+        {erro && <p className="text-sm text-danger">{erro}</p>}
+        {ok && <p className="text-sm text-success">{ok}</p>}
       </div>
     </form>
   );

@@ -78,10 +78,10 @@ export default async function ObraPage({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
             {obraNumero && (
-              <span className="font-mono text-sm font-bold text-steel">{obraNumero}</span>
+              <span className="font-mono text-sm font-bold text-primary">{obraNumero}</span>
             )}
             {obra.codigo && (
-              <span className="font-mono text-xs font-medium text-ink-faint">{obra.codigo}</span>
+              <span className="font-mono text-xs font-medium text-text-3">{obra.codigo}</span>
             )}
             {obra.status && (
               <StatusObraSelector
@@ -91,7 +91,7 @@ export default async function ObraPage({
             )}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">{obra.nome}</h1>
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="mt-1 text-sm text-text-2">
             {obra.cliente?.nome}
             {obra.cidade ? ` · ${obra.cidade}${obra.estado ? `/${obra.estado}` : ""}` : ""}
           </p>
@@ -103,13 +103,13 @@ export default async function ObraPage({
             label="Editar"
             temPermissao={podeEditar}
             acao="editar obras"
-            className="btn-ghost text-sm"
+            variant="ghost" className="text-sm"
           />
         </div>
       </div>
 
       {/* Abas */}
-      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-line">
+      <div className="mt-6 flex gap-1 overflow-x-auto border-b border-border">
         {ABAS.map(({ label, slug }) => {
           const isActive = aba === slug || (slug === "workspace" && aba === "workspace");
           return (
@@ -118,8 +118,8 @@ export default async function ObraPage({
               href={`/obras/${params.id}?aba=${slug}`}
               className={
                 isActive
-                  ? "shrink-0 border-b-2 border-steel px-4 py-2.5 text-sm font-semibold text-ink"
-                  : "shrink-0 px-4 py-2.5 text-sm font-medium text-ink-faint hover:text-ink-soft"
+                  ? "shrink-0 border-b-2 border-primary px-4 py-2.5 text-sm font-semibold text-text"
+                  : "shrink-0 px-4 py-2.5 text-sm font-medium text-text-3 hover:text-text-2"
               }
             >
               {label}

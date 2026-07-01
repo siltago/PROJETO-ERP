@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adicionarTipologia, importarTipologias, excluirLote, editarTipologia } from "@/app/obras/actions";
+import { Button } from "@/ui/components/Button";
+import { Alert } from "@/ui/components/Alert";
 
 // ── Tipos ─────────────────────────────────────────────────────────
 
@@ -88,7 +90,7 @@ function parseXml(text: string): Rascunho[] {
 
 function TratamentoBadge({ texto }: { texto: string }) {
   const lower = texto.toLowerCase();
-  let cls = "bg-canvas text-ink-soft";
+  let cls = "bg-bg text-text-2";
   if (lower.includes("incolor"))                              cls = "bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400";
   else if (lower.includes("fume") || lower.includes("fumê")) cls = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
   else if (lower.includes("preto"))                          cls = "bg-zinc-800 text-zinc-100";
@@ -141,8 +143,8 @@ function TipologiaCard({ t, obraId }: { t: Tipologia; obraId: string }) {
 
   if (editando) {
     return (
-      <div className="rounded-xl border-2 border-steel/40 bg-surface p-4 space-y-3">
-        {/* Status — destaque no topo */}
+      <div className="rounded-xl border-2 border-primary/40 bg-surface p-4 space-y-3">
+        {/* Status */}
         <div>
           <label className="label">Status</label>
           <div className="flex flex-wrap gap-2 mt-1">
@@ -205,52 +207,49 @@ function TipologiaCard({ t, obraId }: { t: Tipologia; obraId: string }) {
         </div>
 
         <div className="flex gap-2 pt-1">
-          <button onClick={salvar} disabled={pending} className="btn-primary text-sm py-1.5 px-4 disabled:opacity-50">
+          <Button onClick={salvar} disabled={pending} size="sm">
             {pending ? "Salvando…" : "Salvar"}
-          </button>
-          <button onClick={() => { setDraft(t); setEditando(false); }} disabled={pending} className="btn-ghost text-sm py-1.5 px-4">
+          </Button>
+          <Button onClick={() => { setDraft(t); setEditando(false); }} disabled={pending} variant="ghost" size="sm">
             Cancelar
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="card flex gap-3 p-3 group cursor-pointer hover:border-steel/30 transition-colors" onClick={() => setEditando(true)}>
-      {/* Dimensões */}
-      <div className="flex shrink-0 flex-col items-center justify-center rounded-lg bg-canvas px-2.5 py-2 text-center min-w-[60px]">
+    <div className="card flex gap-3 p-3 group cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setEditando(true)}>
+      <div className="flex shrink-0 flex-col items-center justify-center rounded-lg bg-bg px-2.5 py-2 text-center min-w-[60px]">
         {t.largura_mm && t.altura_mm ? (
           <>
-            <span className="font-mono text-xs font-bold text-ink">{t.largura_mm}</span>
-            <span className="font-mono text-[9px] text-ink-faint leading-none">×</span>
-            <span className="font-mono text-xs font-bold text-ink">{t.altura_mm}</span>
-            <span className="mt-0.5 text-[9px] text-ink-faint">mm</span>
+            <span className="font-mono text-xs font-bold text-text">{t.largura_mm}</span>
+            <span className="font-mono text-[9px] text-text-3 leading-none">×</span>
+            <span className="font-mono text-xs font-bold text-text">{t.altura_mm}</span>
+            <span className="mt-0.5 text-[9px] text-text-3">mm</span>
           </>
         ) : (
-          <span className="text-xs text-ink-faint">—</span>
+          <span className="text-xs text-text-3">—</span>
         )}
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-sm text-ink">{t.tipo || t.nome}</span>
-          {t.codigo_esquadria && <span className="font-mono text-[11px] text-ink-faint">{t.codigo_esquadria}</span>}
+          <span className="font-bold text-sm text-text">{t.tipo || t.nome}</span>
+          {t.codigo_esquadria && <span className="font-mono text-[11px] text-text-3">{t.codigo_esquadria}</span>}
           <StatusBadge status={t.status || "pendente"} />
         </div>
-        {t.descricao && <p className="mt-0.5 text-xs text-ink-soft leading-snug line-clamp-1">{t.descricao}</p>}
+        {t.descricao && <p className="mt-0.5 text-xs text-text-2 leading-snug line-clamp-1">{t.descricao}</p>}
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-ink-soft"><span className="font-semibold text-ink">{t.quantidade}</span> {t.quantidade === 1 ? "peça" : "peças"}</span>
+          <span className="text-text-2"><span className="font-semibold text-text">{t.quantidade}</span> {t.quantidade === 1 ? "peça" : "peças"}</span>
           {t.tratamento && <TratamentoBadge texto={t.tratamento} />}
-          {t.peso_unit != null && t.peso_unit > 0 && <span className="text-ink-faint">{t.peso_unit} kg/un</span>}
-          {t.preco_unit != null && t.preco_unit > 0 && <span className="font-medium text-ink">{t.preco_unit.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/un</span>}
+          {t.peso_unit != null && t.peso_unit > 0 && <span className="text-text-3">{t.peso_unit} kg/un</span>}
+          {t.preco_unit != null && t.preco_unit > 0 && <span className="font-medium text-text">{t.preco_unit.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/un</span>}
         </div>
       </div>
 
-      {/* Ícone de edição */}
       <div className="shrink-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-faint">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-3">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
         </svg>
       </div>
@@ -277,9 +276,8 @@ function LoteCard({ lote, obraId, defaultOpen }: { lote: Lote; obraId: string; d
   }
 
   return (
-    <div className="rounded-xl border border-line bg-surface overflow-hidden">
-      {/* Header da pasta */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-canvas/60">
+    <div className="rounded-xl border border-border bg-surface overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-3 bg-bg/60">
         <button
           onClick={() => setOpen((p) => !p)}
           className="flex flex-1 items-center gap-2 text-left min-w-0"
@@ -290,23 +288,23 @@ function LoteCard({ lote, obraId, defaultOpen }: { lote: Lote; obraId: string; d
             height="15"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="shrink-0 text-ink-faint"
+            className="shrink-0 text-text-3"
           >
             <path d="M20 6H12l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z" />
           </svg>
-          <span className="font-medium text-sm text-ink truncate">{lote.nome}</span>
-          <span className="shrink-0 rounded-full bg-line px-2 py-0.5 text-[10px] font-semibold text-ink-faint">
+          <span className="font-medium text-sm text-text truncate">{lote.nome}</span>
+          <span className="shrink-0 rounded-full bg-border px-2 py-0.5 text-[10px] font-semibold text-text-3">
             {total}
           </span>
           {totalPeso > 0 && (
-            <span className="hidden sm:inline shrink-0 text-xs text-ink-faint">{totalPeso.toFixed(1)} kg</span>
+            <span className="hidden sm:inline shrink-0 text-xs text-text-3">{totalPeso.toFixed(1)} kg</span>
           )}
           {totalPreco > 0 && (
-            <span className="hidden sm:inline shrink-0 text-xs font-medium text-ink">
+            <span className="hidden sm:inline shrink-0 text-xs font-medium text-text">
               {totalPreco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
             </span>
           )}
-          <span className="shrink-0 text-xs text-ink-faint ml-auto">{data}</span>
+          <span className="shrink-0 text-xs text-text-3 ml-auto">{data}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="14"
@@ -315,25 +313,26 @@ function LoteCard({ lote, obraId, defaultOpen }: { lote: Lote; obraId: string; d
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            className={`shrink-0 text-ink-faint transition-transform ${open ? "rotate-180" : ""}`}
+            className={`shrink-0 text-text-3 transition-transform ${open ? "rotate-180" : ""}`}
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
 
-        {/* Botão excluir lote */}
         {confirmarExcluir ? (
           <div className="flex shrink-0 items-center gap-1">
-            <button
+            <Button
+              variant="danger"
+              size="sm"
               onClick={handleExcluir}
               disabled={pending}
-              className="rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
+              className="px-2"
             >
               {pending ? "…" : "Excluir tudo"}
-            </button>
+            </Button>
             <button
               onClick={() => setConfirmarExcluir(false)}
-              className="rounded-md px-2 py-1 text-xs text-ink-faint hover:bg-canvas"
+              className="rounded-md px-2 py-1 text-xs text-text-3 hover:bg-bg"
             >
               Cancelar
             </button>
@@ -341,7 +340,7 @@ function LoteCard({ lote, obraId, defaultOpen }: { lote: Lote; obraId: string; d
         ) : (
           <button
             onClick={(e) => { e.stopPropagation(); setConfirmarExcluir(true); }}
-            className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-ink-faint hover:bg-red-50 hover:text-red-400 transition-colors"
+            className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-text-3 hover:bg-danger-soft hover:text-danger transition-colors"
             title="Excluir lote"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -351,7 +350,6 @@ function LoteCard({ lote, obraId, defaultOpen }: { lote: Lote; obraId: string; d
         )}
       </div>
 
-      {/* Tipologias */}
       {open && (
         <div className="p-3 space-y-2">
           {lote.tipologias.map((t) => (
@@ -388,7 +386,7 @@ function RascunhoCard({
 
   if (editando) {
     return (
-      <div className="rounded-xl border-2 border-steel bg-surface p-4 space-y-3">
+      <div className="rounded-xl border-2 border-primary bg-surface p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="col-span-2 sm:col-span-1">
             <label className="label">Tipo / Nome *</label>
@@ -428,8 +426,8 @@ function RascunhoCard({
           </div>
         </div>
         <div className="flex gap-2 pt-1">
-          <button onClick={salvar} className="btn-primary text-sm py-1.5 px-4">Salvar</button>
-          <button onClick={() => { setDraft(item); setEditando(false); }} className="btn-ghost text-sm py-1.5 px-4">Cancelar</button>
+          <Button onClick={salvar} size="sm">Salvar</Button>
+          <Button onClick={() => { setDraft(item); setEditando(false); }} variant="ghost" size="sm">Cancelar</Button>
         </div>
       </div>
     );
@@ -437,36 +435,36 @@ function RascunhoCard({
 
   return (
     <div className="card flex gap-3 p-3 group">
-      <div className="flex shrink-0 flex-col items-center justify-center rounded-lg bg-canvas px-2.5 py-2 text-center min-w-[60px]">
+      <div className="flex shrink-0 flex-col items-center justify-center rounded-lg bg-bg px-2.5 py-2 text-center min-w-[60px]">
         {item.largura_mm && item.altura_mm ? (
           <>
-            <span className="font-mono text-xs font-bold text-ink">{item.largura_mm}</span>
-            <span className="font-mono text-[9px] text-ink-faint leading-none">×</span>
-            <span className="font-mono text-xs font-bold text-ink">{item.altura_mm}</span>
-            <span className="mt-0.5 text-[9px] text-ink-faint">mm</span>
+            <span className="font-mono text-xs font-bold text-text">{item.largura_mm}</span>
+            <span className="font-mono text-[9px] text-text-3 leading-none">×</span>
+            <span className="font-mono text-xs font-bold text-text">{item.altura_mm}</span>
+            <span className="mt-0.5 text-[9px] text-text-3">mm</span>
           </>
         ) : (
-          <span className="text-xs text-ink-faint">—</span>
+          <span className="text-xs text-text-3">—</span>
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-sm text-ink">{item.tipo || item.nome}</span>
-          {item.codigo_esquadria && <span className="font-mono text-[11px] text-ink-faint">{item.codigo_esquadria}</span>}
+          <span className="font-bold text-sm text-text">{item.tipo || item.nome}</span>
+          {item.codigo_esquadria && <span className="font-mono text-[11px] text-text-3">{item.codigo_esquadria}</span>}
         </div>
-        {item.descricao && <p className="mt-0.5 text-xs text-ink-soft leading-snug">{item.descricao}</p>}
+        {item.descricao && <p className="mt-0.5 text-xs text-text-2 leading-snug">{item.descricao}</p>}
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-ink-soft"><span className="font-semibold text-ink">{item.quantidade}</span> {item.quantidade === 1 ? "peça" : "peças"}</span>
+          <span className="text-text-2"><span className="font-semibold text-text">{item.quantidade}</span> {item.quantidade === 1 ? "peça" : "peças"}</span>
           {item.tratamento && <TratamentoBadge texto={item.tratamento} />}
-          {item.peso_unit != null && item.peso_unit > 0 && <span className="text-ink-faint">{item.peso_unit} kg/un</span>}
-          {item.preco_unit != null && item.preco_unit > 0 && <span className="font-medium text-ink">{item.preco_unit.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/un</span>}
+          {item.peso_unit != null && item.peso_unit > 0 && <span className="text-text-3">{item.peso_unit} kg/un</span>}
+          {item.preco_unit != null && item.preco_unit > 0 && <span className="font-medium text-text">{item.preco_unit.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/un</span>}
         </div>
       </div>
       <div className="flex shrink-0 flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={() => setEditando(true)} className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-faint hover:bg-canvas hover:text-steel transition-colors" title="Editar">
+        <button onClick={() => setEditando(true)} className="flex h-7 w-7 items-center justify-center rounded-lg text-text-3 hover:bg-bg hover:text-primary transition-colors" title="Editar">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
-        <button onClick={onRemove} className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-faint hover:bg-red-50 hover:text-red-500 transition-colors" title="Excluir">
+        <button onClick={onRemove} className="flex h-7 w-7 items-center justify-center rounded-lg text-text-3 hover:bg-danger-soft hover:text-danger transition-colors" title="Excluir">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
@@ -490,7 +488,6 @@ export function AbaProducao({
   const [mostrarForm, setMostrarForm] = useState(false);
   const [rascunhos, setRascunhos] = useState<Rascunho[] | null>(null);
   const [loteNome, setLoteNome] = useState("");
-  // Lote recém-importado (mostrado imediatamente, antes do server refresh)
   const [localLote, setLocalLote] = useState<Lote | null>(null);
   const [erroXml, setErroXml] = useState<string | null>(null);
   const [resultado, setResultado] = useState<string | null>(null);
@@ -499,7 +496,6 @@ export function AbaProducao({
   const router = useRouter();
   const prevLotesLen = useRef(lotes.length);
 
-  // Quando o servidor retornar os novos lotes, descarta estado local
   useEffect(() => {
     if (localLote && lotes.length !== prevLotesLen.current) {
       setLocalLote(null);
@@ -510,7 +506,7 @@ export function AbaProducao({
   function handleXmlChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const nome = file.name.replace(/\.[^.]+$/, ""); // remove extensão
+    const nome = file.name.replace(/\.[^.]+$/, "");
     e.target.value = "";
     setErroXml(null);
     setLoteNome(nome);
@@ -547,7 +543,6 @@ export function AbaProducao({
     startTransition(async () => {
       try {
         const res = await importarTipologias(obraId, nome, JSON.stringify(payload));
-        // Mostra o lote imediatamente sem esperar o servidor
         setLocalLote({
           id: res.loteId,
           nome,
@@ -574,22 +569,19 @@ export function AbaProducao({
     });
   }
 
-  // Todos os lotes a exibir (server + local recém-importado)
-  const todosLotes = localLote
-    ? [...lotes, localLote]
-    : lotes;
+  const todosLotes = localLote ? [...lotes, localLote] : lotes;
 
   // ── Painel de revisão do XML ──────────────────────────────────
   if (rascunhos !== null) {
     return (
       <div className="mt-6 space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-steel/30 bg-steel/5 px-4 py-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-primary/30 bg-primary-soft px-4 py-3">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-ink">
+            <p className="text-sm font-semibold text-text">
               Revisão do XML — {rascunhos.length} tipologia{rascunhos.length !== 1 ? "s" : ""}
             </p>
             <div className="mt-2 flex items-center gap-2">
-              <label className="shrink-0 text-xs text-ink-faint">Nome da pasta:</label>
+              <label className="shrink-0 text-xs text-text-3">Nome da pasta:</label>
               <input
                 value={loteNome}
                 onChange={(e) => setLoteNome(e.target.value)}
@@ -599,12 +591,12 @@ export function AbaProducao({
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <button onClick={handleConfirmar} disabled={pending || rascunhos.length === 0} className="btn-primary text-sm py-1.5 px-4 disabled:opacity-50">
+            <Button onClick={handleConfirmar} disabled={pending || rascunhos.length === 0} size="sm">
               {pending ? "Salvando…" : "Confirmar importação"}
-            </button>
-            <button onClick={() => { setRascunhos(null); setErroXml(null); }} disabled={pending} className="btn-ghost text-sm py-1.5 px-4">
+            </Button>
+            <Button onClick={() => { setRascunhos(null); setErroXml(null); }} disabled={pending} variant="ghost" size="sm">
               Cancelar
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -618,7 +610,7 @@ export function AbaProducao({
             />
           ))}
         </div>
-        {erroXml && <p className="text-sm text-red-500">{erroXml}</p>}
+        {erroXml && <Alert variant="danger">{erroXml}</Alert>}
       </div>
     );
   }
@@ -626,26 +618,19 @@ export function AbaProducao({
   // ── Vista normal ─────────────────────────────────────────────
   return (
     <div className="mt-6 space-y-4">
-      {/* Aviso de migração pendente */}
       {migracaoPendente && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800/40 dark:bg-amber-900/20">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0 text-amber-500">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          <div>
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Migração SQL necessária</p>
-            <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">
-              Rode o arquivo <code className="font-mono bg-amber-100 dark:bg-amber-900/40 px-1 rounded">supabase/lotes-producao.sql</code> no Supabase SQL Editor para ativar esta aba.
-            </p>
-          </div>
-        </div>
+        <Alert variant="warning" title="Migração SQL necessária">
+          Rode o arquivo{" "}
+          <code className="font-mono bg-warning-soft px-1 rounded">supabase/lotes-producao.sql</code>{" "}
+          no Supabase SQL Editor para ativar esta aba.
+        </Alert>
       )}
 
       {/* Barra de ações */}
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setMostrarForm(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-sm font-medium text-ink-soft hover:border-steel hover:text-steel transition-colors"
+          className="flex items-center gap-1.5 rounded-lg border border-dashed border-border px-3 py-2 text-sm font-medium text-text-2 hover:border-primary hover:text-primary transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Adicionar tipologia
@@ -653,25 +638,23 @@ export function AbaProducao({
 
         <button
           onClick={() => fileRef.current?.click()}
-          className="flex items-center gap-1.5 rounded-lg border border-steel/40 bg-steel/5 px-3 py-2 text-sm font-medium text-steel hover:bg-steel/10 transition-colors"
+          className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary-soft px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
           Importar XML
         </button>
         <input ref={fileRef} type="file" accept=".xml,text/xml" className="hidden" onChange={handleXmlChange} />
 
-        {erroXml && <span className="text-sm text-red-500">{erroXml}</span>}
-        {resultado && <span className="text-sm font-medium text-green-600">{resultado}</span>}
+        {erroXml && <span className="text-sm text-danger">{erroXml}</span>}
+        {resultado && <span className="text-sm font-medium text-success">{resultado}</span>}
       </div>
 
-      {/* Estado vazio */}
       {todosLotes.length === 0 && semLote.length === 0 && !mostrarForm && (
-        <div className="card p-10 text-center text-sm text-ink-faint">
+        <div className="card p-10 text-center text-sm text-text-3">
           Nenhuma tipologia cadastrada. Importe um XML ou adicione manualmente.
         </div>
       )}
 
-      {/* Lotes (pastas) */}
       {todosLotes.length > 0 && (
         <div className="space-y-2">
           {todosLotes.map((lote, i) => (
@@ -685,24 +668,22 @@ export function AbaProducao({
         </div>
       )}
 
-      {/* Tipologias sem lote (adicionadas manualmente) */}
       {semLote.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint px-1">Adicionadas manualmente</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-text-3 px-1">Adicionadas manualmente</p>
           {semLote.map((t) => (
             <div key={t.id} className="card p-3">
-              <p className="font-medium text-sm text-ink">{t.nome}</p>
-              <p className="mt-0.5 text-xs text-ink-soft">{t.quantidade} {t.quantidade === 1 ? "peça" : "peças"}</p>
+              <p className="font-medium text-sm text-text">{t.nome}</p>
+              <p className="mt-0.5 text-xs text-text-2">{t.quantidade} {t.quantidade === 1 ? "peça" : "peças"}</p>
             </div>
           ))}
         </div>
       )}
 
-      {/* Formulário manual */}
       {mostrarForm && (
-        <form onSubmit={handleSubmitManual} className="card divide-y divide-line">
+        <form onSubmit={handleSubmitManual} className="card divide-y divide-border">
           <div className="px-6 py-4">
-            <p className="font-display text-sm font-semibold uppercase tracking-wide text-ink-soft">Nova tipologia</p>
+            <p className="font-display text-sm font-semibold uppercase tracking-wide text-text-2">Nova tipologia</p>
           </div>
           <div className="grid gap-4 p-6 sm:grid-cols-2">
             <div>
@@ -715,8 +696,8 @@ export function AbaProducao({
             </div>
           </div>
           <div className="flex justify-end gap-2 px-6 py-4">
-            <button type="button" onClick={() => setMostrarForm(false)} disabled={pending} className="btn-ghost text-sm">Cancelar</button>
-            <button type="submit" disabled={pending} className="btn-primary text-sm">{pending ? "Salvando…" : "Salvar"}</button>
+            <Button type="button" onClick={() => setMostrarForm(false)} disabled={pending} variant="ghost" size="sm">Cancelar</Button>
+            <Button type="submit" disabled={pending} size="sm">{pending ? "Salvando…" : "Salvar"}</Button>
           </div>
         </form>
       )}

@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { enviarArquivo, deletarArquivo } from "@/app/catalogo/actions";
+import { Button } from "@/ui/components/Button";
 
 type Arquivo = {
   id: string;
@@ -43,7 +44,7 @@ function BotaoExcluirArquivo({
       onClick={handleDelete}
       disabled={pending}
       title="Excluir arquivo"
-      className="absolute right-2 top-2 z-10 rounded-md bg-white/90 p-1.5 text-red-400 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+      className="absolute right-2 top-2 z-10 rounded-md bg-white/90 p-1.5 text-red-400 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-danger-soft hover:text-danger disabled:opacity-50"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -70,8 +71,8 @@ function BotaoExcluirArquivo({
 function IconeTipo({ tipo }: { tipo: string }) {
   if (tipo === "dxf") {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-md bg-canvas">
-        <span className="font-mono text-lg font-bold uppercase text-ink-faint">
+      <div className="flex h-full w-full items-center justify-center rounded-md bg-bg">
+        <span className="font-mono text-lg font-bold uppercase text-text-3">
           DXF
         </span>
       </div>
@@ -79,8 +80,8 @@ function IconeTipo({ tipo }: { tipo: string }) {
   }
   if (tipo === "pdf") {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-md bg-red-50">
-        <span className="font-mono text-lg font-bold uppercase text-red-400">
+      <div className="flex h-full w-full items-center justify-center rounded-md bg-danger-soft">
+        <span className="font-mono text-lg font-bold uppercase text-danger">
           PDF
         </span>
       </div>
@@ -139,11 +140,11 @@ export function AbaArquivos({
     <div className="mt-6 space-y-6">
       {/* Upload */}
       <form onSubmit={handleSubmit} className="card p-5">
-        <p className="mb-3 font-display text-sm font-semibold text-ink">
+        <p className="mb-3 font-display text-sm font-semibold text-text">
           Enviar arquivo
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <label className="flex cursor-pointer items-center gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel">
+          <label className="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="15"
@@ -170,24 +171,23 @@ export function AbaArquivos({
               className="sr-only"
             />
           </label>
-          <button
+          <Button
             type="submit"
             disabled={pending || !nomeArquivo}
-            className="btn-primary"
           >
             {pending ? "Enviando…" : "Enviar"}
-          </button>
-          <span className="text-xs text-ink-faint">
+          </Button>
+          <span className="text-xs text-text-3">
             DXF, PNG, JPG, WEBP, PDF
           </span>
         </div>
-        {erro && <p className="mt-2 text-xs text-red-500">{erro}</p>}
+        {erro && <p className="mt-2 text-xs text-danger">{erro}</p>}
       </form>
 
       {/* Lista de arquivos */}
       {arquivos.length === 0 ? (
         <div className="card p-8 text-center">
-          <p className="text-sm text-ink-faint">Nenhum arquivo enviado.</p>
+          <p className="text-sm text-text-3">Nenhum arquivo enviado.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -225,12 +225,12 @@ export function AbaArquivos({
                 {/* Info */}
                 <div className="p-3">
                   <p
-                    className="truncate text-xs font-medium text-ink"
+                    className="truncate text-xs font-medium text-text"
                     title={arq.nome_original}
                   >
                     {arq.nome_original}
                   </p>
-                  <p className="mt-0.5 text-xs text-ink-faint">
+                  <p className="mt-0.5 text-xs text-text-3">
                     {new Date(arq.criado_em).toLocaleDateString("pt-BR")}
                   </p>
                 </div>

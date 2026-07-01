@@ -14,7 +14,7 @@ export function useToast() {
 const COR: Record<Tipo, string> = {
   erro:    "bg-red-600",
   sucesso: "bg-emerald-600",
-  info:    "bg-steel",
+  info:    "bg-primary",
 };
 
 const ICONE: Record<Tipo, React.ReactNode> = {

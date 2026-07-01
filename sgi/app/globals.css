@@ -183,41 +183,10 @@
   .focus-ring:focus-visible { outline: 2px solid rgb(var(--color-primary)); outline-offset: 2px; }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   COMPONENTES LEGACY (backward-compat durante migração)
-═══════════════════════════════════════════════════════════════ */
 @layer components {
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5
-           text-sm font-semibold text-white
-           transition-all duration-[120ms]
-           active:scale-[0.97]
-           focus:outline-none focus:ring-2 focus:ring-offset-2
-           disabled:opacity-40 disabled:cursor-not-allowed;
-    background-color: rgb(var(--color-primary));
-    border-radius: var(--radius-md);
-    border: none;
-  }
-  .btn-primary:hover { background-color: rgb(var(--color-primary-hover)); }
-  .btn-primary:focus-visible { outline-color: rgb(var(--color-primary)); }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5
-           text-sm font-semibold
-           transition-all duration-[120ms]
-           active:scale-[0.97]
-           focus:outline-none
-           disabled:opacity-40 disabled:cursor-not-allowed;
-    background-color: rgb(var(--color-surface));
-    color: rgb(var(--color-text-2));
-    border: 1px solid rgb(var(--color-border));
-    border-radius: var(--radius-md);
-  }
-  .btn-ghost:hover { background-color: rgb(var(--color-bg)); color: rgb(var(--color-text)); }
-
   .field {
     @apply w-full px-3.5 py-1.5 text-sm transition-shadow duration-[120ms]
-           placeholder:text-ink-faint focus:outline-none disabled:opacity-50;
+           placeholder:text-text-3 focus:outline-none disabled:opacity-50;
     font-family: "Cairo", system-ui, sans-serif;
     background-color: rgb(var(--color-surface));
     color: rgb(var(--color-text));

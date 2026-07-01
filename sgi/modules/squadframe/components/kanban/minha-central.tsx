@@ -67,22 +67,22 @@ function TarefaRow({ t, onOpen }: { t: TarefaCentral; onOpen: (id: string) => vo
   return (
     <div
       onClick={() => onOpen(t.id)}
-      className="group flex items-center gap-3 px-4 py-3 border-b border-line last:border-0 hover:bg-canvas cursor-pointer transition-colors"
+      className="group flex items-center gap-3 px-4 py-3 border-b border-border last:border-0 hover:bg-bg cursor-pointer transition-colors"
     >
       <div
         className="shrink-0 h-2.5 w-1.5 rounded-full"
         style={{ backgroundColor: PRIORIDADE_COR[t.prioridade as TarefaPrioridade] }}
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-ink truncate">{t.titulo}</p>
+        <p className="text-sm font-medium text-text truncate">{t.titulo}</p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           {t.setor && (
-            <span className="text-xs text-ink-faint">{t.setor.nome}</span>
+            <span className="text-xs text-text-3">{t.setor.nome}</span>
           )}
           {t.coluna && (
             <>
-              <span className="text-ink-faint text-xs">·</span>
-              <span className="text-xs text-ink-faint">{t.coluna.nome}</span>
+              <span className="text-text-3 text-xs">·</span>
+              <span className="text-xs text-text-3">{t.coluna.nome}</span>
             </>
           )}
           {t.origem !== "MANUAL" && (
@@ -112,14 +112,14 @@ function TarefaRow({ t, onOpen }: { t: TarefaCentral; onOpen: (id: string) => vo
           {STATUS_LABEL[t.status] ?? t.status}
         </span>
         {t.data_limite && (
-          <span className={`text-xs font-medium ${overdue ? "text-red-500 font-semibold" : today ? "text-orange-500" : "text-ink-faint"}`}>
+          <span className={`text-xs font-medium ${overdue ? "text-danger font-semibold" : today ? "text-warning" : "text-text-3"}`}>
             {overdue ? "⚠ " : today ? "hoje" : ""}{formatDate(t.data_limite)}
           </span>
         )}
         <Link
           href={`/tarefas/${t.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="opacity-0 group-hover:opacity-100 p-1 rounded text-ink-faint hover:text-steel transition-all"
+          className="opacity-0 group-hover:opacity-100 p-1 rounded text-text-3 hover:text-primary transition-all"
           title="Abrir em nova página"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -150,11 +150,11 @@ function Secao({
     <div className="card overflow-hidden mb-4">
       <button
         onClick={() => setAberta((p) => !p)}
-        className="flex w-full items-center justify-between px-4 py-3 border-b border-line hover:bg-canvas transition-colors"
+        className="flex w-full items-center justify-between px-4 py-3 border-b border-border hover:bg-bg transition-colors"
       >
         <div className="flex items-center gap-2">
           <span style={{ color: cor }}>{icone}</span>
-          <span className="text-sm font-semibold text-ink">{titulo}</span>
+          <span className="text-sm font-semibold text-text">{titulo}</span>
           <span
             className="rounded-full px-1.5 py-0.5 text-xs font-medium"
             style={{ backgroundColor: cor + "20", color: cor }}
@@ -170,14 +170,14 @@ function Secao({
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className={`text-ink-faint transition-transform duration-150 ${aberta ? "rotate-180" : ""}`}
+          className={`text-text-3 transition-transform duration-150 ${aberta ? "rotate-180" : ""}`}
         >
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
       {aberta && (
         tarefas.length === 0 ? (
-          <div className="px-4 py-6 text-center text-xs text-ink-faint">Nenhuma tarefa</div>
+          <div className="px-4 py-6 text-center text-xs text-text-3">Nenhuma tarefa</div>
         ) : (
           tarefas.map((t) => <TarefaRow key={t.id} t={t} onOpen={onOpen} />)
         )
@@ -219,10 +219,10 @@ export function MinhaCentral({ minhasTarefas, setorTarefas, usuarioId, usuarioNo
   const total = minhasTarefas.length;
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <div className="px-5 py-4 border-b border-line bg-surface">
-        <h1 className="font-display text-xl font-bold text-ink">Minha Central</h1>
-        <p className="text-xs text-ink-faint mt-0.5">
+    <div className="min-h-screen bg-bg">
+      <div className="px-5 py-4 border-b border-border bg-surface">
+        <h1 className="font-display text-xl font-bold text-text">Minha Central</h1>
+        <p className="text-xs text-text-3 mt-0.5">
           Olá, {usuarioNome} · {total} {total === 1 ? "tarefa ativa" : "tarefas ativas"}
         </p>
       </div>
@@ -323,9 +323,9 @@ export function MinhaCentral({ minhasTarefas, setorTarefas, usuarioId, usuarioNo
         {total === 0 && setorSemDono.length === 0 && (
           <div className="card p-12 text-center">
             <div className="text-3xl mb-3">🎉</div>
-            <p className="font-semibold text-ink mb-1">Tudo em dia!</p>
-            <p className="text-sm text-ink-faint">Nenhuma tarefa ativa atribuída a você.</p>
-            <Link href="/tarefas" className="mt-4 inline-block text-sm text-steel hover:underline">
+            <p className="font-semibold text-text mb-1">Tudo em dia!</p>
+            <p className="text-sm text-text-3">Nenhuma tarefa ativa atribuída a você.</p>
+            <Link href="/tarefas" className="mt-4 inline-block text-sm text-primary hover:underline">
               Ver board do setor →
             </Link>
           </div>

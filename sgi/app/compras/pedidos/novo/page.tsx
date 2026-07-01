@@ -46,7 +46,7 @@ export default async function NovoPedidoPage({
     <div className="px-8 py-8 max-w-5xl">
       <BackButton href={fromObraId ? `/obras/${fromObraId}?aba=pedidos` : "/compras/pedidos"} />
       <h1 className="mt-2 text-2xl font-bold tracking-tight">Novo Pedido de Compra</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-text-2">
         Selecione fornecedor, adicione itens ou importe de solicitações aprovadas.
       </p>
       <div className="mt-6">

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adicionarAlias, editarAlias, excluirAlias } from "@/app/catalogo/actions";
 import { specLabels } from "@/modules/squadframe/lib/tipo-unidade";
+import { Button } from "@/ui/components/Button";
 
 type Alias = {
   id: string; alias: string;
@@ -55,8 +56,8 @@ function SpecsDisplay({ a, tipoUnidade, masterPeso, masterTamanho }: {
     partes.push(`${Number(precoMetroEfetivo).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}${sufixoPreco}${calc ? " (calc.)" : ""}`);
   }
 
-  if (!partes.length) return <span className="text-ink-faint italic text-xs">—</span>;
-  return <span className="text-xs text-ink-soft">{partes.join(" · ")}</span>;
+  if (!partes.length) return <span className="text-text-3 italic text-xs">—</span>;
+  return <span className="text-xs text-text-2">{partes.join(" · ")}</span>;
 }
 
 function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
@@ -80,7 +81,7 @@ function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
       <div className="flex flex-wrap gap-2">
         {showTamanho && (
           <div className="min-w-[90px] flex-1">
-            <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.tamanho}</label>
+            <label className="text-[10px] uppercase tracking-wide text-text-3">{labels.tamanho}</label>
             <input name="tamanho_mm" type="number" step="any" min="0"
               defaultValue={a?.tamanho_mm ?? ""}
               className="field h-7 text-xs"
@@ -88,7 +89,7 @@ function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
           </div>
         )}
         <div className="min-w-[80px] flex-1">
-          <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.peso}</label>
+          <label className="text-[10px] uppercase tracking-wide text-text-3">{labels.peso}</label>
           <input name="peso_metro" type="number" step="any" min="0"
             defaultValue={a?.peso_metro ?? ""}
             className="field h-7 text-xs"
@@ -96,7 +97,7 @@ function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
         </div>
         {isBarra ? (
           <div className="min-w-[80px] flex-1">
-            <label className="text-[10px] uppercase tracking-wide text-ink-faint">Preço/kg (R$/kg)</label>
+            <label className="text-[10px] uppercase tracking-wide text-text-3">Preço/kg (R$/kg)</label>
             <input name="preco_kg" type="number" step="any" min="0"
               value={precoKg}
               onChange={(e) => setPrecoKg(e.target.value)}
@@ -105,7 +106,7 @@ function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
           </div>
         ) : (
           <div className="min-w-[80px] flex-1">
-            <label className="text-[10px] uppercase tracking-wide text-ink-faint">{labels.preco}</label>
+            <label className="text-[10px] uppercase tracking-wide text-text-3">{labels.preco}</label>
             <input name="preco_metro" type="number" step="any" min="0"
               defaultValue={a?.preco_metro ?? ""}
               className="field h-7 text-xs" placeholder="12.50" />
@@ -113,16 +114,16 @@ function SpecsInputs({ a, tipoUnidade, masterPeso, masterTamanho }: {
         )}
       </div>
       {isBarra && precoMetroPreview != null && (
-        <p className="text-[11px] text-ink-soft">
+        <p className="text-[11px] text-text-2">
           ={" "}
           <span className="font-medium">
             {precoMetroPreview.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/m
           </span>{" "}
-          <span className="text-ink-faint">(peso × preço/kg)</span>
+          <span className="text-text-3">(peso × preço/kg)</span>
         </p>
       )}
       {isBarra && precoKg !== "" && pesoParaCalculo == null && (
-        <p className="text-[11px] text-amber-600">
+        <p className="text-[11px] text-warning">
           Informe o peso (aqui ou no produto mestre) para calcular o preço/m.
         </p>
       )}
@@ -173,17 +174,17 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis,
 
   if (editando) {
     return (
-      <tr className="border-b border-line last:border-0 bg-canvas">
+      <tr className="border-b border-border last:border-0 bg-bg">
         <td colSpan={4} className="px-4 py-3">
           <form onSubmit={salvar} className="space-y-2">
             <div className="flex flex-wrap gap-2">
               <div className="flex-1 min-w-[120px]">
-                <label className="text-[10px] uppercase tracking-wide text-ink-faint">Código alias</label>
+                <label className="text-[10px] uppercase tracking-wide text-text-3">Código alias</label>
                 <input value={aliasVal} onChange={(e) => setAliasVal(e.target.value)}
                   className="field h-7 w-full font-mono text-xs" />
               </div>
               <div className="flex-1 min-w-[140px]">
-                <label className="text-[10px] uppercase tracking-wide text-ink-faint">Fornecedor</label>
+                <label className="text-[10px] uppercase tracking-wide text-text-3">Fornecedor</label>
                 <select value={fornId} onChange={(e) => setFornId(e.target.value)} className="field h-7 text-xs">
                   <option value="">Sem fornecedor</option>
                   {fornecedoresDisponiveis.map((f) => (
@@ -193,12 +194,10 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis,
               </div>
             </div>
             <SpecsInputs a={a} tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
-            {erro && <p className="text-xs text-red-500">{erro}</p>}
+            {erro && <p className="text-xs text-danger">{erro}</p>}
             <div className="flex gap-2 pt-1">
-              <button type="submit" disabled={pendEdit || !aliasVal.trim()}
-                className="btn-primary text-xs px-3 py-1">{pendEdit ? "…" : "Salvar"}</button>
-              <button type="button" onClick={() => { setEditando(false); setAliasVal(a.alias); setErro(null); }}
-                className="btn-ghost text-xs px-3 py-1">Cancelar</button>
+              <Button type="submit" disabled={pendEdit || !aliasVal.trim()} className="text-xs px-3 py-1">{pendEdit ? "…" : "Salvar"}</Button>
+              <Button type="button" variant="ghost" onClick={() => { setEditando(false); setAliasVal(a.alias); setErro(null); }} className="text-xs px-3 py-1">Cancelar</Button>
             </div>
           </form>
         </td>
@@ -207,10 +206,10 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis,
   }
 
   return (
-    <tr className={`border-b border-line last:border-0 ${pendDel ? "opacity-40" : ""}`}>
-      <td className="px-4 py-2.5 font-mono text-sm font-medium text-ink">{a.alias}</td>
-      <td className="px-4 py-2.5 text-sm text-ink-soft">
-        {(a.fornecedor as any)?.nome ?? <span className="text-ink-faint italic">—</span>}
+    <tr className={`border-b border-border last:border-0 ${pendDel ? "opacity-40" : ""}`}>
+      <td className="px-4 py-2.5 font-mono text-sm font-medium text-text">{a.alias}</td>
+      <td className="px-4 py-2.5 text-sm text-text-2">
+        {(a.fornecedor as any)?.nome ?? <span className="text-text-3 italic">—</span>}
       </td>
       <td className="px-4 py-2.5">
         <SpecsDisplay a={a} tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
@@ -218,14 +217,14 @@ function AliasRow({ a, produtoId, linhaId, tipoUnidade, fornecedoresDisponiveis,
       <td className="px-4 py-2.5">
         <div className="flex gap-1 justify-end">
           <button onClick={() => setEditando(true)} title="Editar"
-            className="rounded p-1.5 text-ink-faint hover:bg-surface hover:text-ink">
+            className="rounded p-1.5 text-text-3 hover:bg-surface hover:text-text">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
           </button>
           <button onClick={deletar} disabled={pendDel} title="Excluir"
-            className="rounded p-1.5 text-ink-faint hover:bg-red-50 hover:text-red-500">
+            className="rounded p-1.5 text-text-3 hover:bg-danger-soft hover:text-danger">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
               <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
@@ -272,7 +271,7 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
 
   return (
     <div className="mt-6 space-y-4">
-      <p className="text-sm text-ink-faint">
+      <p className="text-sm text-text-3">
         Aliases são códigos alternativos usados por cada fornecedor.
         {isBarra && " Para perfis comprados por peso, informe o preço/kg — o sistema calcula o preço/m automaticamente no pedido."}
         {" "}Peso e comprimento do produto mestre são herdados se não informados.
@@ -282,7 +281,7 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                 <th className="px-4 py-2 font-medium">Código alias</th>
                 <th className="px-4 py-2 font-medium">Fornecedor</th>
                 <th className="px-4 py-2 font-medium">Especificações</th>
@@ -300,13 +299,13 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
         </div>
       ) : (
         <div className="card p-8 text-center">
-          <p className="text-sm text-ink-faint">Nenhum alias cadastrado.</p>
+          <p className="text-sm text-text-3">Nenhum alias cadastrado.</p>
         </div>
       )}
 
       {showForm ? (
         <form onSubmit={handleSubmit} className="card p-4 space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-ink-faint">Adicionar alias</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-3">Adicionar alias</p>
           <div className="flex flex-wrap gap-3">
             <div className="flex-1 min-w-[140px]">
               <label className="label">Código</label>
@@ -314,7 +313,7 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
                 placeholder="Ex: 321, C-ABC-001…" className="field" disabled={pending} />
             </div>
             <div className="flex-1 min-w-[160px]">
-              <label className="label">Fornecedor <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Fornecedor <span className="text-text-3 font-normal">(opcional)</span></label>
               <select value={fornecedorId} onChange={(e) => setFornecedorId(e.target.value)}
                 className="field" disabled={pending}>
                 <option value="">Sem fornecedor</option>
@@ -325,17 +324,17 @@ export function AbaAliases({ produtoId, linhaId, aliases, tipoUnidade, fornecedo
             </div>
           </div>
           <SpecsInputs tipoUnidade={tipoUnidade} masterPeso={masterPeso} masterTamanho={masterTamanho} />
-          {erro && <p className="text-xs text-red-500">{erro}</p>}
+          {erro && <p className="text-xs text-danger">{erro}</p>}
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => { setShowForm(false); setErro(null); }} className="btn-ghost">Cancelar</button>
-            <button type="submit" disabled={pending || !valor.trim()} className="btn-primary">
+            <Button type="button" variant="ghost" onClick={() => { setShowForm(false); setErro(null); }}>Cancelar</Button>
+            <Button type="submit" disabled={pending || !valor.trim()}>
               {pending ? "Adicionando…" : "Adicionar alias"}
-            </button>
+            </Button>
           </div>
         </form>
       ) : (
         <button onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel">
+          className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>

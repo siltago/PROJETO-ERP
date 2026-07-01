@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { vincularCor, vincularTodasCores } from "@/app/catalogo/actions";
+import { Button } from "@/ui/components/Button";
 
 type CorRal = { id: string; codigo_ral: string; nome: string | null; hex: string | null };
 type Acabamento = { id: string; nome: string };
@@ -68,7 +69,7 @@ export function AbaCores({
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                 <th className="w-10 px-4 py-2.5" />
                 <th className="px-4 py-2.5 font-medium">Cor RAL</th>
                 <th className="px-4 py-2.5 font-medium">Nome</th>
@@ -79,21 +80,21 @@ export function AbaCores({
               {cores.map((c) => (
                 <tr
                   key={c.cor?.id}
-                  className="border-b border-line last:border-0 hover:bg-canvas"
+                  className="border-b border-border last:border-0 hover:bg-bg"
                 >
                   <td className="px-4 py-2">
                     <span
-                      className="inline-block h-6 w-6 rounded border border-line"
+                      className="inline-block h-6 w-6 rounded border border-border"
                       style={{ backgroundColor: c.cor?.hex ?? "#e5e7eb" }}
                     />
                   </td>
                   <td className="px-4 py-2.5 font-mono text-xs font-medium">
                     {c.cor?.codigo_ral ?? "—"}
                   </td>
-                  <td className="px-4 py-2.5 text-ink-soft">
+                  <td className="px-4 py-2.5 text-text-2">
                     {c.cor?.nome ?? "—"}
                   </td>
-                  <td className="px-4 py-2.5 text-ink-soft">
+                  <td className="px-4 py-2.5 text-text-2">
                     {c.acabamento?.nome ?? "—"}
                   </td>
                 </tr>
@@ -105,7 +106,7 @@ export function AbaCores({
 
       {cores.length === 0 && !mostrarForm && (
         <div className="card p-8 text-center">
-          <p className="text-sm text-ink-faint">
+          <p className="text-sm text-text-3">
             Nenhuma cor RAL vinculada a este produto.
           </p>
         </div>
@@ -118,7 +119,7 @@ export function AbaCores({
           <button
             onClick={handleVincularTodas}
             disabled={pending}
-            className="flex items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel disabled:opacity-50"
+            className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
@@ -132,7 +133,7 @@ export function AbaCores({
           <button
             onClick={() => setMostrarForm(true)}
             disabled={pending}
-            className="flex items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-steel hover:text-steel disabled:opacity-50"
+            className="flex items-center gap-2 rounded-md border border-dashed border-border px-4 py-3 text-sm font-medium text-text-2 transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -146,7 +147,7 @@ export function AbaCores({
       {/* Formulário vincular uma cor */}
       {mostrarForm && (
         <form onSubmit={handleSubmit} className="card max-w-sm space-y-4 p-5">
-          <p className="font-display text-sm font-semibold text-ink">
+          <p className="font-display text-sm font-semibold text-text">
             Vincular cor RAL
           </p>
 
@@ -162,7 +163,7 @@ export function AbaCores({
               ))}
             </select>
             {naoVinculadas.length === 0 && (
-              <p className="mt-1 text-xs text-ink-faint">
+              <p className="mt-1 text-xs text-text-3">
                 Todas as cores já estão vinculadas.
               </p>
             )}
@@ -171,7 +172,7 @@ export function AbaCores({
           <div>
             <label className="label">
               Acabamento{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <select name="acabamento_id" className="field">
               <option value="">Sem acabamento</option>
@@ -183,20 +184,20 @@ export function AbaCores({
             </select>
           </div>
 
-          {erro && <p className="text-xs text-red-500">{erro}</p>}
+          {erro && <p className="text-xs text-danger">{erro}</p>}
 
           <div className="flex gap-2">
-            <button type="submit" disabled={pending} className="btn-primary">
+            <Button type="submit" disabled={pending}>
               {pending ? "Salvando…" : "Vincular"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => { setMostrarForm(false); setErro(null); }}
               disabled={pending}
-              className="btn-ghost"
             >
               Cancelar
-            </button>
+            </Button>
           </div>
         </form>
       )}

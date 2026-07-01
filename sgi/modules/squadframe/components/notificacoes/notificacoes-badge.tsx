@@ -151,21 +151,21 @@ export function NotificacoesBadge({ usuarioId, naoLidasIniciais }: Props) {
       {aberto && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAberto(false)} />
-          <div className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-1rem))] rounded-xl border border-line bg-surface shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-line">
-              <span className="text-sm font-semibold text-ink">Notificações</span>
+          <div className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-1rem))] rounded-xl border border-border bg-surface shadow-xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <span className="text-sm font-semibold text-text">Notificações</span>
               {naoLidas > 0 && (
                 <button
                   onClick={handleMarcarTodas}
-                  className="text-xs text-steel hover:underline"
+                  className="text-xs text-primary hover:underline"
                 >
                   Marcar todas como lidas
                 </button>
               )}
             </div>
-            <div className="max-h-96 overflow-y-auto divide-y divide-line">
+            <div className="max-h-96 overflow-y-auto divide-y divide-border">
               {notificacoes.length === 0 ? (
-                <div className="px-4 py-8 text-center text-sm text-ink-faint">
+                <div className="px-4 py-8 text-center text-sm text-text-3">
                   Nenhuma notificação
                 </div>
               ) : (
@@ -180,26 +180,26 @@ export function NotificacoesBadge({ usuarioId, naoLidasIniciais }: Props) {
                         setAberto(false);
                         router.push(link.href);
                       }}
-                      className={`flex items-start gap-3 px-4 py-3 transition-colors ${!n.lida ? "bg-steel/5" : ""} ${link ? "cursor-pointer hover:bg-canvas" : ""}`}
+                      className={`flex items-start gap-3 px-4 py-3 transition-colors ${!n.lida ? "bg-primary/5" : ""} ${link ? "cursor-pointer hover:bg-bg" : ""}`}
                     >
-                      <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${!n.lida ? "bg-steel" : ""}`} />
+                      <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${!n.lida ? "bg-primary" : ""}`} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-ink">
+                        <p className="text-xs font-medium text-text">
                           {TIPO_LABEL[n.tipo] ?? n.tipo}
                         </p>
                         {link && (
-                          <p className="truncate text-xs text-steel">
+                          <p className="truncate text-xs text-primary">
                             {link.label} →
                           </p>
                         )}
-                        <span className="text-[10px] text-ink-faint">
+                        <span className="text-[10px] text-text-3">
                           <RelativeTime ts={n.criado_em} />
                         </span>
                       </div>
                       {!n.lida && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleMarcarLida(n.id); }}
-                          className="shrink-0 text-[10px] text-ink-faint hover:text-steel transition-colors mt-0.5"
+                          className="shrink-0 text-[10px] text-text-3 hover:text-primary transition-colors mt-0.5"
                           title="Marcar como lida"
                         >
                           ✓

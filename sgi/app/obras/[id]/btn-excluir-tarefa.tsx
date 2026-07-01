@@ -21,7 +21,7 @@ export function BtnExcluirTarefa({ tarefaId }: { tarefaId: string }) {
     <button
       onClick={handleClick}
       disabled={pending}
-      className="opacity-0 group-hover:opacity-100 transition-opacity text-ink-faint hover:text-red-500 disabled:opacity-30 p-1 rounded"
+      className="opacity-0 group-hover:opacity-100 transition-opacity text-text-3 hover:text-danger disabled:opacity-30 p-1 rounded"
       title="Excluir tarefa"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

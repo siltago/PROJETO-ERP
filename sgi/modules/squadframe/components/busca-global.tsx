@@ -101,21 +101,21 @@ export function BuscaGlobal() {
       {aberto && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center px-4" style={{ paddingTop: "max(10vh, env(safe-area-inset-top))" }} onClick={() => setAberto(false)}>
           <div
-            className="w-full max-w-lg rounded-2xl border border-line bg-surface shadow-2xl overflow-hidden"
+            className="w-full max-w-lg rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
-              <SearchIcon size={16} className="text-ink-faint shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+              <SearchIcon size={16} className="text-text-3 shrink-0" />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => handleQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Buscar obras, produtos, fornecedores, pedidos…"
-                className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
+                className="flex-1 bg-transparent text-sm text-text outline-none placeholder:text-text-3"
               />
               {query && (
-                <button onClick={() => { setQuery(""); setResultados([]); inputRef.current?.focus(); }} className="text-ink-faint hover:text-ink">
+                <button onClick={() => { setQuery(""); setResultados([]); inputRef.current?.focus(); }} className="text-text-3 hover:text-text">
                   <CloseIcon size={14} />
                 </button>
               )}
@@ -128,16 +128,16 @@ export function BuscaGlobal() {
                     <button
                       onClick={() => navegar(r.href)}
                       onMouseEnter={() => setSelecionado(i)}
-                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${i === selecionado ? "bg-canvas" : ""}`}
+                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${i === selecionado ? "bg-bg" : ""}`}
                     >
                       <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${TIPO_COR[r.tipo]}`}>
                         {TIPO_LABEL[r.tipo]}
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-ink">{r.titulo}</p>
-                        {r.subtitulo && <p className="truncate text-xs text-ink-faint">{r.subtitulo}</p>}
+                        <p className="truncate text-sm font-medium text-text">{r.titulo}</p>
+                        {r.subtitulo && <p className="truncate text-xs text-text-3">{r.subtitulo}</p>}
                       </div>
-                      <ChevronRightIcon size={12} className="ml-auto shrink-0 text-ink-faint" />
+                      <ChevronRightIcon size={12} className="ml-auto shrink-0 text-text-3" />
                     </button>
                   </li>
                 ))}
@@ -145,11 +145,11 @@ export function BuscaGlobal() {
             )}
 
             {query.length >= 2 && resultados.length === 0 && (
-              <p className="px-4 py-6 text-center text-sm text-ink-faint">Nenhum resultado para "{query}"</p>
+              <p className="px-4 py-6 text-center text-sm text-text-3">Nenhum resultado para "{query}"</p>
             )}
 
             {!query && (
-              <p className="px-4 py-4 text-center text-xs text-ink-faint">Digite para buscar · ↑↓ navegar · Enter selecionar</p>
+              <p className="px-4 py-4 text-center text-xs text-text-3">Digite para buscar · ↑↓ navegar · Enter selecionar</p>
             )}
           </div>
         </div>

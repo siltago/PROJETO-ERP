@@ -15,7 +15,7 @@ export default async function NovaSolicitacaoPage() {
     <div className="px-8 py-8 max-w-4xl">
       <BackButton href="/compras/solicitacoes" />
       <h1 className="mt-2 text-2xl font-bold tracking-tight">Nova Solicitação de Compra</h1>
-      <p className="mt-1 text-sm text-ink-soft">Todos os itens devem vir do catálogo de produtos.</p>
+      <p className="mt-1 text-sm text-text-2">Todos os itens devem vir do catálogo de produtos.</p>
       <div className="mt-6">
         <NovaSolicitacaoCliente obras={obras ?? []} coresRal={coresRal ?? []} />
       </div>

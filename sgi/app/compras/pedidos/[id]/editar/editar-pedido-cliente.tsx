@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { editarPedido } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
 import { calcPrecoUnit } from "@/modules/squadframe/lib/tipo-unidade";
+import { Button } from "@/ui/components/Button";
 
 type Produto = { id: string; codigo_mestre: string; nome: string; unidade: string; tamanho_mm?: number | null; peso_metro?: number | null; preco_metro?: number | null };
 type Fornecedor = { id: string; nome: string; ativo?: boolean };
@@ -61,14 +62,14 @@ function BuscaProduto({ onAdd }: { onAdd: (p: Produto) => void }) {
       <input value={q} onChange={(e) => buscar(e.target.value)}
         placeholder="Buscar produto para adicionar…" className="field h-9 w-full text-sm" />
       {aberto && resultados.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-line bg-surface shadow-lg">
+        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-surface shadow-lg">
           {resultados.map((p) => (
             <button key={p.id} type="button"
               onClick={() => { onAdd(p); setQ(""); setResultados([]); setAberto(false); }}
-              className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-canvas">
-              <span className="font-mono text-xs text-ink-faint w-24 shrink-0">{p.codigo_mestre}</span>
-              <span className="flex-1 text-ink">{p.nome}</span>
-              <span className="text-xs text-ink-faint">{p.unidade}</span>
+              className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-bg">
+              <span className="font-mono text-xs text-text-3 w-24 shrink-0">{p.codigo_mestre}</span>
+              <span className="flex-1 text-text">{p.nome}</span>
+              <span className="text-xs text-text-3">{p.unidade}</span>
             </button>
           ))}
         </div>
@@ -202,7 +203,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
         <div className="card p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-              <label className="label">Fornecedor <span className="text-red-500">*</span></label>
+              <label className="label">Fornecedor <span className="text-danger">*</span></label>
               <select name="fornecedor_id" required defaultValue={pedido.fornecedor_id} className="field">
                 <option value="">Selecione…</option>
                 {fornecedores.filter(f => f.ativo !== false).map((f) => (
@@ -217,14 +218,14 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
               </select>
             </div>
             <div>
-              <label className="label">Obra <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Obra <span className="text-text-3 font-normal">(opcional)</span></label>
               <select name="obra_id" defaultValue={pedido.obra_id ?? ""} className="field">
                 <option value="">Sem obra</option>
                 {obras.map((o) => <option key={o.id} value={o.id}>{o.codigo} — {o.nome}</option>)}
               </select>
             </div>
             <div>
-              <label className="label">Forma de pagamento <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Forma de pagamento <span className="text-text-3 font-normal">(opcional)</span></label>
               <select name="forma_pagamento_id" defaultValue={pedido.forma_pagamento_id ?? ""} className="field">
                 <option value="">Não definida</option>
                 {formasPagamento.map((fp) => <option key={fp.id} value={fp.id}>{fp.nome}</option>)}
@@ -232,22 +233,22 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
             </div>
             {coresRal.length > 0 && (
               <div className="sm:col-span-2">
-                <label className="label">Cor <span className="text-ink-faint font-normal">(opcional)</span></label>
+                <label className="label">Cor <span className="text-text-3 font-normal">(opcional)</span></label>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="inline-flex rounded-md border border-line overflow-hidden text-xs">
+                  <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
                     <button type="button"
                       onClick={() => setModoCorPedido("unica")}
-                      className={`px-3 py-1.5 transition-colors ${modoCorPedido === "unica" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                      className={`px-3 py-1.5 transition-colors ${modoCorPedido === "unica" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                       Cor única
                     </button>
                     <button type="button"
                       onClick={() => setModoCorPedido("por-item")}
-                      className={`px-3 py-1.5 border-l border-line transition-colors ${modoCorPedido === "por-item" ? "bg-steel text-white" : "bg-surface text-ink-soft hover:bg-canvas"}`}>
+                      className={`px-3 py-1.5 border-l border-border transition-colors ${modoCorPedido === "por-item" ? "bg-primary text-white" : "bg-surface text-text-2 hover:bg-bg"}`}>
                       Por item
                     </button>
                   </div>
                   {modoCorPedido === "por-item" && (
-                    <span className="text-xs text-ink-faint">Selecione a cor em cada item da tabela abaixo</span>
+                    <span className="text-xs text-text-3">Selecione a cor em cada item da tabela abaixo</span>
                   )}
                 </div>
                 {modoCorPedido === "unica" && (
@@ -263,7 +264,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
               </div>
             )}
             <div>
-              <label className="label">Prazo de entrega <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Prazo de entrega <span className="text-text-3 font-normal">(opcional)</span></label>
               <input type="date" name="prazo_entrega" defaultValue={pedido.prazo_entrega ?? ""} className="field" />
             </div>
             <div className="sm:col-span-2">
@@ -276,9 +277,9 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
         {/* Itens */}
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-ink">Itens do pedido</h2>
-            <p className="text-sm text-ink-soft">
-              Total: <span className="font-semibold text-ink">
+            <h2 className="text-sm font-semibold text-text">Itens do pedido</h2>
+            <p className="text-sm text-text-2">
+              Total: <span className="font-semibold text-text">
                 {total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </span>
             </p>
@@ -288,7 +289,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
             <div className="card overflow-x-auto mb-3">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                     <th className="px-4 py-2 font-medium">Produto / Item</th>
                     <th className="px-4 py-2 font-medium">Qtd / Dimensões</th>
                     <th className="px-4 py-2 font-medium w-36">Preço unit.</th>
@@ -305,21 +306,21 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                       ? (area / it.qtd_pecas) * it.preco_metro
                       : it.preco_unitario;
                     return (
-                      <tr key={idx} className="border-b border-line last:border-0">
+                      <tr key={idx} className="border-b border-border last:border-0">
                         <td className="px-4 py-2">
-                          <p className="font-medium text-ink">{it.descricao_snapshot}</p>
+                          <p className="font-medium text-text">{it.descricao_snapshot}</p>
                           {!it.produto_id && (
-                            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">EXTERNO</span>
+                            <span className="rounded-full bg-warning-soft px-1.5 py-0.5 text-[10px] font-bold text-warning">EXTERNO</span>
                           )}
                           {it.tamanho_mm && (
-                            <p className="text-xs text-ink-faint">{it.tamanho_mm} mm {itChapa ? "(esp.)" : "(barra)"}</p>
+                            <p className="text-xs text-text-3">{it.tamanho_mm} mm {itChapa ? "(esp.)" : "(barra)"}</p>
                           )}
                         </td>
                         <td className="px-4 py-2">
                           {itChapa ? (
                             <div className="flex flex-col gap-1 min-w-[200px]">
                               <div className="flex items-center gap-1">
-                                <span className="text-[10px] font-medium text-ink-faint uppercase w-4">L</span>
+                                <span className="text-[10px] font-medium text-text-3 uppercase w-4">L</span>
                                 <input type="number" min="0" step="1" placeholder="mm"
                                   value={it.largura_m != null ? Math.round(it.largura_m * 1000) : ""}
                                   onChange={(e) => {
@@ -332,8 +333,8 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                                     }));
                                   }}
                                   className="field h-7 w-20 text-xs" />
-                                <span className="text-xs text-ink-faint">×</span>
-                                <span className="text-[10px] font-medium text-ink-faint uppercase w-4">A</span>
+                                <span className="text-xs text-text-3">×</span>
+                                <span className="text-[10px] font-medium text-text-3 uppercase w-4">A</span>
                                 <input type="number" min="0" step="1" placeholder="mm"
                                   value={it.altura_m != null ? Math.round(it.altura_m * 1000) : ""}
                                   onChange={(e) => {
@@ -346,7 +347,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                                     }));
                                   }}
                                   className="field h-7 w-20 text-xs" />
-                                <span className="text-xs text-ink-faint">mm</span>
+                                <span className="text-xs text-text-3">mm</span>
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <input type="number" min="1" step="1" placeholder="Qtd pç"
@@ -361,7 +362,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                                     }));
                                   }}
                                   className="field h-7 w-16 text-xs" />
-                                <span className="text-xs text-ink-faint">peças</span>
+                                <span className="text-xs text-text-3">peças</span>
                               </div>
                             </div>
                           ) : (
@@ -369,15 +370,15 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                               <input type="number" min="0" step="any" value={it.quantidade_pedida}
                                 onChange={(e) => setItens(prev => prev.map((x, i) => i === idx ? { ...x, quantidade_pedida: parseFloat(e.target.value) || 0 } : x))}
                                 className="field h-8 w-20 text-sm" />
-                              <span className="text-xs text-ink-faint shrink-0">{it.unidade}</span>
+                              <span className="text-xs text-text-3 shrink-0">{it.unidade}</span>
                             </div>
                           )}
                         </td>
                         <td className="px-4 py-2">
                           {itChapa ? (
                             <div>
-                              <p className="text-sm text-ink">{precoDisplay.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
-                              {it.preco_metro && <p className="text-xs text-ink-faint">R$ {it.preco_metro.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/m²</p>}
+                              <p className="text-sm text-text">{precoDisplay.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+                              {it.preco_metro && <p className="text-xs text-text-3">R$ {it.preco_metro.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/m²</p>}
                             </div>
                           ) : (
                             <input type="number" min="0" step="0.01" value={it.preco_unitario || ""}
@@ -408,7 +409,7 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
                         )}
                         <td className="px-4 py-2">
                           <button type="button" onClick={() => removeItem(idx)}
-                            className="text-ink-faint hover:text-red-500">
+                            className="text-text-3 hover:text-danger">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
@@ -422,19 +423,19 @@ export function EditarPedidoCliente({ pedido, itensIniciais, fornecedores, obras
             </div>
           )}
 
-          <div className="rounded-lg border border-dashed border-line p-3">
-            <p className="mb-2 text-xs font-medium text-ink-faint uppercase tracking-widest">Adicionar produto do catálogo</p>
+          <div className="rounded-lg border border-dashed border-border p-3">
+            <p className="mb-2 text-xs font-medium text-text-3 uppercase tracking-widest">Adicionar produto do catálogo</p>
             <BuscaProduto onAdd={addProduto} />
           </div>
         </div>
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <p className="text-sm text-danger">{erro}</p>}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={pending} className="btn-primary">
+          <Button type="submit" disabled={pending}>
             {pending ? "Salvando…" : "Salvar alterações"}
-          </button>
-          <a href={`/compras/pedidos/${pedido.id}`} className="btn-ghost">Cancelar</a>
+          </Button>
+          <Button as="a" variant="ghost" href={`/compras/pedidos/${pedido.id}`}>Cancelar</Button>
         </div>
       </form>
     </>

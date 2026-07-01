@@ -33,7 +33,7 @@ export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
     return (
       <button
         onClick={() => setAberta(true)}
-        className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-faint transition-colors hover:bg-canvas hover:text-ink-soft ${collapsed ? "justify-center w-full" : ""}`}
+        className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-text-3 transition-colors hover:bg-bg hover:text-text-2 ${collapsed ? "justify-center w-full" : ""}`}
         title="Nova aba"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,27 +48,27 @@ export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-wrap items-end gap-2 rounded-lg border border-steel/30 bg-canvas p-3"
+      className="flex flex-wrap items-end gap-2 rounded-lg border border-primary/30 bg-bg p-3"
     >
       <div>
-        <label className="mb-1 block text-xs text-ink-soft">Nome da aba</label>
+        <label className="mb-1 block text-xs text-text-2">Nome da aba</label>
         <input
           name="nome"
           autoFocus
           required
           placeholder="Ex: Perfil, Vidro…"
           disabled={pending}
-          className="h-8 w-44 rounded border border-steel px-2.5 text-sm outline-none focus:ring-1 focus:ring-steel"
+          className="h-8 w-44 rounded border border-primary px-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs text-ink-soft">Unidade padrão</label>
+        <label className="mb-1 block text-xs text-text-2">Unidade padrão</label>
         <select
           name="unidade"
           required
           defaultValue="UN"
           disabled={pending}
-          className="h-8 rounded border border-steel px-2 text-sm outline-none focus:ring-1 focus:ring-steel"
+          className="h-8 rounded border border-primary px-2 text-sm outline-none focus:ring-1 focus:ring-primary"
         >
           {TIPO_UNIDADE_OPCOES.map(op => (
             <option key={op.value} value={op.value}>{op.label}</option>
@@ -78,7 +78,7 @@ export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
       <button
         type="submit"
         disabled={pending}
-        className="h-8 rounded bg-steel px-3 text-xs font-medium text-white hover:bg-steel/90 disabled:opacity-50"
+        className="h-8 rounded bg-primary px-3 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
       >
         {pending ? "…" : "Criar"}
       </button>
@@ -86,11 +86,11 @@ export function NovaAbaInline({ collapsed }: { collapsed?: boolean } = {}) {
         type="button"
         onClick={() => { setAberta(false); setErro(null); }}
         disabled={pending}
-        className="h-8 rounded px-2 text-xs text-ink-faint hover:text-ink"
+        className="h-8 rounded px-2 text-xs text-text-3 hover:text-text"
       >
         Cancelar
       </button>
-      {erro && <span className="text-xs text-red-500">{erro}</span>}
+      {erro && <span className="text-xs text-danger">{erro}</span>}
     </form>
   );
 }

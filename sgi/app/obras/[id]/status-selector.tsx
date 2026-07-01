@@ -58,17 +58,17 @@ export function StatusObraSelector({ obraId, statusAtual }: Props) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-1.5 min-w-[160px] rounded-xl border border-line bg-surface shadow-xl overflow-hidden">
+        <div className="absolute left-0 top-full z-30 mt-1.5 min-w-[160px] rounded-xl border border-border bg-surface shadow-xl overflow-hidden">
           {status.length === 0 ? (
-            <div className="px-4 py-3 text-xs text-ink-faint">Carregando…</div>
+            <div className="px-4 py-3 text-xs text-text-3">Carregando…</div>
           ) : (
             status.map((s) => (
               <button
                 key={s.id}
                 onClick={() => handleSelect(s)}
                 disabled={pendingId !== null}
-                className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-canvas disabled:opacity-50
-                  ${s.id === statusAtual.id ? "font-semibold" : "font-normal text-ink-soft"}`}
+                className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-bg disabled:opacity-50
+                  ${s.id === statusAtual.id ? "font-semibold" : "font-normal text-text-2"}`}
               >
                 <span
                   className="h-2 w-2 shrink-0 rounded-full"
@@ -76,10 +76,10 @@ export function StatusObraSelector({ obraId, statusAtual }: Props) {
                 />
                 {s.nome}
                 {pendingId === s.id && (
-                  <span className="ml-auto h-3 w-3 animate-spin rounded-full border border-steel border-t-transparent" />
+                  <span className="ml-auto h-3 w-3 animate-spin rounded-full border border-primary border-t-transparent" />
                 )}
                 {s.id === statusAtual.id && pendingId === null && (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-auto text-steel"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-auto text-primary"><polyline points="20 6 9 17 4 12"/></svg>
                 )}
               </button>
             ))

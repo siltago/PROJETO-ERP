@@ -21,19 +21,19 @@ export function KanbanColumn({ coluna, tarefas, onNovaTarefa, onCardClick }: Pro
     nomeMin.includes("cancelad") ||
     nomeMin === "done";
 
-  const bgClass = coluna.tipo === "PADRAO" ? "bg-surface" : "bg-canvas";
+  const bgClass = coluna.tipo === "PADRAO" ? "bg-surface" : "bg-bg";
 
   return (
     <div
-      className={`flex flex-col shrink-0 rounded-2xl border border-line ${bgClass} transition-colors`}
+      className={`flex flex-col shrink-0 rounded-2xl border border-border ${bgClass} transition-colors`}
       style={{
         width: 280,
         minHeight: 200,
-        outline: isOver ? "2px solid #0F4C81" : "none",
+        outline: isOver ? "2px solid var(--color-primary)" : "none",
         outlineOffset: 2,
       }}
     >
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-line">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
         <div className="flex items-center gap-2 min-w-0">
           {coluna.cor && (
             <div
@@ -41,16 +41,16 @@ export function KanbanColumn({ coluna, tarefas, onNovaTarefa, onCardClick }: Pro
               style={{ backgroundColor: coluna.cor }}
             />
           )}
-          <span className="text-sm font-semibold text-ink truncate" title={coluna.nome}>
+          <span className="text-sm font-semibold text-text truncate" title={coluna.nome}>
             {coluna.nome}
           </span>
-          <span className="shrink-0 rounded-full bg-canvas px-1.5 py-0.5 text-xs font-medium text-ink-faint border border-line">
+          <span className="shrink-0 rounded-full bg-bg px-1.5 py-0.5 text-xs font-medium text-text-3 border border-border">
             {tarefas.length}
           </span>
         </div>
         <button
           onClick={onNovaTarefa}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-canvas hover:text-ink transition-colors"
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-text-3 hover:bg-bg hover:text-text transition-colors"
           title="Nova tarefa"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -67,7 +67,7 @@ export function KanbanColumn({ coluna, tarefas, onNovaTarefa, onCardClick }: Pro
           style={{ minHeight: 80 }}
         >
           {tarefas.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-xs text-ink-faint select-none">
+            <div className="flex items-center justify-center py-8 text-xs text-text-3 select-none">
               Nenhuma tarefa
             </div>
           ) : (

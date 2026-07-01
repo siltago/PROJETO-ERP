@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { registrarRecebimento } from "@/app/compras/actions";
 import { AssinarModal } from "@/modules/squadframe/components/assinar-modal";
+import { Button } from "@/ui/components/Button";
 
 type Item = {
   id: string; descricao_snapshot: string; unidade: string;
@@ -61,18 +62,18 @@ export function ReceberCliente({ pedidoId, itens }: { pedidoId: string; itens: I
               <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="field" required />
             </div>
             <div>
-              <label className="label">Observações <span className="text-ink-faint font-normal">(opcional)</span></label>
+              <label className="label">Observações <span className="text-text-3 font-normal">(opcional)</span></label>
               <input value={obs} onChange={(e) => setObs(e.target.value)} className="field" placeholder="NF, observações gerais…" />
             </div>
           </div>
         </div>
 
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-ink">Quantidades recebidas</h2>
+          <h2 className="mb-3 text-sm font-semibold text-text">Quantidades recebidas</h2>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                   <th className="px-5 py-3 font-medium">Produto</th>
                   <th className="px-5 py-3 font-medium text-right">Pedido</th>
                   <th className="px-5 py-3 font-medium text-right">Já recebido</th>
@@ -82,15 +83,15 @@ export function ReceberCliente({ pedidoId, itens }: { pedidoId: string; itens: I
               </thead>
               <tbody>
                 {itens.map((it) => (
-                  <tr key={it.id} className="border-b border-line last:border-0">
+                  <tr key={it.id} className="border-b border-border last:border-0">
                     <td className="px-5 py-3">
-                      <p className="font-medium text-ink">{it.produto?.nome ?? it.descricao_snapshot}</p>
-                      <p className="font-mono text-xs text-ink-faint">{it.produto?.codigo_mestre}</p>
+                      <p className="font-medium text-text">{it.produto?.nome ?? it.descricao_snapshot}</p>
+                      <p className="font-mono text-xs text-text-3">{it.produto?.codigo_mestre}</p>
                     </td>
-                    <td className="px-5 py-3 text-right text-ink-soft">
+                    <td className="px-5 py-3 text-right text-text-2">
                       {Number(it.quantidade_pedida).toLocaleString("pt-BR")} {it.unidade}
                     </td>
-                    <td className="px-5 py-3 text-right text-green-600">
+                    <td className="px-5 py-3 text-right text-success">
                       {Number(it.quantidade_recebida).toLocaleString("pt-BR")}
                     </td>
                     <td className="px-5 py-3 text-right font-semibold text-orange-500">
@@ -112,13 +113,13 @@ export function ReceberCliente({ pedidoId, itens }: { pedidoId: string; itens: I
           </div>
         </div>
 
-        {erro && <p className="text-sm text-red-600">{erro}</p>}
+        {erro && <p className="text-sm text-danger">{erro}</p>}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={pending} className="btn-primary">
+          <Button type="submit" disabled={pending}>
             {pending ? "Aguarde…" : "Confirmar recebimento"}
-          </button>
-          <a href={`/compras/pedidos/${pedidoId}`} className="btn-ghost">Cancelar</a>
+          </Button>
+          <Button as="a" variant="ghost" href={`/compras/pedidos/${pedidoId}`}>Cancelar</Button>
         </div>
       </form>
     </>

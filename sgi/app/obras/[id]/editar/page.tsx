@@ -28,8 +28,8 @@ export default async function EditarObraPage({ params }: { params: { id: string 
     return (
       <div className="px-8 py-8">
         <BackButton href={`/obras/${params.id}`} />
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 rounded-xl border border-line bg-surface p-12 text-center max-w-md mx-auto">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-surface p-12 text-center max-w-md mx-auto">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
               fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
@@ -37,8 +37,8 @@ export default async function EditarObraPage({ params }: { params: { id: string 
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-ink">Acesso restrito</h2>
-            <p className="mt-1 text-sm text-ink-soft">
+            <h2 className="text-lg font-semibold text-text">Acesso restrito</h2>
+            <p className="mt-1 text-sm text-text-2">
               Você não tem permissão para editar obras. Solicite ao administrador do sistema.
             </p>
           </div>
@@ -52,7 +52,7 @@ export default async function EditarObraPage({ params }: { params: { id: string 
     <div className="px-8 py-8 max-w-2xl">
       <BackButton href={`/obras/${params.id}`} />
       <h1 className="mt-4 text-2xl font-bold tracking-tight">Editar obra</h1>
-      <p className="mt-1 text-sm text-ink-soft font-mono">{obra.codigo}</p>
+      <p className="mt-1 text-sm text-text-2 font-mono">{obra.codigo}</p>
       <div className="mt-6">
         <EditarObraCliente obra={obra as any} />
       </div>

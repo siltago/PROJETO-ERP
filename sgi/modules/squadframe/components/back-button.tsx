@@ -7,7 +7,7 @@ export function BackButton({ href = "/", label = "Voltar" }: { href?: string; la
   return (
     <button
       onClick={() => router.push(href)}
-      className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:bg-canvas hover:text-ink"
+      className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm font-medium text-text-2 shadow-sm transition-colors hover:bg-bg hover:text-text"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

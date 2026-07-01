@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BackButton } from "@/modules/squadframe/components/back-button";
+import { Button } from "@/ui/components/Button";
 
 type Setor = { id: string; nome: string; cor: string; count: number };
 
@@ -37,16 +38,16 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
 
   const NavContent = ({ onClose }: { onClose?: () => void }) => (
     <>
-      <div className="flex items-center justify-between border-b border-line px-3 py-3">
+      <div className="flex items-center justify-between border-b border-border px-3 py-3">
         {!collapsed && (
           <div>
             <BackButton href="/" />
-            <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-ink-faint">Usuários</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-text-3">Usuários</p>
           </div>
         )}
         <button
           onClick={onClose ?? (() => setCollapsed(!collapsed))}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-canvas transition-colors ${collapsed && !onClose ? "mx-auto" : ""}`}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-3 hover:bg-bg transition-colors ${collapsed && !onClose ? "mx-auto" : ""}`}
         >
           {onClose ? (
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -66,7 +67,7 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
             title={collapsed ? item.label : undefined}
             onClick={() => onClose?.()}
             className={`flex items-center gap-3 mx-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              isActive(item.href) ? "bg-steel/10 text-steel" : "text-ink-soft hover:bg-canvas hover:text-ink"
+              isActive(item.href) ? "bg-primary/10 text-primary" : "text-text-2 hover:bg-bg hover:text-text"
             } ${collapsed && !onClose ? "justify-center" : ""}`}
           >
             {item.icon}
@@ -77,13 +78,13 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
         {setores.length > 0 && (!collapsed || onClose) && (
           <>
             <div className="mt-3 px-5 pb-1">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint">Por setor</p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-text-3">Por setor</p>
             </div>
             {setores.map((s) => (
-              <div key={s.id} className="flex items-center gap-2.5 mx-2 rounded-xl px-3 py-2 text-sm text-ink-soft">
+              <div key={s.id} className="flex items-center gap-2.5 mx-2 rounded-xl px-3 py-2 text-sm text-text-2">
                 <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.cor }} />
                 {s.nome}
-                <span className="ml-auto text-xs text-ink-faint">{s.count}</span>
+                <span className="ml-auto text-xs text-text-3">{s.count}</span>
               </div>
             ))}
           </>
@@ -91,10 +92,10 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
       </nav>
 
       {(!collapsed || onClose) && (
-        <div className="border-t border-line p-3" style={onClose ? { paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" } : {}}>
-          <Link href="/cadastro" onClick={() => onClose?.()} className="btn-primary w-full text-center text-sm">
+        <div className="border-t border-border p-3" style={onClose ? { paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" } : {}}>
+          <Button as="a" href="/cadastro" onClick={() => onClose?.()} className="w-full justify-center">
             Novo usuário
-          </Link>
+          </Button>
         </div>
       )}
     </>
@@ -106,7 +107,7 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
       <button
         onClick={() => setMobileOpen(true)}
         aria-label="Menu de usuários"
-        className="fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-steel text-white shadow-lg lg:hidden"
+        className="fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg lg:hidden"
         style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))", right: "calc(1.25rem + env(safe-area-inset-right))", boxShadow: "0 4px 20px rgba(15,76,129,0.4)" }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -124,7 +125,7 @@ export function UsuariosSidebar({ setores }: { setores: Setor[] }) {
       </div>
 
       {/* Desktop sidebar */}
-      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-line bg-surface transition-all duration-200 ${collapsed ? "w-16" : "w-56"}`}>
+      <aside className={`hidden lg:flex flex-col shrink-0 border-r border-border bg-surface transition-all duration-200 ${collapsed ? "w-16" : "w-56"}`}>
         <NavContent />
       </aside>
     </>

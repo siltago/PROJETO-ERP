@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createAdminClient as createClient } from "@/shared/database/supabase-admin";
 import { criarLinha } from "../actions";
 import { BackButton } from "@/modules/squadframe/components/back-button";
+import { Button } from "@/ui/components/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -26,14 +27,14 @@ export default async function NovaLinhaPage({
       <BackButton href="/catalogo" />
 
       <h1 className="mt-4 text-2xl font-bold tracking-tight">Nova linha</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-text-2">
         Linhas agrupam produtos de uma mesma série ou fabricante.
       </p>
 
       <form action={criarLinha} className="card mt-6 max-w-2xl p-6">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <label className="label">Tipo / Aba <span className="text-red-500">*</span></label>
+            <label className="label">Tipo / Aba <span className="text-danger">*</span></label>
             <select name="tipo" required defaultValue={tipoPreSelecionado} className="field">
               {tiposList.length === 0 ? (
                 <option value="">Crie uma aba no catálogo primeiro</option>
@@ -46,19 +47,19 @@ export default async function NovaLinhaPage({
                 </>
               )}
             </select>
-            <p className="mt-1 text-xs text-ink-faint">Em qual aba do catálogo esta linha aparece?</p>
+            <p className="mt-1 text-xs text-text-3">Em qual aba do catálogo esta linha aparece?</p>
           </div>
 
           <div>
             <label className="label">
               Fabricante{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <input name="fabricante" className="field" placeholder="Ex: Alumínio São Paulo" />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="label">Nome da linha <span className="text-red-500">*</span></label>
+            <label className="label">Nome da linha <span className="text-danger">*</span></label>
             <input
               name="nome"
               required
@@ -70,7 +71,7 @@ export default async function NovaLinhaPage({
           <div className="sm:col-span-2">
             <label className="label">
               Descrição{" "}
-              <span className="font-normal text-ink-soft">(opcional)</span>
+              <span className="font-normal text-text-2">(opcional)</span>
             </label>
             <textarea
               name="descricao"
@@ -82,12 +83,12 @@ export default async function NovaLinhaPage({
         </div>
 
         <div className="mt-6 flex gap-3">
-          <button type="submit" className="btn-primary">
+          <Button type="submit">
             Criar linha
-          </button>
-          <Link href={tipoPreSelecionado ? `/catalogo?aba=${tipoPreSelecionado}` : "/catalogo"} className="btn-ghost">
+          </Button>
+          <Button as="a" href={tipoPreSelecionado ? `/catalogo?aba=${tipoPreSelecionado}` : "/catalogo"} variant="ghost">
             Cancelar
-          </Link>
+          </Button>
         </div>
       </form>
     </div>

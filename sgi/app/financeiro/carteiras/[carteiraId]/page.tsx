@@ -70,21 +70,21 @@ export default async function CarteiraDetailPage({
 
   return (
     <div className="px-8 py-8 max-w-4xl">
-      <Link href="/financeiro?aba=carteiras" className="text-xs text-ink-faint hover:text-ink-soft">
+      <Link href="/financeiro?aba=carteiras" className="text-xs text-text-3 hover:text-text-2">
         ← Voltar às carteiras
       </Link>
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{forn?.nome ?? "—"}</h1>
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="mt-1 text-sm text-text-2">
             {obra?.codigo && <span className="font-mono mr-1">[{obra.codigo}]</span>}
             {obra?.nome ?? "Sem obra"}
           </p>
         </div>
         <div className="card p-4 text-right">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Saldo atual</p>
-          <p className={`mt-1 text-3xl font-bold ${carteira.saldo_atual > 0 ? "text-green-700" : "text-red-500"}`}>
+          <p className="text-xs uppercase tracking-wide text-text-3">Saldo atual</p>
+          <p className={`mt-1 text-3xl font-bold ${carteira.saldo_atual > 0 ? "text-success" : "text-danger"}`}>
             {fmt(carteira.saldo_atual)}
           </p>
         </div>
@@ -93,27 +93,27 @@ export default async function CarteiraDetailPage({
       {/* Resumo */}
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Total depositado</p>
-          <p className="mt-1 text-xl font-bold text-green-700">{fmt(totalDepositos)}</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Total depositado</p>
+          <p className="mt-1 text-xl font-bold text-success">{fmt(totalDepositos)}</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Total debitado</p>
-          <p className="mt-1 text-xl font-bold text-red-600">{fmt(totalDebitos)}</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Total debitado</p>
+          <p className="mt-1 text-xl font-bold text-danger">{fmt(totalDebitos)}</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs uppercase tracking-wide text-ink-faint">Movimentações</p>
-          <p className="mt-1 text-xl font-bold text-ink">{(movimentacoes ?? []).length}</p>
+          <p className="text-xs uppercase tracking-wide text-text-3">Movimentações</p>
+          <p className="mt-1 text-xl font-bold text-text">{(movimentacoes ?? []).length}</p>
         </div>
       </div>
 
       {/* Ledger */}
       <div className="mt-8 card overflow-x-auto">
-        <div className="border-b border-line px-5 py-3">
-          <h2 className="text-sm font-semibold text-ink">Extrato</h2>
+        <div className="border-b border-border px-5 py-3">
+          <h2 className="text-sm font-semibold text-text">Extrato</h2>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
               <th className="px-5 py-2 font-medium">Data</th>
               <th className="px-5 py-2 font-medium">Tipo</th>
               <th className="px-5 py-2 font-medium">Descrição</th>
@@ -124,43 +124,43 @@ export default async function CarteiraDetailPage({
           <tbody>
             {(movimentacoes ?? []).length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-sm text-ink-faint">
+                <td colSpan={5} className="px-5 py-8 text-center text-sm text-text-3">
                   Nenhuma movimentação.
                 </td>
               </tr>
             ) : (movimentacoes ?? []).map((m) => (
-              <tr key={m.id} className="border-b border-line last:border-0 hover:bg-canvas/50">
-                <td className="px-5 py-2.5 text-xs text-ink-faint">
+              <tr key={m.id} className="border-b border-border last:border-0 hover:bg-bg/50">
+                <td className="px-5 py-2.5 text-xs text-text-3">
                   {new Date(m.criado_em).toLocaleString("pt-BR")}
                 </td>
                 <td className="px-5 py-2.5">
                   <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                     m.tipo === "DEPOSITO"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-red-50 text-red-600"
+                      ? "bg-success-soft text-success"
+                      : "bg-danger-soft text-danger"
                   }`}>
                     {m.tipo === "DEPOSITO" ? "▲ Depósito" : "▼ Débito"}
                   </span>
                 </td>
-                <td className="px-5 py-2.5 text-ink-soft">
+                <td className="px-5 py-2.5 text-text-2">
                   {m.descricao ?? (m.referencia_tipo === "pedido" ? (
                     pedidosMap[m.referencia_id as string] ? (
                       <Link
                         href={`/compras/pedidos/${m.referencia_id}`}
-                        className="text-steel hover:underline text-xs font-mono"
+                        className="text-primary hover:underline text-xs font-mono"
                       >
                         {pedidosMap[m.referencia_id as string]}
                       </Link>
                     ) : (
-                      <span className="text-xs text-ink-faint italic">Pedido excluído</span>
+                      <span className="text-xs text-text-3 italic">Pedido excluído</span>
                     )
                   ) : "—")}
                 </td>
-                <td className="px-5 py-2.5 text-xs text-ink-faint">
+                <td className="px-5 py-2.5 text-xs text-text-3">
                   {(m.usuario as any)?.nome ?? "—"}
                 </td>
                 <td className="px-5 py-2.5 text-right font-semibold">
-                  <span className={m.tipo === "DEPOSITO" ? "text-green-700" : "text-red-600"}>
+                  <span className={m.tipo === "DEPOSITO" ? "text-success" : "text-danger"}>
                     {m.tipo === "DEBITO" ? "−" : "+"}{fmt(m.valor)}
                   </span>
                 </td>

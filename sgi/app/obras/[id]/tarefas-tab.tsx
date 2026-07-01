@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/shared/database/supabase-admin";
 import Link from "next/link";
 import { PRIORIDADE_COR, PRIORIDADE_LABEL } from "@/modules/squadframe/types/kanban";
+import { Button } from "@/ui/components/Button";
 
 const STATUS_LABEL: Record<string, string> = {
   SEM_DONO:     "Sem dono",
@@ -42,26 +43,26 @@ export async function TarefasTab({ obraId }: { obraId: string }) {
   return (
     <div className="mt-6">
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-ink-soft">
+        <p className="text-sm text-text-2">
           Tarefas vinculadas a esta obra.{" "}
-          <span className="text-ink-faint">Clique em uma tarefa para abrir no módulo de Tarefas.</span>
+          <span className="text-text-3">Clique em uma tarefa para abrir no módulo de Tarefas.</span>
         </p>
-        <Link href="/tarefas" className="text-sm text-steel hover:underline">
+        <Link href="/tarefas" className="text-sm text-primary hover:underline">
           Abrir kanban completo →
         </Link>
       </div>
 
       {tarefas.length === 0 ? (
         <div className="card flex flex-col items-center gap-3 py-16 text-center">
-          <p className="text-sm font-medium text-ink">Nenhuma tarefa ativa para esta obra</p>
-          <p className="text-xs text-ink-faint">Crie tarefas no kanban e vincule a esta obra.</p>
-          <Link href="/tarefas" className="btn-primary mt-2 text-sm">Ir para Tarefas</Link>
+          <p className="text-sm font-medium text-text">Nenhuma tarefa ativa para esta obra</p>
+          <p className="text-xs text-text-3">Crie tarefas no kanban e vincule a esta obra.</p>
+          <Button as="a" href="/tarefas" className="mt-2 text-sm">Ir para Tarefas</Button>
         </div>
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                 <th className="px-5 py-3 font-medium">Tarefa</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Prioridade</th>
@@ -76,8 +77,8 @@ export async function TarefasTab({ obraId }: { obraId: string }) {
                 const pCor    = PRIORIDADE_COR[t.prioridade as keyof typeof PRIORIDADE_COR] ?? "#94a3b8";
                 const vencida = t.data_limite && new Date(t.data_limite) < hoje;
                 return (
-                  <tr key={t.id} className={`border-b border-line last:border-0 transition-colors hover:bg-canvas ${vencida ? "bg-red-50/40" : ""}`}>
-                    <td className="px-5 py-3 font-medium text-ink max-w-xs">
+                  <tr key={t.id} className={`border-b border-border last:border-0 transition-colors hover:bg-bg ${vencida ? "bg-danger-soft/40" : ""}`}>
+                    <td className="px-5 py-3 font-medium text-text max-w-xs">
                       <Link href={`/tarefas?tarefa=${t.id}`} className="hover:underline truncate block">
                         {t.titulo}
                       </Link>
@@ -96,15 +97,15 @@ export async function TarefasTab({ obraId }: { obraId: string }) {
                         {PRIORIDADE_LABEL[t.prioridade as keyof typeof PRIORIDADE_LABEL] ?? t.prioridade}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-ink-soft">
-                      {t.responsavel?.nome ?? <span className="text-ink-faint">—</span>}
+                    <td className="px-5 py-3 text-text-2">
+                      {t.responsavel?.nome ?? <span className="text-text-3">—</span>}
                     </td>
-                    <td className={`px-5 py-3 text-xs font-medium ${vencida ? "text-red-600" : "text-ink-faint"}`}>
+                    <td className={`px-5 py-3 text-xs font-medium ${vencida ? "text-danger" : "text-text-3"}`}>
                       {t.data_limite ? new Date(t.data_limite).toLocaleDateString("pt-BR") : "—"}
                       {vencida && " ⚠"}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <Link href={`/tarefas?tarefa=${t.id}`} className="text-xs text-steel hover:underline">
+                      <Link href={`/tarefas?tarefa=${t.id}`} className="text-xs text-primary hover:underline">
                         →
                       </Link>
                     </td>

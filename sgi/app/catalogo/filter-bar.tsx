@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useTransition } from "react";
+import { Input } from "@/ui/components/Input";
+import { Button } from "@/ui/components/Button";
+import { Select } from "@/ui/components/Select";
+import { Chip } from "@/ui/components/Chip";
 
 export type Filters = {
   tipo: string;
@@ -20,6 +24,14 @@ type Props = {
   current: Filters;
 };
 
+const SearchIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
 export function FilterBar({ fornecedores, linhas, categorias, current }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -29,7 +41,6 @@ export function FilterBar({ fornecedores, linhas, categorias, current }: Props) 
     const next: Record<string, string> = {};
     const base: Filters = { ...current };
 
-    // Apply overrides
     for (const [k, v] of Object.entries(overrides)) {
       (base as any)[k] = v ?? "";
     }
@@ -42,8 +53,7 @@ export function FilterBar({ fornecedores, linhas, categorias, current }: Props) 
     if (base.status) next.status = base.status;
     if (base.ordem) next.ordem = base.ordem;
 
-    const params = new URLSearchParams(next);
-    return `/catalogo?${params.toString()}`;
+    return `/catalogo?${new URLSearchParams(next).toString()}`;
   };
 
   const go = (overrides: Partial<Record<keyof Filters, string | null>>) => {
@@ -52,14 +62,10 @@ export function FilterBar({ fornecedores, linhas, categorias, current }: Props) 
 
   const handleFornecedor = (v: string) =>
     go({ fornecedor: v || null, linha: null, categoria: null, q: null });
-
   const handleLinha = (v: string) =>
     go({ linha: v || null, categoria: null, q: null });
-
   const handleCategoria = (v: string) => go({ categoria: v || null, q: null });
-
   const handleStatus = (v: string) => go({ status: v || null });
-
   const handleOrdem = (v: string) => go({ ordem: v || null });
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,170 +82,133 @@ export function FilterBar({ fornecedores, linhas, categorias, current }: Props) 
 
   return (
     <div
-      className={`rounded-xl border border-line bg-surface p-4 transition-opacity ${
+      className={`rounded-xl border border-border bg-surface p-4 transition-opacity ${
         isPending ? "pointer-events-none opacity-60" : ""
       }`}
     >
-      {/* Busca */}
       <form onSubmit={handleSearch} className="flex gap-2">
-        <div className="relative flex-1">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
-            xmlns="http://www.w3.org/2000/svg"
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            ref={searchRef}
-            type="search"
-            defaultValue={current.q}
-            placeholder="Buscar por código, nome ou alias…"
-            className="h-10 w-full rounded-lg border border-line bg-canvas pl-9 pr-4 text-sm placeholder:text-ink-faint focus:border-steel focus:outline-none focus:ring-2 focus:ring-steel/10"
-          />
-        </div>
-        <button type="submit" className="btn-primary h-10 px-4 text-sm shrink-0">
-          Buscar
-        </button>
+        <Input
+          ref={searchRef}
+          type="search"
+          defaultValue={current.q}
+          placeholder="Buscar por código, nome ou alias…"
+          prefixIcon={SearchIcon}
+          className="h-10"
+        />
+        <Button type="submit" className="shrink-0 h-10">Buscar</Button>
         {hasFilters && (
-          <button
-            type="button"
-            onClick={clearAll}
-            className="h-10 rounded-lg border border-line px-3 text-xs text-ink-soft hover:bg-canvas shrink-0"
-          >
+          <Button type="button" variant="ghost" onClick={clearAll} className="shrink-0 h-10">
             Limpar
-          </button>
+          </Button>
         )}
       </form>
 
-      {/* Filtros dependentes */}
       <div className="mt-3 flex flex-wrap gap-2">
         {fornecedores.length > 0 && (
-          <select
+          <Select
             value={current.fornecedor}
             onChange={(e) => handleFornecedor(e.target.value)}
-            className="h-9 rounded-lg border border-line bg-canvas px-3 text-sm text-ink focus:border-steel focus:outline-none"
+            fullWidth={false}
+            placeholder="Todos os fornecedores"
+            className="h-9 text-sm"
           >
-            <option value="">Todos os fornecedores</option>
             {fornecedores.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
+              <option key={f} value={f}>{f}</option>
             ))}
-          </select>
+          </Select>
         )}
 
         {linhas.length > 0 && (
-          <select
+          <Select
             value={current.linha}
             onChange={(e) => handleLinha(e.target.value)}
-            className="h-9 rounded-lg border border-line bg-canvas px-3 text-sm text-ink focus:border-steel focus:outline-none"
+            fullWidth={false}
+            placeholder="Todas as linhas"
+            className="h-9 text-sm"
           >
-            <option value="">Todas as linhas</option>
             {linhas.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.nome}
-              </option>
+              <option key={l.id} value={l.id}>{l.nome}</option>
             ))}
-          </select>
+          </Select>
         )}
 
         {categorias.length > 0 && (
-          <select
+          <Select
             value={current.categoria}
             onChange={(e) => handleCategoria(e.target.value)}
-            className="h-9 rounded-lg border border-line bg-canvas px-3 text-sm text-ink focus:border-steel focus:outline-none"
+            fullWidth={false}
+            placeholder="Todas as categorias"
+            className="h-9 text-sm"
           >
-            <option value="">Todas as categorias</option>
             {categorias.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
-          </select>
+          </Select>
         )}
 
-        <select
+        <Select
           value={current.status}
           onChange={(e) => handleStatus(e.target.value)}
-          className="h-9 rounded-lg border border-line bg-canvas px-3 text-sm text-ink focus:border-steel focus:outline-none"
+          fullWidth={false}
+          className="h-9 text-sm"
         >
           <option value="">Somente ativos</option>
           <option value="todos">Todos</option>
           <option value="inativo">Somente inativos</option>
-        </select>
+        </Select>
 
-        <select
+        <Select
           value={current.ordem}
           onChange={(e) => handleOrdem(e.target.value)}
-          className="h-9 rounded-lg border border-line bg-canvas px-3 text-sm text-ink focus:border-steel focus:outline-none"
+          fullWidth={false}
+          className="h-9 text-sm"
         >
           <option value="">Ordenar por nome</option>
           <option value="codigo">Ordenar por código</option>
           <option value="categoria">Ordenar por categoria</option>
-        </select>
+        </Select>
       </div>
 
-      {/* Chips de filtros ativos */}
       {hasFilters && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {current.q && (
-            <Chip label={`"${current.q}"`} onRemove={() => go({ q: null })} />
+            <Chip variant="primary" onRemove={() => go({ q: null })}>
+              {`"${current.q}"`}
+            </Chip>
           )}
           {current.fornecedor && (
             <Chip
-              label={current.fornecedor}
+              variant="primary"
               onRemove={() => go({ fornecedor: null, linha: null, categoria: null })}
-            />
+            >
+              {current.fornecedor}
+            </Chip>
           )}
           {current.linha && (
             <Chip
-              label={linhas.find((l) => l.id === current.linha)?.nome ?? current.linha}
+              variant="primary"
               onRemove={() => go({ linha: null, categoria: null })}
-            />
+            >
+              {linhas.find((l) => l.id === current.linha)?.nome ?? current.linha}
+            </Chip>
           )}
           {current.categoria && (
-            <Chip label={current.categoria} onRemove={() => go({ categoria: null })} />
+            <Chip variant="primary" onRemove={() => go({ categoria: null })}>
+              {current.categoria}
+            </Chip>
           )}
           {current.status === "inativo" && (
-            <Chip label="Somente inativos" onRemove={() => go({ status: null })} />
+            <Chip variant="primary" onRemove={() => go({ status: null })}>
+              Somente inativos
+            </Chip>
           )}
           {current.status === "todos" && (
-            <Chip label="Incluindo inativos" onRemove={() => go({ status: null })} />
+            <Chip variant="primary" onRemove={() => go({ status: null })}>
+              Incluindo inativos
+            </Chip>
           )}
         </div>
       )}
     </div>
-  );
-}
-
-function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-steel/10 px-2.5 py-0.5 text-xs font-medium text-steel">
-      {label}
-      <button
-        onClick={onRemove}
-        className="flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-steel/20"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="9"
-          height="9"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-    </span>
   );
 }

@@ -33,7 +33,7 @@ const SECOES = [
     label: "Atenção",
     descricao: "Itens que exigem ação imediata",
     dot: "bg-red-500",
-    header: "border-red-200 bg-red-50 dark:border-red-800/60 dark:bg-red-950/40",
+    header: "border-red-200 bg-danger-soft dark:border-red-800/60 dark:bg-red-950/40",
     empty: "Nenhum item exige atenção imediata.",
   },
   {
@@ -41,7 +41,7 @@ const SECOES = [
     label: "Em andamento",
     descricao: "Itens ativos sem bloqueio",
     dot: "bg-amber-400",
-    header: "border-amber-200 bg-amber-50 dark:border-amber-800/60 dark:bg-amber-950/40",
+    header: "border-amber-200 bg-warning-soft dark:border-amber-800/60 dark:bg-amber-950/40",
     empty: "Nenhum item em andamento.",
   },
   {
@@ -57,7 +57,7 @@ const SECOES = [
 const PRIORIDADE_BADGE: Record<string, string> = {
   critica: "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300",
   alta:    "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300",
-  media:   "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+  media:   "bg-warning-soft text-warning dark:bg-amber-900/50 dark:text-amber-300",
   baixa:   "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400",
 };
 const PRIORIDADE_LABEL: Record<string, string> = {
@@ -73,7 +73,7 @@ function ActivityCard({ a }: { a: Activity }) {
   return (
     <Link
       href={a.href}
-      className={`group flex items-start gap-4 border-b border-line px-5 py-4 transition-colors last:border-0 hover:bg-canvas border-l-4 ${a.corBorda}`}
+      className={`group flex items-start gap-4 border-b border-border px-5 py-4 transition-colors last:border-0 hover:bg-bg border-l-4 ${a.corBorda}`}
     >
       {/* Badge de tipo */}
       <span className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-xs font-bold tracking-wide ${a.corIcone}`}>
@@ -83,7 +83,7 @@ function ActivityCard({ a }: { a: Activity }) {
       {/* Corpo */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span className="font-mono text-sm font-semibold text-ink">{a.titulo}</span>
+          <span className="font-mono text-sm font-semibold text-text">{a.titulo}</span>
           <span
             className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
             style={{ backgroundColor: a.statusCor + "20", color: a.statusCor }}
@@ -95,7 +95,7 @@ function ActivityCard({ a }: { a: Activity }) {
           </span>
         </div>
 
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-soft">
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-text-2">
           {a.subtitulo && <span>{a.subtitulo}</span>}
           {a.responsavel && (
             <span className="flex items-center gap-1">
@@ -103,7 +103,7 @@ function ActivityCard({ a }: { a: Activity }) {
               {a.responsavel}
             </span>
           )}
-          <span className="text-ink-faint">{tempoRelativo(a.ultimaMovimentacao)}</span>
+          <span className="text-text-3">{tempoRelativo(a.ultimaMovimentacao)}</span>
         </div>
 
         {/* Relacionamentos */}
@@ -113,9 +113,9 @@ function ActivityCard({ a }: { a: Activity }) {
               <span
                 key={i}
                 onClick={(e) => e.preventDefault()}
-                className="inline-flex items-center gap-1 rounded border border-line bg-canvas px-2 py-0.5 text-xs text-ink-soft hover:bg-surface"
+                className="inline-flex items-center gap-1 rounded border border-border bg-bg px-2 py-0.5 text-xs text-text-2 hover:bg-surface"
               >
-                <span className="text-ink-faint">↳</span>
+                <span className="text-text-3">↳</span>
                 <a href={r.href} onClick={(e) => e.stopPropagation()} className="hover:underline">
                   {r.label}
                 </a>
@@ -126,7 +126,7 @@ function ActivityCard({ a }: { a: Activity }) {
       </div>
 
       {/* Origem */}
-      <span className="shrink-0 text-xs text-ink-faint opacity-0 transition-opacity group-hover:opacity-100">
+      <span className="shrink-0 text-xs text-text-3 opacity-0 transition-opacity group-hover:opacity-100">
         {a.origem} →
       </span>
     </Link>
@@ -157,16 +157,16 @@ function WorkspaceSecao({
         className={`flex items-center gap-3 rounded-t-xl border px-5 py-3 ${secao.header} transition-opacity hover:opacity-80`}
       >
         <span className={`h-2.5 w-2.5 rounded-full ${secao.dot}`} />
-        <span className="text-sm font-semibold text-ink">{secao.label}</span>
-        <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold text-ink-soft">
+        <span className="text-sm font-semibold text-text">{secao.label}</span>
+        <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold text-text-2">
           {items.length}
         </span>
-        <span className="ml-auto text-xs text-ink-faint">{secao.descricao}</span>
-        <span className="text-xs text-ink-faint">{filtroAtivo === secao.classificacao ? "✕ limpar filtro" : "filtrar"}</span>
+        <span className="ml-auto text-xs text-text-3">{secao.descricao}</span>
+        <span className="text-xs text-text-3">{filtroAtivo === secao.classificacao ? "✕ limpar filtro" : "filtrar"}</span>
       </Link>
-      <div className="rounded-b-xl border border-t-0 border-line bg-surface overflow-hidden">
+      <div className="rounded-b-xl border border-t-0 border-border bg-surface overflow-hidden">
         {items.length === 0 ? (
-          <p className="px-5 py-6 text-sm text-ink-faint">{secao.empty}</p>
+          <p className="px-5 py-6 text-sm text-text-3">{secao.empty}</p>
         ) : (
           items.map((a) => <ActivityCard key={a.id} a={a} />)
         )}
@@ -246,8 +246,8 @@ export async function WorkspaceTab({
     <div className="mt-6 space-y-5">
 
       {/* Contadores por módulo */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-ink-faint">
-        <span className="font-medium text-ink">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-text-3">
+        <span className="font-medium text-text">
           {todas.length} itens no total
         </span>
         {totalPorTipo.pedido > 0 && (
@@ -271,7 +271,7 @@ export async function WorkspaceTab({
         {filtroAtivo && (
           <Link
             href={`/obras/${obraId}?aba=workspace`}
-            className="ml-auto text-xs font-medium text-steel hover:underline"
+            className="ml-auto text-xs font-medium text-primary hover:underline"
           >
             Mostrar todos →
           </Link>
@@ -291,8 +291,8 @@ export async function WorkspaceTab({
 
       {todas.length === 0 && (
         <div className="card flex flex-col items-center gap-3 py-16 text-center">
-          <p className="text-sm font-medium text-ink">Nenhuma atividade registrada para esta obra</p>
-          <p className="text-xs text-ink-faint">
+          <p className="text-sm font-medium text-text">Nenhuma atividade registrada para esta obra</p>
+          <p className="text-xs text-text-3">
             Pedidos, solicitações, tarefas e itens de produção aparecerão aqui automaticamente.
           </p>
         </div>

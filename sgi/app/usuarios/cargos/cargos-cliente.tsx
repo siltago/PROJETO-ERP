@@ -26,6 +26,9 @@ import {
 } from "./actions";
 import { usePode } from "@/modules/squadframe/components/user-provider";
 import { BackButton } from "@/modules/squadframe/components/back-button";
+import { Badge } from "@/ui/components/Badge";
+import { Button } from "@/ui/components/Button";
+import { Chip } from "@/ui/components/Chip";
 
 // ─── Tipos ───────────────────────────────────────────────────
 
@@ -180,7 +183,7 @@ function CargoCard({
     <div ref={setNodeRef} style={style}>
       {!editando ? (
         <div
-          className="flex cursor-pointer items-start gap-2 rounded-lg border border-line bg-surface p-3 shadow-card transition-shadow hover:shadow-md"
+          className="flex cursor-pointer items-start gap-2 rounded-lg border border-border bg-surface p-3 shadow-card transition-shadow hover:shadow-md"
           onClick={() => podeEditar && setEditando(true)}
         >
           {podeEditar && (
@@ -188,7 +191,7 @@ function CargoCard({
               {...attributes}
               {...listeners}
               onClick={(e) => e.stopPropagation()}
-              className="mt-0.5 shrink-0 cursor-grab text-ink-faint active:cursor-grabbing"
+              className="mt-0.5 shrink-0 cursor-grab text-text-3 active:cursor-grabbing"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/>
@@ -200,35 +203,33 @@ function CargoCard({
           <div className="mt-0.5 h-full w-1 shrink-0 rounded-full" style={{ backgroundColor: cargo.cor, minHeight: 36 }} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-ink">{cargo.nome}</span>
+              <span className="text-sm font-semibold text-text">{cargo.nome}</span>
               {cargo.is_admin && (
-                <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                  Admin
-                </span>
+                <Badge variant="warning" size="sm">Admin</Badge>
               )}
             </div>
             {cargo.is_admin ? (
-              <p className="mt-1 text-[11px] text-ink-faint">Acesso total</p>
+              <p className="mt-1 text-[11px] text-text-3">Acesso total</p>
             ) : modulosAtivos.length > 0 ? (
               <div className="mt-1.5 flex flex-wrap gap-1">
                 {modulosAtivos.map((m) => (
-                  <span key={m} className="rounded-full bg-steel/10 px-1.5 py-0.5 text-[10px] font-medium text-steel">
+                  <Chip key={m} variant="primary" className="text-[10px]">
                     {MODULO_LABEL[m]}
-                  </span>
+                  </Chip>
                 ))}
               </div>
             ) : (
-              <p className="mt-1 text-[11px] text-ink-faint">Sem permissões</p>
+              <p className="mt-1 text-[11px] text-text-3">Sem permissões</p>
             )}
           </div>
           {podeEditar && (
-            <span className="mt-1 shrink-0 text-[11px] text-ink-faint opacity-0 group-hover:opacity-100">
+            <span className="mt-1 shrink-0 text-[11px] text-text-3 opacity-0 group-hover:opacity-100">
               Editar
             </span>
           )}
         </div>
       ) : (
-        <div className="rounded-lg border border-steel bg-surface p-4 shadow-md">
+        <div className="rounded-lg border border-primary bg-surface p-4 shadow-md">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
               <label className="label">Nome do cargo</label>
@@ -238,8 +239,8 @@ function CargoCard({
               <label className="label">Cor</label>
               <div className="flex items-center gap-2">
                 <input type="color" value={cor} onChange={(e) => setCor(e.target.value)}
-                  className="h-9 w-12 cursor-pointer rounded border border-line bg-surface p-1" />
-                <span className="font-mono text-xs text-ink-faint">{cor}</span>
+                  className="h-9 w-12 cursor-pointer rounded border border-border bg-surface p-1" />
+                <span className="font-mono text-xs text-text-3">{cor}</span>
               </div>
             </div>
             <div>
@@ -253,23 +254,23 @@ function CargoCard({
           <label className="mt-4 flex cursor-pointer items-center gap-2">
             <div
               onClick={() => toggleAdmin(!isAdmin)}
-              className={`relative h-5 w-9 rounded-full transition-colors ${isAdmin ? "bg-amber-500" : "bg-line"}`}
+              className={`relative h-5 w-9 rounded-full transition-colors ${isAdmin ? "bg-amber-500" : "bg-border"}`}
             >
               <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${isAdmin ? "translate-x-4" : "translate-x-0.5"}`} />
             </div>
-            <span className="text-sm font-medium text-ink">Administrador</span>
-            <span className="text-xs text-ink-faint">(acesso total)</span>
+            <span className="text-sm font-medium text-text">Administrador</span>
+            <span className="text-xs text-text-3">(acesso total)</span>
           </label>
 
-          <div className="mt-4 overflow-hidden rounded-lg border border-line">
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-line bg-canvas">
-                  <th className="px-3 py-2 text-left font-medium text-ink-soft">Módulo</th>
+                <tr className="border-b border-border bg-bg">
+                  <th className="px-3 py-2 text-left font-medium text-text-2">Módulo</th>
                   {ACOES.map((a) => (
-                    <th key={a} className="px-2 py-2 text-center font-medium text-ink-soft">{ACAO_LABEL[a]}</th>
+                    <th key={a} className="px-2 py-2 text-center font-medium text-text-2">{ACAO_LABEL[a]}</th>
                   ))}
-                  <th className="px-2 py-2 text-center font-medium text-ink-soft">Tudo</th>
+                  <th className="px-2 py-2 text-center font-medium text-text-2">Tudo</th>
                 </tr>
               </thead>
               <tbody>
@@ -277,8 +278,8 @@ function CargoCard({
                   const mPerms = permissoes.filter((p) => p.modulo === modulo);
                   const todosAtivos = mPerms.length > 0 && mPerms.every((p) => permsIds.has(p.id));
                   return (
-                    <tr key={modulo} className="border-b border-line last:border-0 hover:bg-canvas/50">
-                      <td className="px-3 py-2 font-medium text-ink">{MODULO_LABEL[modulo]}</td>
+                    <tr key={modulo} className="border-b border-border last:border-0 hover:bg-bg/50">
+                      <td className="px-3 py-2 font-medium text-text">{MODULO_LABEL[modulo]}</td>
                       {ACOES.map((acao) => {
                         const perm = mPerms.find((p) => p.acao === acao);
                         return (
@@ -288,9 +289,9 @@ function CargoCard({
                                 checked={permsIds.has(perm.id) || isAdmin}
                                 disabled={isAdmin}
                                 onChange={() => togglePerm(perm.id)}
-                                className="h-4 w-4 rounded accent-steel"
+                                className="h-4 w-4 rounded accent-primary"
                               />
-                            ) : <span className="text-ink-faint">—</span>}
+                            ) : <span className="text-text-3">—</span>}
                           </td>
                         );
                       })}
@@ -299,7 +300,7 @@ function CargoCard({
                           checked={todosAtivos || isAdmin}
                           disabled={isAdmin}
                           onChange={(e) => toggleModulo(modulo, e.target.checked)}
-                          className="h-4 w-4 rounded accent-steel"
+                          className="h-4 w-4 rounded accent-primary"
                         />
                       </td>
                     </tr>
@@ -315,34 +316,34 @@ function CargoCard({
             if (!todosCatalogo.length) return null;
             const todosMarcados = todosCatalogo.every((p) => permsIds.has(p.id));
             return (
-              <div className="mt-3 overflow-hidden rounded-lg border border-line">
-                <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
-                  <span className="text-xs font-medium text-ink-soft">Catálogo</span>
-                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+              <div className="mt-3 overflow-hidden rounded-lg border border-border">
+                <div className="flex items-center justify-between border-b border-border bg-bg px-3 py-2">
+                  <span className="text-xs font-medium text-text-2">Catálogo</span>
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-text-2">
                     <input type="checkbox"
                       checked={todosMarcados}
                       onChange={(e) => toggleModulo("catalogo", e.target.checked)}
-                      className="h-3.5 w-3.5 rounded accent-steel"
+                      className="h-3.5 w-3.5 rounded accent-primary"
                     />
                     Tudo
                   </label>
                 </div>
-                <div className="divide-y divide-line">
+                <div className="divide-y divide-border">
                   {CATALOGO_GRUPOS.map(({ key, label }) => {
                     const grupoPerms = todosCatalogo.filter((p) => p.modulo === key);
                     if (!grupoPerms.length) return null;
                     return (
                       <div key={key} className="px-3 py-2">
-                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-3">{label}</p>
                         <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                           {grupoPerms.map((p) => (
                             <label key={p.id} className="flex cursor-pointer items-center gap-2">
                               <input type="checkbox"
                                 checked={permsIds.has(p.id)}
                                 onChange={() => togglePerm(p.id)}
-                                className="h-3.5 w-3.5 rounded accent-steel"
+                                className="h-3.5 w-3.5 rounded accent-primary"
                               />
-                              <span className="text-xs text-ink">{p.nome}</span>
+                              <span className="text-xs text-text">{p.nome}</span>
                             </label>
                           ))}
                         </div>
@@ -360,34 +361,34 @@ function CargoCard({
             if (!todosCompras.length) return null;
             const todosMarcados = todosCompras.every((p) => permsIds.has(p.id));
             return (
-              <div className="mt-3 overflow-hidden rounded-lg border border-line">
-                <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
-                  <span className="text-xs font-medium text-ink-soft">Compras</span>
-                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+              <div className="mt-3 overflow-hidden rounded-lg border border-border">
+                <div className="flex items-center justify-between border-b border-border bg-bg px-3 py-2">
+                  <span className="text-xs font-medium text-text-2">Compras</span>
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-text-2">
                     <input type="checkbox"
                       checked={todosMarcados}
                       onChange={(e) => toggleModulo("compras", e.target.checked)}
-                      className="h-3.5 w-3.5 rounded accent-steel"
+                      className="h-3.5 w-3.5 rounded accent-primary"
                     />
                     Tudo
                   </label>
                 </div>
-                <div className="divide-y divide-line">
+                <div className="divide-y divide-border">
                   {COMPRAS_GRUPOS.map(({ key, label }) => {
                     const grupoPerms = todosCompras.filter((p) => p.modulo === key);
                     if (!grupoPerms.length) return null;
                     return (
                       <div key={key} className="px-3 py-2">
-                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-3">{label}</p>
                         <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                           {grupoPerms.map((p) => (
                             <label key={p.id} className="flex cursor-pointer items-center gap-2">
                               <input type="checkbox"
                                 checked={permsIds.has(p.id)}
                                 onChange={() => togglePerm(p.id)}
-                                className="h-3.5 w-3.5 rounded accent-steel"
+                                className="h-3.5 w-3.5 rounded accent-primary"
                               />
-                              <span className="text-xs text-ink">{p.nome}</span>
+                              <span className="text-xs text-text">{p.nome}</span>
                             </label>
                           ))}
                         </div>
@@ -405,34 +406,34 @@ function CargoCard({
             if (!todosFinanceiro.length) return null;
             const todosMarcados = todosFinanceiro.every((p) => permsIds.has(p.id));
             return (
-              <div className="mt-3 overflow-hidden rounded-lg border border-line">
-                <div className="flex items-center justify-between border-b border-line bg-canvas px-3 py-2">
-                  <span className="text-xs font-medium text-ink-soft">Financeiro</span>
-                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+              <div className="mt-3 overflow-hidden rounded-lg border border-border">
+                <div className="flex items-center justify-between border-b border-border bg-bg px-3 py-2">
+                  <span className="text-xs font-medium text-text-2">Financeiro</span>
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs text-text-2">
                     <input type="checkbox"
                       checked={todosMarcados}
                       onChange={(e) => toggleModulo("financeiro", e.target.checked)}
-                      className="h-3.5 w-3.5 rounded accent-steel"
+                      className="h-3.5 w-3.5 rounded accent-primary"
                     />
                     Tudo
                   </label>
                 </div>
-                <div className="divide-y divide-line">
+                <div className="divide-y divide-border">
                   {FINANCEIRO_GRUPOS.map(({ key, label }) => {
                     const grupoPerms = todosFinanceiro.filter((p) => p.modulo === key || p.chave.startsWith(key + "."));
                     if (!grupoPerms.length) return null;
                     return (
                       <div key={key} className="px-3 py-2">
-                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-faint">{label}</p>
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-3">{label}</p>
                         <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                           {grupoPerms.map((p) => (
                             <label key={p.id} className="flex cursor-pointer items-center gap-2">
                               <input type="checkbox"
                                 checked={permsIds.has(p.id)}
                                 onChange={() => togglePerm(p.id)}
-                                className="h-3.5 w-3.5 rounded accent-steel"
+                                className="h-3.5 w-3.5 rounded accent-primary"
                               />
-                              <span className="text-xs text-ink">{p.nome}</span>
+                              <span className="text-xs text-text">{p.nome}</span>
                             </label>
                           ))}
                         </div>
@@ -444,17 +445,17 @@ function CargoCard({
             );
           })()}
 
-          {erro && <p className="mt-3 text-xs text-red-500">{erro}</p>}
+          {erro && <p className="mt-3 text-xs text-danger">{erro}</p>}
 
           <div className="mt-4 flex items-center gap-2">
-            <button onClick={handleSave} disabled={pending} className="btn-primary">
+            <Button size="sm" onClick={handleSave} disabled={pending}>
               {pending ? "Salvando…" : "Salvar"}
-            </button>
-            <button onClick={() => { setEditando(false); setErro(null); }} disabled={pending} className="btn-ghost">
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => { setEditando(false); setErro(null); }} disabled={pending}>
               Cancelar
-            </button>
+            </Button>
             <button onClick={handleExcluir} disabled={pending}
-              className="ml-auto text-xs text-ink-faint hover:text-red-500 disabled:opacity-50">
+              className="ml-auto text-xs text-text-3 hover:text-danger disabled:opacity-50">
               Excluir cargo
             </button>
           </div>
@@ -547,12 +548,12 @@ export function CargosCliente({
         onClick={() => setSetorAtivo(s.id)}
         className={`flex items-center gap-2 shrink-0 rounded-lg px-3 py-2 text-sm transition-colors
           sm:w-full sm:rounded-none sm:px-4 sm:py-2.5
-          ${ativo ? "bg-steel/10 font-medium text-steel sm:border-r-2 sm:bg-steel/5" : "text-ink-soft hover:bg-canvas hover:text-ink"}`}
+          ${ativo ? "bg-primary/10 font-medium text-primary sm:border-r-2 sm:bg-primary/5" : "text-text-2 hover:bg-bg hover:text-text"}`}
         style={ativo ? { borderRightColor: s.cor } : {}}
       >
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.cor }} />
         <span className="flex-1 text-left">{s.nome}</span>
-        <span className={`text-xs ${ativo ? "text-steel/70" : "text-ink-faint"}`}>{count}</span>
+        <span className={`text-xs ${ativo ? "text-primary/70" : "text-text-3"}`}>{count}</span>
       </button>
     );
   }
@@ -560,18 +561,18 @@ export function CargosCliente({
   return (
     <div className="flex flex-col sm:flex-row sm:h-[calc(100dvh-56px-env(safe-area-inset-top))]">
       {/* ── Cabeçalho mobile (back + título) ──────────── */}
-      <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3 sm:hidden">
+      <div className="flex items-center gap-3 border-b border-border bg-surface px-4 py-3 sm:hidden">
         <BackButton href="/usuarios" />
-        <p className="text-xs font-semibold uppercase tracking-widest text-ink-faint">Cargos</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-text-3">Cargos</p>
       </div>
 
       {/* ── Tabs de setor (mobile: scroll horizontal) ─── */}
-      <div className="flex overflow-x-auto gap-1 border-b border-line bg-surface px-3 py-2 sm:hidden">
+      <div className="flex overflow-x-auto gap-1 border-b border-border bg-surface px-3 py-2 sm:hidden">
         {setores.map((s) => <SetorBtn key={s.id} s={s} />)}
         {podeGerenciar && !adicionandoSetor && (
           <button
             onClick={() => setAdicionandoSetor(true)}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 text-xs text-ink-faint hover:border-steel hover:text-steel transition-colors"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-text-3 hover:border-primary hover:text-primary transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Novo setor
@@ -579,7 +580,7 @@ export function CargosCliente({
         )}
       </div>
       {adicionandoSetor && (
-        <div className="border-b border-line bg-surface px-3 py-2 space-y-2 sm:hidden">
+        <div className="border-b border-border bg-surface px-3 py-2 space-y-2 sm:hidden">
           <input
             autoFocus value={nomeSetor}
             onChange={(e) => setNomeSetor(e.target.value)}
@@ -589,18 +590,18 @@ export function CargosCliente({
           />
           <div className="flex items-center gap-2">
             <input type="color" value={corSetor} onChange={(e) => setCorSetor(e.target.value)}
-              className="h-8 w-10 cursor-pointer rounded border border-line p-1" />
-            <button onClick={handleCriarSetor} disabled={pending} className="btn-primary flex-1 py-1 text-xs">Criar</button>
-            <button onClick={() => setAdicionandoSetor(false)} className="text-xs text-ink-faint hover:text-ink">✕</button>
+              className="h-8 w-10 cursor-pointer rounded border border-border p-1" />
+            <Button size="sm" onClick={handleCriarSetor} disabled={pending} className="flex-1">Criar</Button>
+            <button onClick={() => setAdicionandoSetor(false)} className="text-xs text-text-3 hover:text-text">✕</button>
           </div>
         </div>
       )}
 
       {/* ── Sidebar de setores (desktop) ──────────────── */}
-      <aside className="hidden sm:flex w-56 shrink-0 flex-col border-r border-line bg-surface">
-        <div className="border-b border-line px-4 py-3">
+      <aside className="hidden sm:flex w-56 shrink-0 flex-col border-r border-border bg-surface">
+        <div className="border-b border-border px-4 py-3">
           <BackButton href="/usuarios" />
-          <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-ink-faint">Setores</p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-text-3">Setores</p>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-1">
@@ -608,7 +609,7 @@ export function CargosCliente({
         </nav>
 
         {podeGerenciar && (
-          <div className="border-t border-line p-3">
+          <div className="border-t border-border p-3">
             {adicionandoSetor ? (
               <div className="space-y-2">
                 <input
@@ -620,15 +621,15 @@ export function CargosCliente({
                 />
                 <div className="flex items-center gap-2">
                   <input type="color" value={corSetor} onChange={(e) => setCorSetor(e.target.value)}
-                    className="h-8 w-10 cursor-pointer rounded border border-line p-1" />
-                  <button onClick={handleCriarSetor} disabled={pending} className="btn-primary flex-1 py-1 text-xs">Criar</button>
-                  <button onClick={() => setAdicionandoSetor(false)} className="text-xs text-ink-faint hover:text-ink">✕</button>
+                    className="h-8 w-10 cursor-pointer rounded border border-border p-1" />
+                  <Button size="sm" onClick={handleCriarSetor} disabled={pending} className="flex-1">Criar</Button>
+                  <button onClick={() => setAdicionandoSetor(false)} className="text-xs text-text-3 hover:text-text">✕</button>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setAdicionandoSetor(true)}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-ink-faint hover:bg-canvas hover:text-ink"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-text-3 hover:bg-bg hover:text-text"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -643,7 +644,7 @@ export function CargosCliente({
       {/* ── Conteúdo: cargos do setor ──────────────────── */}
       <div className="flex-1 overflow-y-auto">
         {!setor ? (
-          <div className="flex h-full items-center justify-center text-sm text-ink-faint">
+          <div className="flex h-full items-center justify-center text-sm text-text-3">
             Selecione um setor
           </div>
         ) : (
@@ -652,20 +653,20 @@ export function CargosCliente({
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="h-3 w-3 rounded-full" style={{ backgroundColor: setor.cor }} />
-                <h2 className="text-xl font-bold text-ink">{setor.nome}</h2>
-                <span className="text-sm text-ink-faint">{cargosDoSetor.length} cargos</span>
+                <h2 className="text-xl font-bold text-text">{setor.nome}</h2>
+                <span className="text-sm text-text-3">{cargosDoSetor.length} cargos</span>
               </div>
               {podeGerenciar && !adicionandoCargo && (
-                <button onClick={() => setAdicionandoCargo(true)} className="btn-primary">
+                <Button onClick={() => setAdicionandoCargo(true)}>
                   Novo cargo
-                </button>
+                </Button>
               )}
             </div>
 
             {/* Formulário novo cargo */}
             {podeGerenciar && adicionandoCargo && (
-              <div className="mb-4 rounded-lg border border-steel bg-surface p-4">
-                <p className="mb-3 text-sm font-semibold text-ink">Novo cargo em {setor.nome}</p>
+              <div className="mb-4 rounded-lg border border-primary bg-surface p-4">
+                <p className="mb-3 text-sm font-semibold text-text">Novo cargo em {setor.nome}</p>
                 <div className="flex items-end gap-3">
                   <div className="flex-1">
                     <label className="label">Nome</label>
@@ -680,15 +681,14 @@ export function CargosCliente({
                   <div>
                     <label className="label">Cor</label>
                     <input type="color" value={corCargo} onChange={(e) => setCorCargo(e.target.value)}
-                      className="h-9 w-12 cursor-pointer rounded border border-line p-1" />
+                      className="h-9 w-12 cursor-pointer rounded border border-border p-1" />
                   </div>
-                  <button onClick={handleCriarCargo} disabled={pending} className="btn-primary">
+                  <Button onClick={handleCriarCargo} disabled={pending}>
                     {pending ? "…" : "Criar cargo"}
-                  </button>
-                  <button onClick={() => { setAdicionandoCargo(false); setNomeCargo(""); }}
-                    className="btn-ghost">
+                  </Button>
+                  <Button variant="ghost" onClick={() => { setAdicionandoCargo(false); setNomeCargo(""); }}>
                     Cancelar
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -698,10 +698,10 @@ export function CargosCliente({
               <SortableContext items={cargosDoSetor.map((c) => c.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex flex-col gap-3">
                   {cargosDoSetor.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-line px-6 py-12 text-center text-sm text-ink-faint">
+                    <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center text-sm text-text-3">
                       Nenhum cargo neste setor.
                       {podeGerenciar && (
-                        <button onClick={() => setAdicionandoCargo(true)} className="mt-2 block w-full text-steel hover:underline">
+                        <button onClick={() => setAdicionandoCargo(true)} className="mt-2 block w-full text-primary hover:underline">
                           Criar o primeiro cargo
                         </button>
                       )}

@@ -30,30 +30,30 @@ export default async function ComprasPage() {
   return (
     <div className="px-4 py-6 sm:px-8 sm:py-8">
       <h1 className="text-2xl font-bold tracking-tight">Painel de Compras</h1>
-      <p className="mt-1 text-sm text-ink-soft">Visão geral e pendências prioritárias.</p>
+      <p className="mt-1 text-sm text-text-2">Visão geral e pendências prioritárias.</p>
 
       {/* Cards */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="card px-5 py-4 hover:shadow-md transition-shadow">
             <p className="text-3xl font-bold" style={{ color: s.cor }}>{s.value}</p>
-            <p className="mt-1 text-xs text-ink-soft">{s.label}</p>
+            <p className="mt-1 text-xs text-text-2">{s.label}</p>
           </Link>
         ))}
       </div>
 
       {/* Pendências */}
       <div className="mt-8">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-ink-faint">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-text-3">
           Solicitações pendentes
         </h2>
         {(pendencias ?? []).length === 0 ? (
-          <p className="text-sm text-ink-faint">Nenhuma pendência no momento.</p>
+          <p className="text-sm text-text-3">Nenhuma pendência no momento.</p>
         ) : (
           <div className="card overflow-x-auto">
             <table className="w-full min-w-[560px] text-sm">
               <thead>
-                <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                   <th className="px-5 py-3 font-medium">Número</th>
                   <th className="px-5 py-3 font-medium">Obra</th>
                   <th className="px-5 py-3 font-medium">Status</th>
@@ -63,13 +63,13 @@ export default async function ComprasPage() {
               </thead>
               <tbody>
                 {(pendencias ?? []).map((s: any) => (
-                  <tr key={s.id} className="border-b border-line last:border-0 hover:bg-canvas">
+                  <tr key={s.id} className="border-b border-border last:border-0 hover:bg-bg">
                     <td className="px-5 py-3">
-                      <Link href={`/compras/solicitacoes/${s.id}`} className="font-mono text-xs font-semibold text-steel hover:underline">
+                      <Link href={`/compras/solicitacoes/${s.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
                         {s.numero}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-ink-soft">{s.obra?.nome ?? "—"}</td>
+                    <td className="px-5 py-3 text-text-2">{s.obra?.nome ?? "—"}</td>
                     <td className="px-5 py-3">
                       <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
                         style={{ backgroundColor: STATUS_SOL_COR[s.status as keyof typeof STATUS_SOL_COR] + "20", color: STATUS_SOL_COR[s.status as keyof typeof STATUS_SOL_COR] }}>
@@ -82,7 +82,7 @@ export default async function ComprasPage() {
                         {PRIORIDADE_LABEL[s.prioridade as keyof typeof PRIORIDADE_LABEL]}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-xs text-ink-faint">
+                    <td className="px-5 py-3 text-xs text-text-3">
                       {new Date(s.criado_em).toLocaleDateString("pt-BR")}
                     </td>
                   </tr>

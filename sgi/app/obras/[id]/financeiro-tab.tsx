@@ -8,15 +8,15 @@ const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const STATUS_LABEL: Record<string, { label: string; cor: string }> = {
-  RASCUNHO:               { label: "Rascunho",             cor: "bg-ink-faint/10 text-ink-faint" },
-  AGUARDANDO_APROVACAO:   { label: "Ag. Aprovação",        cor: "bg-amber-100 text-amber-700" },
+  RASCUNHO:               { label: "Rascunho",             cor: "bg-ink-faint/10 text-text-3" },
+  AGUARDANDO_APROVACAO:   { label: "Ag. Aprovação",        cor: "bg-warning-soft text-warning" },
   APROVADO:               { label: "Aprovado",             cor: "bg-blue-100 text-blue-700" },
   EMITIDO:                { label: "Emitido",              cor: "bg-purple-100 text-purple-700" },
   AGUARDANDO_RECEBIMENTO: { label: "Ag. Recebimento",      cor: "bg-cyan-100 text-cyan-700" },
   RECEBIDO_PARCIAL:       { label: "Rec. Parcial",         cor: "bg-orange-100 text-orange-700" },
-  RECEBIDO:               { label: "Recebido",             cor: "bg-green-100 text-green-700" },
+  RECEBIDO:               { label: "Recebido",             cor: "bg-green-100 text-success" },
   FINALIZADO:             { label: "Finalizado",           cor: "bg-green-200 text-green-800" },
-  CANCELADO:              { label: "Cancelado",            cor: "bg-red-100 text-red-600" },
+  CANCELADO:              { label: "Cancelado",            cor: "bg-danger-soft text-danger" },
 };
 
 export async function FinanceiroTab({ obraId }: { obraId: string }) {
@@ -67,27 +67,27 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
       {/* ── Dashboard de pedidos ── */}
       {podeDashboard && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-faint">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-3">
             Pedidos desta obra
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="card p-4">
-              <p className="text-xs text-ink-faint">Total de pedidos</p>
-              <p className="mt-1 text-2xl font-bold text-ink">{totalPedidos}</p>
+              <p className="text-xs text-text-3">Total de pedidos</p>
+              <p className="mt-1 text-2xl font-bold text-text">{totalPedidos}</p>
             </div>
             <div className="card p-4">
-              <p className="text-xs text-ink-faint">Valor confirmado</p>
-              <p className="mt-1 text-xl font-bold text-ink">{totalValor > 0 ? fmt(totalValor) : "—"}</p>
+              <p className="text-xs text-text-3">Valor confirmado</p>
+              <p className="mt-1 text-xl font-bold text-text">{totalValor > 0 ? fmt(totalValor) : "—"}</p>
             </div>
             <div className="card p-4">
-              <p className="text-xs text-ink-faint">Saldo em carteiras</p>
-              <p className={`mt-1 text-xl font-bold ${saldoTotal > 0 ? "text-green-700" : "text-ink-faint"}`}>
+              <p className="text-xs text-text-3">Saldo em carteiras</p>
+              <p className={`mt-1 text-xl font-bold ${saldoTotal > 0 ? "text-success" : "text-text-3"}`}>
                 {carteirasList.length > 0 ? fmt(saldoTotal) : "—"}
               </p>
             </div>
             <div className="card p-4">
-              <p className="text-xs text-ink-faint">Faturamento direto</p>
-              <p className="mt-1 text-xl font-bold text-steel">
+              <p className="text-xs text-text-3">Faturamento direto</p>
+              <p className="mt-1 text-xl font-bold text-primary">
                 {pedidosList.filter((p) => p.usa_carteira).length} pedido(s)
               </p>
             </div>
@@ -98,7 +98,7 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
             <div className="mt-4 card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-faint">
+                  <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-text-3">
                     <th className="px-4 py-2 font-medium">Pedido</th>
                     <th className="px-4 py-2 font-medium">Fornecedor</th>
                     <th className="px-4 py-2 font-medium">Status</th>
@@ -107,20 +107,20 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
                 </thead>
                 <tbody>
                   {pedidosList.map((p) => {
-                    const s = STATUS_LABEL[p.status] ?? { label: p.status, cor: "bg-canvas text-ink-faint" };
+                    const s = STATUS_LABEL[p.status] ?? { label: p.status, cor: "bg-bg text-text-3" };
                     return (
-                      <tr key={p.id} className="border-b border-line last:border-0 hover:bg-canvas/50">
+                      <tr key={p.id} className="border-b border-border last:border-0 hover:bg-bg/50">
                         <td className="px-4 py-2.5">
-                          <Link href={`/compras/pedidos/${p.id}`} className="font-mono text-xs text-steel hover:underline">
+                          <Link href={`/compras/pedidos/${p.id}`} className="font-mono text-xs text-primary hover:underline">
                             {p.numero}
                           </Link>
                           {p.usa_carteira && (
-                            <span className="ml-2 rounded-full bg-steel/10 px-1.5 py-0.5 text-[10px] font-semibold text-steel">
+                            <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                               FD
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-ink-soft">
+                        <td className="px-4 py-2.5 text-xs text-text-2">
                           {(p.fornecedor as any)?.nome ?? "—"}
                         </td>
                         <td className="px-4 py-2.5">
@@ -128,7 +128,7 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
                             {s.label}
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 text-right text-xs font-semibold text-ink">
+                        <td className="px-4 py-2.5 text-right text-xs font-semibold text-text">
                           {p.valor_final ? fmt(p.valor_final) : "—"}
                         </td>
                       </tr>
@@ -141,8 +141,8 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
 
           {pedidosList.length === 0 && (
             <div className="mt-4 card p-8 text-center">
-              <p className="text-sm text-ink-faint">Nenhum pedido de compra nesta obra.</p>
-              <Link href={`/compras/pedidos/novo?obra_id=${obraId}`} className="mt-2 inline-block text-sm text-steel hover:underline">
+              <p className="text-sm text-text-3">Nenhum pedido de compra nesta obra.</p>
+              <Link href={`/compras/pedidos/novo?obra_id=${obraId}`} className="mt-2 inline-block text-sm text-primary hover:underline">
                 Criar pedido
               </Link>
             </div>
@@ -154,11 +154,11 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
       {podeVerCarteira && (
         <div>
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-faint">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-text-3">
               Carteiras por fornecedor
             </h2>
             {carteirasList.length > 0 && (
-              <span className="text-xs text-ink-faint">
+              <span className="text-xs text-text-3">
                 {carteirasList.length} carteira(s) · saldo total {fmt(saldoTotal)}
               </span>
             )}
@@ -166,7 +166,7 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
 
           {carteirasList.length === 0 ? (
             <div className="mt-3 card p-8 text-center">
-              <p className="text-sm text-ink-faint">
+              <p className="text-sm text-text-3">
                 Nenhuma carteira ainda.{" "}
                 {podeDepositar && "Faça um depósito abaixo para criar a primeira."}
               </p>
@@ -181,11 +181,11 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
                     href={`/financeiro/carteiras/${c.id}`}
                     className="card p-4 hover:shadow-md transition-shadow"
                   >
-                    <p className="truncate text-sm font-semibold text-ink">{forn?.nome ?? "—"}</p>
-                    <p className={`mt-2 text-xl font-bold ${c.saldo_atual > 0 ? "text-green-700" : "text-red-500"}`}>
+                    <p className="truncate text-sm font-semibold text-text">{forn?.nome ?? "—"}</p>
+                    <p className={`mt-2 text-xl font-bold ${c.saldo_atual > 0 ? "text-success" : "text-danger"}`}>
                       {fmt(c.saldo_atual)}
                     </p>
-                    <p className="mt-1 text-[10px] text-ink-faint">Ver extrato →</p>
+                    <p className="mt-1 text-[10px] text-text-3">Ver extrato →</p>
                   </Link>
                 );
               })}
@@ -195,7 +195,7 @@ export async function FinanceiroTab({ obraId }: { obraId: string }) {
           {/* Formulário de depósito */}
           {podeDepositar && (
             <div className="mt-4 card p-5">
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wide text-text-3">
                 Novo depósito
               </h3>
               <ObraDepositarForm obraId={obraId} fornecedores={fornecedores ?? []} />

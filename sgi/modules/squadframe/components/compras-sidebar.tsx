@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AppSidebar, SidebarSection } from "@/ui/layout/AppSidebar";
+import { Button } from "@/ui/components/Button";
 import {
   DashboardIcon, DocumentIcon, PackageIcon, BuildingIcon,
   BriefcaseIcon, CreditCardIcon, DollarSignIcon,
@@ -34,14 +35,14 @@ export function ComprasSidebar() {
   const footer = (podeCriarSolicitacao || podeCriarPedido) ? (
     <div className="space-y-2">
       {podeCriarSolicitacao && (
-        <Link href="/compras/solicitacoes/nova" className="btn-primary w-full text-center text-sm block">
+        <Button as="a" href="/compras/solicitacoes/nova" className="w-full justify-center">
           Nova solicitação
-        </Link>
+        </Button>
       )}
       {podeCriarPedido && (
-        <Link href="/compras/pedidos/novo" className="btn-ghost w-full text-center text-sm block">
+        <Button as="a" href="/compras/pedidos/novo" variant="ghost" className="w-full justify-center">
           Novo pedido
-        </Link>
+        </Button>
       )}
     </div>
   ) : undefined;
