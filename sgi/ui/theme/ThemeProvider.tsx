@@ -42,6 +42,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [frameTheme, setFrameThemeState] = useState(true);
 
   useEffect(() => {
+    // Migra chave legada "theme" → "squad-theme"
+    if (!localStorage.getItem("squad-theme") && localStorage.getItem("theme")) {
+      localStorage.setItem("squad-theme", localStorage.getItem("theme")!);
+      localStorage.removeItem("theme");
+    }
     const stored = (localStorage.getItem("squad-theme") as Theme) ?? "system";
     const storedFrame = localStorage.getItem("squad-frame-theme") !== "false";
     const r = stored === "system" ? getSystemTheme() : (stored as "light" | "dark");
@@ -88,20 +93,4 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function ThemeScript() {
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `(function(){
-  try {
-    var t = localStorage.getItem('squad-theme') || 'system';
-    var f = localStorage.getItem('squad-frame-theme') !== 'false';
-    var d = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (d) document.documentElement.classList.add('dark');
-    if (f) document.documentElement.classList.add('frame');
-  } catch(e) {}
-})()`,
-      }}
-    />
-  );
-}
+// ThemeScript foi movido para ui/theme/ThemeScript.tsx (Server Component puro, sem "use client").

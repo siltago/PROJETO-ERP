@@ -20,9 +20,9 @@ const variantStyles: Record<ButtonVariant, string> = {
   secondary: "bg-surface-2 text-text hover:bg-surface-3 border-border",
   outline:   "bg-transparent text-primary hover:bg-primary-soft border-primary",
   ghost:     "bg-transparent text-text-2 hover:bg-surface-2 hover:text-text border-transparent",
-  danger:    "bg-danger text-white hover:bg-red-600 border-transparent",
-  success:   "bg-success text-white hover:bg-emerald-600 border-transparent",
-  warning:   "bg-warning text-white hover:bg-amber-600 border-transparent",
+  danger:    "bg-danger text-white hover:bg-danger-hover border-transparent",
+  success:   "bg-success text-white hover:bg-success-hover border-transparent",
+  warning:   "bg-warning text-white hover:bg-warning-hover border-transparent",
   accent:    "bg-accent text-white hover:bg-accent-hover border-transparent",
 };
 

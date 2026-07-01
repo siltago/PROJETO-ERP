@@ -6,6 +6,7 @@ interface AvatarProps {
   src?: string | null;
   name?: string;
   size?: AvatarSize;
+  color?: string;
   className?: string;
 }
 
@@ -35,9 +36,9 @@ function nameToColor(name?: string) {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export function Avatar({ src, name, size = "md", className }: AvatarProps) {
+export function Avatar({ src, name, size = "md", color: colorProp, className }: AvatarProps) {
   const { box, text } = sizes[size];
-  const color = nameToColor(name);
+  const color = colorProp ?? nameToColor(name);
   const initials = getInitials(name);
 
   if (src) {

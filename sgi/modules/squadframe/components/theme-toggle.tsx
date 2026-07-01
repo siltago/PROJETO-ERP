@@ -1,26 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTheme } from "@/ui/theme/ThemeProvider";
 import { SunIcon, MoonIcon } from "@/ui/icons";
 
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("squad-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = stored ? stored === "dark" : prefersDark;
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
-
-  function toggle() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("squad-theme", next ? "dark" : "light");
-  }
-
+  const { resolvedTheme, toggle } = useTheme();
+  const dark = resolvedTheme === "dark";
   return (
     <button
       onClick={toggle}

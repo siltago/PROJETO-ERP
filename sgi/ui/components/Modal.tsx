@@ -148,7 +148,7 @@ export function ConfirmDialog({
             disabled={loading}
             className={cn(
               "btn-primary text-sm",
-              variant === "danger" && "bg-danger hover:bg-red-600"
+              variant === "danger" && "bg-danger hover:bg-danger-hover"
             )}
           >
             {loading ? "Aguarde…" : confirmLabel}

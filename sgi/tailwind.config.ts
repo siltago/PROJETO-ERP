@@ -7,7 +7,6 @@ const config: Config = {
     "./ui/**/*.{js,ts,jsx,tsx}",
     "./modules/**/*.{js,ts,jsx,tsx}",
     "./shared/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -42,14 +41,17 @@ const config: Config = {
 
         success: {
           DEFAULT: "rgb(var(--color-success)      / <alpha-value>)",
+          hover:   "rgb(var(--color-success-hover)/ <alpha-value>)",
           soft:    "rgb(var(--color-success-soft) / <alpha-value>)",
         },
         warning: {
           DEFAULT: "rgb(var(--color-warning)      / <alpha-value>)",
+          hover:   "rgb(var(--color-warning-hover)/ <alpha-value>)",
           soft:    "rgb(var(--color-warning-soft) / <alpha-value>)",
         },
         danger: {
           DEFAULT: "rgb(var(--color-danger)      / <alpha-value>)",
+          hover:   "rgb(var(--color-danger-hover)/ <alpha-value>)",
           soft:    "rgb(var(--color-danger-soft) / <alpha-value>)",
         },
         info: {

@@ -11,7 +11,8 @@ import { PwaProvider } from "@/modules/squadframe/components/pwa-provider";
 import { OfflineBanner, UpdateBanner } from "@/modules/squadframe/components/pwa-banners";
 import { HeaderUser } from "@/modules/squadframe/components/header-user";
 import { AppHeader } from "@/ui/layout/AppHeader";
-import { ThemeScript } from "@/ui/theme/ThemeProvider";
+import { ThemeProvider } from "@/ui/theme/ThemeProvider";
+import { ThemeScript } from "@/ui/theme/ThemeScript";
 import "./globals.css";
 
 const ThemeToggle = dynamic(
@@ -73,33 +74,35 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeScript />
       </head>
       <body>
-        <PwaProvider usuarioId={usuario?.id} vapidPublicKey={vapidPublicKey}>
-          <UpdateBanner />
-          <OfflineBanner />
+        <ThemeProvider>
+          <PwaProvider usuarioId={usuario?.id} vapidPublicKey={vapidPublicKey}>
+            <UpdateBanner />
+            <OfflineBanner />
 
-          {usuario && (
-            <AppHeader
-              navItems={NAV_ITEMS}
-              mobileNavSlot={<MobileNav />}
-              rightSlot={
-                <>
-                  <BuscaGlobal />
-                  <NotificacoesBadge usuarioId={usuario.id} naoLidasIniciais={naoLidasCount} />
-                  <ThemeToggle />
-                  <HeaderUser usuario={usuario} />
-                </>
-              }
-            />
-          )}
+            {usuario && (
+              <AppHeader
+                navItems={NAV_ITEMS}
+                mobileNavSlot={<MobileNav />}
+                rightSlot={
+                  <>
+                    <BuscaGlobal />
+                    <NotificacoesBadge usuarioId={usuario.id} naoLidasIniciais={naoLidasCount} />
+                    <ThemeToggle />
+                    <HeaderUser usuario={usuario} />
+                  </>
+                }
+              />
+            )}
 
-          <UserProvider usuario={usuario}>
-            <ToastProvider>
-              <main style={usuario ? { paddingTop: "calc(56px + env(safe-area-inset-top))" } : undefined}>
-                {children}
-              </main>
-            </ToastProvider>
-          </UserProvider>
-        </PwaProvider>
+            <UserProvider usuario={usuario}>
+              <ToastProvider>
+                <main style={usuario ? { paddingTop: "calc(56px + env(safe-area-inset-top))" } : undefined}>
+                  {children}
+                </main>
+              </ToastProvider>
+            </UserProvider>
+          </PwaProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

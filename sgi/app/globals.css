@@ -36,10 +36,13 @@
 
   /* Semânticas */
   --color-success:       16  185 129;
+  --color-success-hover: 5   150 105;
   --color-success-soft:  209 250 229;
   --color-warning:       245 158 11;
+  --color-warning-hover: 217 119 6;
   --color-warning-soft:  254 243 199;
   --color-danger:        239 68  68;
+  --color-danger-hover:  220 38  38;
   --color-danger-soft:   254 226 226;
   --color-info:          59  130 246;
   --color-info-soft:     219 234 254;
@@ -107,10 +110,13 @@
   --color-accent-soft:   0   40  55;
 
   --color-success:       52  211 153;
+  --color-success-hover: 110 231 183;
   --color-success-soft:  6   78  59;
   --color-warning:       251 191 36;
+  --color-warning-hover: 252 211 77;
   --color-warning-soft:  78  52  4;
   --color-danger:        248 113 113;
+  --color-danger-hover:  252 165 165;
   --color-danger-soft:   127 29  29;
   --color-info:          96  165 250;
   --color-info-soft:     30  58  138;

@@ -62,7 +62,9 @@ export function AppSidebar({
   /* Body scroll lock on mobile */
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      if (mobileOpen) document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   const isActive = (item: SidebarNavItem) =>

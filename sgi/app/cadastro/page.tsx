@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/shared/database/supabase-client";
 import { cadastrarUsuario } from "./actions";
+import { Input } from "@/ui/components/Input";
+import { Button } from "@/ui/components/Button";
+import { Alert } from "@/ui/components/Alert";
+import { AuthLayout } from "@/ui/layouts/AuthLayout";
 
 export default function CadastroPage() {
   const [erro, setErro] = useState<string | null>(null);
@@ -22,10 +25,8 @@ export default function CadastroPage() {
 
     start(async () => {
       try {
-        // Cria usuário via server action (admin API, sem e-mail de confirmação)
         await cadastrarUsuario(fd);
       } catch (err: any) {
-        // Se já existe, tenta login direto com as credenciais informadas
         if (err.message.includes("já está cadastrado")) {
           const supabase = createClient();
           const { error: loginError } = await supabase.auth.signInWithPassword({
@@ -38,7 +39,6 @@ export default function CadastroPage() {
         return;
       }
 
-      // Login imediato após criação
       const supabase = createClient();
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email: String(fd.get("email") || ""),
@@ -46,59 +46,35 @@ export default function CadastroPage() {
       });
 
       if (loginError) { setErro(loginError.message); return; }
-
       router.push("/");
       router.refresh();
     });
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 flex flex-col items-center gap-3">
-          <Image src="/icon.png" alt="SquadFrame" width={52} height={52} />
-          <div className="text-center">
-            <p className="font-display text-xl font-bold text-ink">SquadFrame</p>
-            <p className="text-sm text-ink-faint">Criar conta</p>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="card space-y-4 p-6">
-          <div>
-            <label className="label">Nome completo</label>
-            <input name="nome" required className="field" placeholder="João da Silva" />
-          </div>
-          <div>
-            <label className="label">E-mail</label>
-            <input name="email" type="email" required className="field" placeholder="joao@acme.com" />
-          </div>
-          <div>
-            <label className="label">Senha</label>
-            <input name="senha" type="password" required minLength={6} className="field" placeholder="••••••••" />
-          </div>
-          <div>
-            <label className="label">Confirmar senha</label>
-            <input name="confirmar" type="password" required className="field" placeholder="••••••••" />
-          </div>
-
-          {erro && (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-              {erro}
-            </p>
-          )}
-
-          <button type="submit" disabled={pending} className="btn-primary w-full">
-            {pending ? "Criando conta…" : "Criar conta"}
-          </button>
-
-          <p className="text-center text-sm text-ink-faint">
-            Já tem conta?{" "}
-            <a href="/login" className="text-steel hover:underline">
-              Entrar
-            </a>
-          </p>
-        </form>
-      </div>
-    </div>
+    <AuthLayout
+      logoSrc="/icon.png"
+      logoAlt="SquadFrame"
+      title="SquadFrame"
+      description="Criar conta"
+      cardSize="sm"
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <Input label="Nome completo" name="nome" required placeholder="João da Silva" />
+        <Input label="E-mail" name="email" type="email" required placeholder="joao@acme.com" />
+        <Input label="Senha" name="senha" type="password" required minLength={6} placeholder="••••••••" />
+        <Input label="Confirmar senha" name="confirmar" type="password" required placeholder="••••••••" />
+        {erro && <Alert variant="danger">{erro}</Alert>}
+        <Button type="submit" disabled={pending} fullWidth>
+          {pending ? "Criando conta…" : "Criar conta"}
+        </Button>
+        <p className="text-center text-sm text-text-2">
+          Já tem conta?{" "}
+          <a href="/login" className="text-primary hover:underline font-medium">
+            Entrar
+          </a>
+        </p>
+      </form>
+    </AuthLayout>
   );
 }
