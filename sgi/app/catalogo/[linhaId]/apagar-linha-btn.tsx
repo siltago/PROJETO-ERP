@@ -27,7 +27,7 @@ export function ApagarLinhaBtn({ linhaId, nomeLinha }: { linhaId: string; nomeLi
     <button
       onClick={handleClick}
       disabled={pending}
-      className="inline-flex items-center gap-1.5 rounded-card border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 rounded-card border border-red-200 bg-surface px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polyline points="3 6 5 6 21 6"/>

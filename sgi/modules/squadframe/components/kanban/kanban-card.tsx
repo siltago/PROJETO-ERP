@@ -144,7 +144,7 @@ export function KanbanCard({ tarefa, onClick }: Props) {
                 <span className="text-xs text-ink-faint">{checkDone}/{checkTotal}</span>
                 <span className="text-xs text-ink-faint">{checkPct}%</span>
               </div>
-              <div className="h-1 w-full bg-canvas rounded-full overflow-hidden">
+              <div className="h-1 w-full bg-surface-3 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-steel transition-all"
                   style={{ width: `${checkPct}%` }}

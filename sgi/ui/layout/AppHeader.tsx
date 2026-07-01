@@ -24,7 +24,7 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({
-  logoSrc = "/icon.png",
+  logoSrc = "/favicon.png",
   logoAlt = "Logo",
   appName = "SquadFrame",
   navItems = [],
@@ -46,7 +46,7 @@ export function AppHeader({
         className
       )}
       style={{
-        backgroundColor: "rgb(var(--color-primary))",
+        backgroundColor: "rgb(var(--color-header))",
         paddingTop: "env(safe-area-inset-top)",
         height: `calc(${height}px + env(safe-area-inset-top))`,
       }}
@@ -60,9 +60,9 @@ export function AppHeader({
           <Image
             src={logoSrc}
             alt={logoAlt}
-            width={32}
-            height={32}
-            className="shrink-0 rounded-md"
+            width={26}
+            height={26}
+            className="shrink-0"
           />
         )}
         <span className="text-base font-bold leading-none text-white hidden sm:inline">

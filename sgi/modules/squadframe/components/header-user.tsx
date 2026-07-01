@@ -6,6 +6,9 @@ import Link from "next/link";
 import { createClient } from "@/shared/database/supabase-client";
 import { usePwa } from "@/modules/squadframe/components/pwa-provider";
 import type { UsuarioAtual } from "@/shared/auth/auth";
+import {
+  ChevronDownIcon, UserIcon, LogoutIcon, BellIcon, PhoneIcon, UploadIcon,
+} from "@/ui/icons";
 
 export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
   const [aberto, setAberto] = useState(false);
@@ -66,20 +69,11 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
         </div>
 
         {/* Chevron */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
+        <ChevronDownIcon
+          size={14}
           stroke="rgba(255,255,255,0.7)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
           className={`hidden shrink-0 transition-transform sm:block ${aberto ? "rotate-180" : ""}`}
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        />
       </button>
 
       {/* Dropdown */}
@@ -108,9 +102,9 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                     {initials}
                   </div>
                 )}
-                <div>
-                  <p className="text-sm font-medium text-ink">{usuario.nome}</p>
-                  <p className="text-xs text-ink-faint">{usuario.email}</p>
+                <div className="min-w-0 overflow-hidden">
+                  <p className="truncate text-sm font-medium text-ink">{usuario.nome}</p>
+                  <p className="truncate text-xs text-ink-faint">{usuario.email}</p>
                 </div>
               </div>
               {usuario.empresa && (
@@ -148,10 +142,7 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                 onClick={() => setAberto(false)}
                 className="flex items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+                <UserIcon size={14} />
                 Meu perfil
               </Link>
 
@@ -161,38 +152,27 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                   onClick={async () => { setAberto(false); await installApp(); }}
                   className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2"/>
-                    <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" strokeLinecap="round"/>
-                  </svg>
+                  <PhoneIcon size={14} />
                   Instalar aplicativo
                 </button>
               )}
 
-              {/* iOS Safari: mostrar instruções */}
               {showIOSInstructions && (
                 <button
                   onClick={() => { setAberto(false); setShowIOSModal(true); }}
                   className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2"/>
-                    <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" strokeLinecap="round"/>
-                  </svg>
+                  <PhoneIcon size={14} />
                   Instalar no iPhone
                 </button>
               )}
 
-              {/* Ativar notificações push — mostra se instalado em standalone OU se push é suportado e permissão ainda não foi concedida/negada */}
               {(isInstalled || isPushSupported) && pushPermission !== "granted" && pushPermission !== "denied" && (
                 <button
                   onClick={async () => { setAberto(false); await requestPushPermission(); }}
                   className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-ink"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                  </svg>
+                  <BellIcon size={14} />
                   Ativar notificações
                 </button>
               )}
@@ -203,11 +183,7 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
                 onClick={handleLogout}
                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-soft hover:bg-canvas hover:text-red-600"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+                <LogoutIcon size={14} />
                 Sair
               </button>
             </div>
@@ -225,7 +201,7 @@ export function HeaderUser({ usuario }: { usuario: UsuarioAtual }) {
               <li className="flex items-start gap-2">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-xs font-bold text-white">1</span>
                 Toque em <strong className="mx-1">Compartilhar</strong>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                <UploadIcon size={16} className="shrink-0" />
                 na barra do Safari
               </li>
               <li className="flex items-start gap-2">

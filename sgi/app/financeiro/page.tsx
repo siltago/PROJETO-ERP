@@ -242,7 +242,7 @@ export default async function FinanceiroPage({
                     <span className="text-sm font-semibold text-ink shrink-0">{fmt(f.total)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-canvas overflow-hidden">
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-3 overflow-hidden">
                       <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-xs text-ink-faint w-12 text-right">{pct.toFixed(1)}%</span>
@@ -273,7 +273,7 @@ export default async function FinanceiroPage({
                     <span className="text-sm font-semibold text-ink shrink-0">{fmt(o.total)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-canvas overflow-hidden">
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-3 overflow-hidden">
                       <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-xs text-ink-faint w-12 text-right">{pct.toFixed(1)}%</span>
@@ -309,7 +309,7 @@ export default async function FinanceiroPage({
                       <td className="px-5 py-2.5 text-right font-semibold text-ink">{fmt(val)}</td>
                       <td className="px-5 py-2.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-32 h-1.5 rounded-full bg-canvas overflow-hidden">
+                          <div className="w-32 h-1.5 rounded-full bg-surface-3 overflow-hidden">
                             <div className="h-full bg-steel rounded-full" style={{ width: `${pct}%` }} />
                           </div>
                           <span className="text-xs text-ink-faint">{pct.toFixed(1)}%</span>

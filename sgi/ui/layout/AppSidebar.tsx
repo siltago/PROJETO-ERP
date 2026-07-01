@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/ui/lib/cn";
 import { Tooltip } from "@/ui/components/Tooltip";
+import { ChevronLeftIcon, ChevronRightIcon, MenuIcon, CloseIcon } from "@/ui/icons";
 
 export interface SidebarNavItem {
   href: string;
@@ -158,12 +159,9 @@ export function AppSidebar({
       {/* Nav */}
       {navContent}
 
-      {/* Footer slot */}
-      {footer && (
-        <div className={cn(
-          "shrink-0 border-t border-divider transition-all duration-[120ms]",
-          collapsed ? "px-2 py-3" : "px-4 py-3"
-        )}>
+      {/* Footer slot — hidden when collapsed (buttons too wide for 72px) */}
+      {footer && !collapsed && (
+        <div className="shrink-0 border-t border-divider px-4 py-3">
           {footer}
         </div>
       )}
@@ -179,14 +177,7 @@ export function AppSidebar({
         aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
         title={collapsed ? "Expandir menu" : "Recolher menu"}
       >
-        <svg
-          width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-          className="transition-transform duration-[180ms]"
-          style={{ transform: collapsed ? "rotate(180deg)" : "none" }}
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
+        {collapsed ? <ChevronRightIcon size={16} /> : <ChevronLeftIcon size={16} />}
       </button>
     </aside>
   );
@@ -210,9 +201,7 @@ export function AppSidebar({
           boxShadow: "0 4px 20px rgb(var(--color-primary) / 0.4)",
         }}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
+        <MenuIcon size={22} />
       </button>
 
       {/* Backdrop */}
@@ -241,9 +230,7 @@ export function AppSidebar({
             onClick={() => setMobileOpen(false)}
             className="h-8 w-8 flex items-center justify-center rounded-lg text-text-2 hover:bg-surface-2"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+            <CloseIcon size={16} />
           </button>
         </div>
         {header && <div className="px-4 py-3 border-b border-divider shrink-0">{header}</div>}

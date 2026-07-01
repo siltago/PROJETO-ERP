@@ -32,9 +32,7 @@ export const metadata: Metadata = {
   description: "Gestão Industrial Para Esquadrias",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/icon.png",
     apple: "/icon.png",
-    shortcut: "/icon.png",
   },
   other: {
     "apple-mobile-web-app-capable": "yes",

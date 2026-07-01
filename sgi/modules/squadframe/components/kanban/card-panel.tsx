@@ -533,7 +533,7 @@ export function CardPanel({ tarefaId, onClose, standalone = false }: Props) {
               <label className="label mb-0">Checklist {checkTotal > 0 && `(${checkDone}/${checkTotal})`}</label>
             </div>
             {checkTotal > 0 && (
-              <div className="h-1 w-full bg-canvas rounded-full overflow-hidden mb-2">
+              <div className="h-1 w-full bg-surface-3 rounded-full overflow-hidden mb-2">
                 <div className="h-full rounded-full bg-steel transition-all" style={{ width: `${checkPct}%` }} />
               </div>
             )}

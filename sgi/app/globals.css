@@ -44,6 +44,9 @@
   --color-info:          59  130 246;
   --color-info-soft:     219 234 254;
 
+  /* Header — usa primary por padrão, sobrescrito no Frame */
+  --color-header:      var(--color-primary);
+
   /* Aliases legados — backward-compat */
   --color-canvas:      var(--color-bg);
   --color-ink:         var(--color-text);
@@ -119,9 +122,10 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FRAME THEME — identidade SquadFrame
+   FRAME THEME — identidade SquadFrame (modo claro)
 ═══════════════════════════════════════════════════════════════ */
 .frame {
+  --color-header:        34  40  49;   /* #222831 — sempre fixo */
   --color-primary:       34  40  49;
   --color-primary-hover: 40  59  72;
   --color-primary-active:28  50  62;
@@ -129,6 +133,15 @@
   --color-accent:        0   166 192;
   --color-accent-hover:  0   147 171;
   --color-accent-soft:   224 247 250;
+}
+
+/* Frame + Dark: primary vira cyan para manter legibilidade no fundo escuro
+   mas --color-header permanece #222831 (definido em .frame acima) */
+.dark.frame {
+  --color-primary:        0   188 212;
+  --color-primary-hover:  0   210 236;
+  --color-primary-active: 38  228 255;
+  --color-primary-soft:   0   40  55;
 }
 
 /* ═══════════════════════════════════════════════════════════════

@@ -1,5 +1,8 @@
 /* SquadUI — Design System exports */
 
+/* Icons */
+export * from "./icons";
+
 /* Theme */
 export { ThemeProvider, ThemeScript, useTheme } from "./theme/ThemeProvider";
 export type { Theme } from "./theme/tokens";

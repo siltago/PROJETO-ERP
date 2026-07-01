@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { SearchIcon, CloseIcon, ChevronRightIcon } from "@/ui/icons";
 
 type Resultado = {
   tipo: "obra" | "produto" | "fornecedor" | "pedido" | "solicitacao" | "tarefa";
@@ -21,12 +22,12 @@ const TIPO_LABEL: Record<Resultado["tipo"], string> = {
 };
 
 const TIPO_COR: Record<Resultado["tipo"], string> = {
-  obra: "bg-blue-100 text-blue-700",
-  produto: "bg-amber-100 text-amber-700",
-  fornecedor: "bg-emerald-100 text-emerald-700",
-  pedido: "bg-violet-100 text-violet-700",
-  solicitacao: "bg-purple-100 text-purple-700",
-  tarefa: "bg-teal-100 text-teal-700",
+  obra:       "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  produto:    "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  fornecedor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  pedido:     "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  solicitacao:"bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  tarefa:     "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
 };
 
 export function BuscaGlobal() {
@@ -92,7 +93,7 @@ export function BuscaGlobal() {
         className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-white/70 hover:bg-white/15 hover:text-white transition-colors"
         title="Buscar (Ctrl+K)"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <SearchIcon size={14} />
         <span className="hidden md:inline">Buscar</span>
         <kbd className="hidden md:inline text-xs opacity-60 font-mono">Ctrl+K</kbd>
       </button>
@@ -104,7 +105,7 @@ export function BuscaGlobal() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-ink-faint shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <SearchIcon size={16} className="text-ink-faint shrink-0" />
               <input
                 ref={inputRef}
                 value={query}
@@ -115,7 +116,7 @@ export function BuscaGlobal() {
               />
               {query && (
                 <button onClick={() => { setQuery(""); setResultados([]); inputRef.current?.focus(); }} className="text-ink-faint hover:text-ink">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  <CloseIcon size={14} />
                 </button>
               )}
             </div>
@@ -136,7 +137,7 @@ export function BuscaGlobal() {
                         <p className="truncate text-sm font-medium text-ink">{r.titulo}</p>
                         {r.subtitulo && <p className="truncate text-xs text-ink-faint">{r.subtitulo}</p>}
                       </div>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-auto shrink-0 text-ink-faint"><polyline points="9 18 15 12 9 6"/></svg>
+                      <ChevronRightIcon size={12} className="ml-auto shrink-0 text-ink-faint" />
                     </button>
                   </li>
                 ))}
